@@ -167,7 +167,7 @@ export default class Home extends React.Component<any> {
       <section className="home-section-gradient home-section">
         <div className="home-section-content">
           <Row type="flex" justify="center">
-            <p className="home-section-header home-section-gradient-header">Free for Open Source. Forever</p>
+            <p id="pricing" className="home-section-header home-section-gradient-header">Free for Open Source. Forever</p>
           </Row>
           <Row type="flex" justify="center">
             <a href={`${API_HOST}/v1/auth/github`}>
@@ -183,8 +183,12 @@ export default class Home extends React.Component<any> {
   }
 
   private renderWhyUsSection() {
+    const lines: JSX.Element[] = [
+      (<>You will get perfect Golang code review because we are focused only on one language - <b>Golang</b>. We are fine-tuning our tools for the best golang code analysis.</>),
+      (<>GolangCI is built by developers for developers. We believe in open source and GolangCI is an <a target="_blank" href="https://github.com/golangci/golangci">open source project</a>.</>)
+    ];
     return (
-      <section className="home-section home-section-why-us">
+      <section className="home-section home-section-padded">
         <div className="home-section-content">
           <Row type="flex" justify="center">
             <p className="home-section-header">Why us?</p>
@@ -196,10 +200,7 @@ export default class Home extends React.Component<any> {
               </Row>
             </Col>
             <Col xs={24} sm={18}>
-              <p className="home-section-why-us-description">
-                We support only one language - Golang.
-                We are focused on building the best automated code review tool for <b>Golang</b> projects.
-              </p>
+              {lines.map((e: JSX.Element) => (<p className="home-section-why-us-description">{e}</p>))}
             </Col>
           </Row>
         </div>

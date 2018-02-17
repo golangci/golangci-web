@@ -31,3 +31,14 @@ section {
   margin-right: 5px !important;
   vertical-align: middle;
 }
+
+.footer-cell {
+  display: table-cell;
+  border-right: solid rgba(0, 0, 0, 0.3) 1px;
+  padding: 0 3px;
+}
+
+.footer-cell-last {
+  display: table-cell;
+  padding-left: 3px;
+}

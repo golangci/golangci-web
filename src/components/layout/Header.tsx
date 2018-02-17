@@ -41,21 +41,17 @@ class MyHeader extends React.Component<IProps> {
   }
 
   private getMenu(mode: MenuMode): JSX.Element {
-    const needMenu = false;
-    return needMenu ? (
+    return (
       <Menu
         theme="light"
         mode={mode}
         defaultSelectedKeys={['2']}
         style={{ lineHeight: '64px' }}
       >
-        {!this.props.currentUser && <Menu.Item key="1">Product</Menu.Item>}
-        {!this.props.currentUser && <Menu.Item key="2">Pricing</Menu.Item>}
-        <Menu.Item key="3">Documentation</Menu.Item>
-        <Menu.Item key="4">FAQ</Menu.Item>
-        {!this.props.currentUser && <Menu.Item key="5">About</Menu.Item>}
+        {!this.props.currentUser && <Menu.Item key="1"><a href="/#integrated-with-github">Product</a></Menu.Item>}
+        {!this.props.currentUser && <Menu.Item key="2"><a href="/#pricing">Pricing</a></Menu.Item>}
       </Menu>
-    ) : null;
+    );
   }
 
   render() {
