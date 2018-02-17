@@ -1,0 +1,98 @@
+$logo-aspect-ratio: 620 / 100;
+$logo-height: 2.5rem;
+$logo-color: $blue;
+
+.logo {
+  line-height: initial;
+  float: left;
+  margin: 16px 24px 0 0;
+}
+
+.logo-svg {
+  height: $logo-height;
+  width: $logo-height * $logo-aspect-ratio;
+
+  fill: $logo-color;
+}
+
+.logo-svg:hover #logo__text {
+  fill: shade($logo-color, 30%);
+  transition: fill 0.3s ease-in;
+}
+
+@include keyframes(grow) {
+  0% {
+    @include transform(scale(0.25));
+  }
+
+  35% {
+    @include transform(scale(1.0));
+  }
+
+  70% {
+    @include transform(scale(0.85));
+  }
+
+  100% {
+    @include transform(scale(1));
+    opacity: 1;
+  }
+}
+
+%center-and-fade {
+  @include transform-origin(50%);
+  opacity: 0;
+}
+
+.logo-svg:hover #logo__go__circle {
+  @include animation(grow 0.5s ease-out forwards);
+  @extend %center-and-fade;
+}
+
+@include keyframes(moveInDown) {
+  0% {
+    @include transform(translate3d(0, -300px, 0));
+  }
+
+  60% {
+    @include transform(translate3d(0, 13px, 0));
+  }
+
+  80% {
+    @include transform(translate3d(0, -9px, 0));
+  }
+
+  100% {
+    @include transform(translate3d(0, 0, 0));
+    opacity: 1;
+  }
+}
+
+.logo-svg:hover #logo__go__body {
+  @include animation(moveInDown 1.0s ease-out forwards);
+  @extend %center-and-fade;
+}
+
+@include keyframes(moveInRightShield) {
+  0% {
+    @include transform(translate3d(-100px, 46px, 0));
+  }
+
+  50% {
+    @include transform(translate3d(48px, 46px, 0));
+  }
+
+  80% {
+    @include transform(translate3d(0px, 46px, 0));
+  }
+
+  100% {
+    @include transform(translate3d(12px, 46px, 0));
+    opacity: 1;
+  }
+}
+
+.logo-svg:hover #logo__go__shield {
+  @include animation(moveInRightShield 1.0s ease-out forwards);
+  @extend %center-and-fade;
+}

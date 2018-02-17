@@ -1,0 +1,9 @@
+<% for (key in htmlWebpackPlugin.files.chunks) { %>
+  <script src="/js/dist/<%= htmlWebpackPlugin.files.chunks[key].entry %>" type="text/javascript" defer></script>
+<% } %>
+
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"></link>
+
+<% for (var key in htmlWebpackPlugin.files.css) { %>
+  <link href="/js/dist/<%= htmlWebpackPlugin.files.css[key] %>" rel="stylesheet">
+<% } %>

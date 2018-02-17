@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist/",
+        "sourceMap": true,
+        "noImplicitAny": true,
+        "allowJs": true,
+        "module": "esnext",
+        "baseUrl": "./",
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "target": "es6",
+        "jsx": "react",
+        "lib": ["dom", "es6", "dom.iterable" ,"scripthost", "es2017"],
+        "typeRoots": [
+          "node_modules/@types",
+          "src/typings"
+        ],
+        "paths": {
+          "*" : ["./node_modules/@types/*", "*"]
+        }
+    },
+    "exclude": [
+      "**/node_modules/*"
+    ]
+}

@@ -1,0 +1,106 @@
+.home-jumbotron {
+  padding: 4em 20px 8em;
+}
+
+.home-jumbotron-header {
+  font-size: 4em;
+  margin-bottom: 0.2em;
+}
+
+.home-jumbotron-subheader {
+  font-size: 1.3em;
+}
+
+$home-section-gradient-top: #8176b5;
+$home-section-gradient-bottom: $blue;
+
+.home-section-gradient {
+  color: $home-gradient-text-color;
+  background: linear-gradient(to bottom left, $home-section-gradient-top, $home-section-gradient-bottom);
+
+  padding: $large-spacing 10% ($large-spacing * 2);
+}
+
+.home-section-content {
+  margin: 0px 20px;
+}
+
+.home-section-header {
+  font-size: 3em;
+}
+
+.home-section-gradient-header {
+  border-bottom: 1px solid rgba($white, 0.2);
+  text-shadow: $base-text-shadow;
+}
+
+.home-matter-column-header {
+  font-weight: bold;
+  font-size: 1.2em;
+  text-shadow: $base-text-shadow;
+}
+
+.home-matter-column-text {
+  font-size: 1.2em;
+}
+
+.home-matter-column-icon-full-svg svg {
+  width: 100%;
+  height: 100%;
+}
+
+.home-matter-column-icon {
+  padding-left: 20px;
+  padding-right: 15px;
+}
+
+.home-matter-row0 {
+  @media screen and (max-width: $screen-xs) {
+    margin-bottom: 0px;
+  }
+  margin-bottom: 80px;
+}
+
+.home-matter-column-icon svg {
+  fill: $home-gradient-text-color;
+}
+
+.home-section-why-us {
+  padding: 3em 20%;
+}
+
+.home-section-why-us-description {
+  font-size: 1.3em;
+  padding-left: 0.5em;
+}
+
+.home-section-padded {
+  padding: 3em 20%;
+}
+
+.home-pr-comment-demo {
+  width: 80%;
+  max-width: 1100px;
+}
+
+.home-pr-comment-demo-img {
+  width: 100%;
+}
+
+.home-github-status-demo {
+  padding-top: 4em;
+  width: 80%;
+  max-width: 900px;
+}
+
+.home-github-status-demo-img {
+  width: 100%;
+}
+
+.hr-bordered-top {
+  border-top: 1px solid #dcdcdc;
+}
+
+.home-section-linters-description {
+  font-size: 1.3em;
+}

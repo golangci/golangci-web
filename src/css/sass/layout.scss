@@ -1,0 +1,33 @@
+.content {
+  margin: 16px 0;
+}
+
+section {
+  display:block
+}
+
+.header-account-block {
+  margin-left: auto;
+  display: inline-block;
+}
+
+.header-account-block a {
+  margin-right: 20px;
+}
+
+.header-account-logout {
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.header-row {
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.ant-menu-horizontal {
+  border-bottom: 0 !important;
+}
+
+.header-account-avatar {
+  margin-right: 5px !important;
+  vertical-align: middle;
+}
