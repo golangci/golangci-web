@@ -65,7 +65,7 @@ export default class Home extends React.Component<any> {
     return (
       <section className="home-jumbotron">
         <Row type="flex" justify="center">
-          <h1 className="home-jumbotron-header">Automated code review for Golang</h1>
+          <h1 className="home-jumbotron-header">Automated code review for Go</h1>
         </Row>
         <Row type="flex" justify="center">
           <p className="home-jumbotron-subheader">GolangCI comments on issues in Github pull requests: bugs, style violations, anti-pattern instances</p>
@@ -185,7 +185,7 @@ export default class Home extends React.Component<any> {
 
   private renderWhyUsSection() {
     const lines: JSX.Element[] = [
-      (<>You will get perfect Golang code review because we are focused only on one language - <b>Golang</b>. We are fine-tuning our tools for the best golang code analysis.</>),
+      (<>You will get perfect Go code review because we are focused only on one language - <b>Go</b>. We are fine-tuning our tools for the best go code analysis.</>),
       (<>GolangCI is built by developers for developers. We believe in open source and GolangCI is an <a target="_blank" href="https://github.com/golangci/golangci">open source project</a>.</>)
     ];
     return (
@@ -210,7 +210,7 @@ export default class Home extends React.Component<any> {
   }
 
   private renderHead() {
-    return <Helmet title="Automated code review for Golang" />
+    return <Helmet title="Automated code review for Go" />
   }
 
   render() {
