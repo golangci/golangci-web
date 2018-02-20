@@ -2,6 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
 import { Button, Icon, Row, Col, List } from 'antd';
+import { Helmet } from "react-helmet";
 import Octicon from 'react-component-octicons';
 import Go from '../../assets/images/logo/go.svg';
 import prCommentDemoImage from '../../assets/images/home/pr-comment-demo.png';
@@ -208,9 +209,14 @@ export default class Home extends React.Component<any> {
     )
   }
 
+  private renderHead() {
+    return <Helmet title="Automated code review for Golang" />
+  }
+
   render() {
     return (
       <>
+        {this.renderHead()}
         {this.renderJumbotron()}
         {this.renderWhyDoYouNeedSection()}
         {this.renderGithubIntegrationSection()}
