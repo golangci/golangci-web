@@ -16,6 +16,7 @@ import buildRoutes from './routes/routes';
 import rootSaga from './sagas';
 import reachGoal from './modules/utils/goals';
 import { toastr } from 'react-redux-toastr';
+import { reportError } from './modules/utils/errors';
 
 export default class ClientApp {
   private sendStatHit(action: string) {
@@ -87,10 +88,6 @@ export default class ClientApp {
   }
 
   public run(): void {
-    window.onerror = this.onError.bind(this);
-    window.addEventListener("error", (e) => {
-      this.onError("addEventListener(error)", "", 0, 0, e);
-    });
     this.runImpl();
   }
 
@@ -114,6 +111,7 @@ export default class ClientApp {
 
   private sendError(data: object) {
     console.error("sendError:", data);
+    reportError(data);
   }
 }
 
