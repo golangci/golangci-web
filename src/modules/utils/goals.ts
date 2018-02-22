@@ -31,7 +31,7 @@ export default function reachGoal(category: string, action: string, label?: stri
   }
 }
 
-export function trackEvent(text: string) {
+export function trackEvent(text: string): void {
   try {
     if (typeof window == "undefined") {
       return;

@@ -79,9 +79,10 @@ export const reducer = combineReducers<IRepoStore>({
 
 function* doReposFetching() {
   const state: IAppStore = yield select();
-  const resp = yield call(makeApiGetRequest, "/v1/repos", state.auth.cookie);
+  const apiUrl = "/v1/repos";
+  const resp = yield call(makeApiGetRequest, apiUrl, state.auth.cookie);
   if (!resp || resp.error) {
-    yield* processError(resp, "Can't check authorization");
+    yield* processError(apiUrl, resp, "Can't check authorization");
   } else {
     yield put(onReposFetched(resp.data.repos));
   }
@@ -93,9 +94,10 @@ function* fetchReposWatcher() {
 
 function* doActivateRepoRequest({activate, name}: any) {
   const state: IAppStore = yield select();
-  const resp = yield call(activate ? makeApiPutRequest : makeApiDeleteRequest, `/v1/repos/${name}`, state.auth.cookie);
+  let apiUrl = `/v1/repos/${name}`;
+  const resp = yield call(activate ? makeApiPutRequest : makeApiDeleteRequest, apiUrl, state.auth.cookie);
   if (!resp || resp.error) {
-    yield* processError(resp, "Can't activate repo");
+    yield* processError(apiUrl, resp, "Can't activate repo");
   } else {
     yield put(onActivatedRepo(name, activate));
     yield call(reachGoal, "repos", activate ? "connect" : "disconnect");

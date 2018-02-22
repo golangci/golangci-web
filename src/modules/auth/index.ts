@@ -52,13 +52,14 @@ export const reducer = combineReducers<IAuthStore>({
 
 function* doAuthCheckRequest() {
   const state: IAppStore = yield select();
-  const resp = yield call(makeApiGetRequest, "/v1/auth/check", state.auth.cookie);
+  const apiUrl = "/v1/auth/check";
+  const resp = yield call(makeApiGetRequest, apiUrl, state.auth.cookie);
   if (!resp || resp.error) {
     if (getApiHttpCode(resp) === 403) {
       // user isn't authorized
       yield put(onCheckedAuth(null))
     } else {
-      yield* processError(resp, "Can't check authorization");
+      yield* processError(apiUrl, resp, "Can't check authorization");
     }
   } else {
     yield put(onCheckedAuth(resp.data.user));

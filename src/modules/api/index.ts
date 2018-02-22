@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { onGotApiResult } from '../result';
 import { put } from 'redux-saga/effects';
+import { reportError } from '../utils/errors';
 
 export const makeApiGetRequest = (path: string, cookie?: string): Promise<IApiResponse> => {
   return makeApiRequest(path, "GET", cookie);
@@ -37,7 +38,7 @@ const makeApiRequest = (path: string, method: string, cookie?: string, data?: an
     return {data: resp.data};
   })
   .catch<IApiResponse>(error => {
-    console.error("API: %s: %s: got error with cookie %s: %s for %sms", method, path, cookie, error, Date.now() - startTime);
+    console.warn("API: %s: %s: got error with cookie %s: %s for %sms", method, path, cookie, error, Date.now() - startTime);
     return {error};
   });
 }
@@ -53,7 +54,8 @@ export const getApiHttpCode = (resp: IApiResponse): number => {
   return code;
 }
 
-export function* processError(resp: IApiResponse, message: string) {
+export function* processError(apiUrl: string, resp: IApiResponse, message: string) {
   yield put(onGotApiResult(getApiHttpCode(resp)));
+  reportError("api error", {error: !resp ? "no response" : resp.error, apiUrl});
   console.error("api error:", message, resp);
 }
