@@ -186,7 +186,7 @@ export default class Home extends React.Component<any> {
   private renderWhyUsSection() {
     const lines: JSX.Element[] = [
       (<>You will get perfect Go code review because we are focused only on one language - <b>Go</b>. We are fine-tuning our tools for the best go code analysis.</>),
-      (<>GolangCI is built by developers for developers. We believe in open source and GolangCI is an <a target="_blank" href="https://github.com/golangci/golangci">open source project</a>.</>)
+      (<>GolangCI is built by developers for developers. We believe in open source and GolangCI is an <a target="_blank" href="https://github.com/golangci/golangci?utm_source=golangci.com&utm_content=home_open_source">open source project</a>.</>)
     ];
     return (
       <section className="home-section home-section-padded">
