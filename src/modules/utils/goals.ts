@@ -1,28 +1,51 @@
 export default function reachGoal(category: string, action: string, label?: string, value?: any) {
-  if (typeof window == "undefined") {
-    return;
+  try {
+    if (typeof window == "undefined") {
+      return;
+    }
+
+    console.log('reachGoal: category="%s", action="%s", label="%s", value=%s',
+      category, action, label, value
+    );
+
+    let w = window as any;
+    if (w.yaCounter47296422 !== undefined) {
+      let yaGoalName = category + '.' + action;
+      w.yaCounter47296422.reachGoal(yaGoalName, function () {
+        console.log('yandex goal "%s" was sent', yaGoalName);
+      });
+    }
+
+    if (w.ga !== undefined) {
+      w.ga('send', {
+        hitType: 'event',
+        eventCategory: category,
+        eventAction: action,
+        eventLabel: label,
+        eventValue: value,
+      });
+      console.log('sent goal to google');
+    }
+  } catch (ex) {
+    console.error("exception in reachGoal:", ex);
   }
+}
 
-  console.log('reachGoal: category="%s", action="%s", label="%s", value=%s',
-    category, action, label, value
-  );
+export function trackEvent(text: string) {
+  try {
+    if (typeof window == "undefined") {
+      return;
+    }
 
-  let w = window as any;
-  if (w.yaCounter47296422 !== undefined) {
-    let yaGoalName = category + '.' + action;
-    w.yaCounter47296422.reachGoal(yaGoalName, function () {
-      console.log('yandex goal "%s" was sent', yaGoalName);
-    });
-  }
+    let w = window as any;
+    if (w.mixpanel === undefined) {
+      console.warn("try to track event '%s': no mixpanel js", text);
+      return;
+    }
 
-  if (w.ga !== undefined) {
-    w.ga('send', {
-      hitType: 'event',
-      eventCategory: category,
-      eventAction: action,
-      eventLabel: label,
-      eventValue: value,
-    });
-    console.log('sent goal to google');
+    w.mixpanel.track(text);
+    console.debug("tracked event '%s'", text);
+  } catch (ex) {
+    console.error("exception in trackEvent:", ex);
   }
 }

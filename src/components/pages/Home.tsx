@@ -7,6 +7,7 @@ import Octicon from 'react-component-octicons';
 import Go from '../../assets/images/logo/go.svg';
 import prCommentDemoImage from '../../assets/images/home/pr-comment-demo.png';
 import githubStatusImage from '../../assets/images/home/github-status.png';
+import reachGoal, { trackEvent } from '../../modules/utils/goals';
 
 export default class Home extends React.Component<any> {
   private renderLintersSection() {
@@ -61,6 +62,12 @@ export default class Home extends React.Component<any> {
     )
   }
 
+  private onGithubAuthClick(): boolean {
+    reachGoal("auth", "go_to_github");
+    trackEvent("clicked on github auth btn");
+    return true;
+  }
+
   private renderJumbotron() {
     return (
       <section className="home-jumbotron">
@@ -72,7 +79,7 @@ export default class Home extends React.Component<any> {
         </Row>
         <Row type="flex" justify="center">
           <a href={`${API_HOST}/v1/auth/github`}>
-            <Button type="primary" size="large">
+            <Button onClick={this.onGithubAuthClick} type="primary" size="large">
               <Icon type="github" />
               Signup via Github
             </Button>
@@ -172,7 +179,7 @@ export default class Home extends React.Component<any> {
           </Row>
           <Row type="flex" justify="center">
             <a href={`${API_HOST}/v1/auth/github`}>
-              <Button type="primary" size="large">
+              <Button onClick={this.onGithubAuthClick} type="primary" size="large">
                 <Icon type="github" />
                 Signup via Github
               </Button>
@@ -201,7 +208,7 @@ export default class Home extends React.Component<any> {
               </Row>
             </Col>
             <Col xs={24} sm={18}>
-              {lines.map((e: JSX.Element) => (<p className="home-section-why-us-description">{e}</p>))}
+              {lines.map((e: JSX.Element, i: number) => (<p key={i} className="home-section-why-us-description">{e}</p>))}
             </Col>
           </Row>
         </div>
