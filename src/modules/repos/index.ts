@@ -5,6 +5,7 @@ import {
   makeApiGetRequest, makeApiPostRequest, makeApiPutRequest, makeApiDeleteRequest,
   IApiResponse, getApiHttpCode, processError
 } from '../api';
+import reachGoal from '../utils/goals';
 
 enum ReposAction {
   FetchList = "@@GOLANGCI/REPOS/LIST/FETCH",
@@ -97,6 +98,7 @@ function* doActivateRepoRequest({activate, name}: any) {
     yield* processError(resp, "Can't activate repo");
   } else {
     yield put(onActivatedRepo(name, activate));
+    yield call(reachGoal, "repos", activate ? "connect" : "disconnect");
   }
 }
 

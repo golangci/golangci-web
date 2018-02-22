@@ -8,9 +8,9 @@ export default function reachGoal(category: string, action: string, label?: stri
   );
 
   let w = window as any;
-  if (w.yaCounter42654659 !== undefined) {
+  if (w.yaCounter47296422 !== undefined) {
     let yaGoalName = category + '.' + action;
-    w.yaCounter42654659.reachGoal(yaGoalName, function () {
+    w.yaCounter47296422.reachGoal(yaGoalName, function () {
       console.log('yandex goal "%s" was sent', yaGoalName);
     });
   }

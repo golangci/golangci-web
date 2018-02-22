@@ -24,8 +24,8 @@ export default class ClientApp {
     }
 
     let w = (window as any);
-    if (w.yaCounter42654659 !== undefined) {
-      w.yaCounter42654659.hit(window.location.href);
+    if (w.yaCounter47296422 !== undefined) {
+      w.yaCounter47296422.hit(window.location.href);
     } else {
       console.warn("history.listen: w.yaCounter is undefined, can't send hit");
     }
@@ -35,7 +35,7 @@ export default class ClientApp {
       console.warn("history.listen: w.ga is undefined, can't send hit");
     }
 
-    if (w.yaCounter42654659 !== undefined && w.ga !== undefined) {
+    if (w.yaCounter47296422 !== undefined && w.ga !== undefined) {
       console.info("history.listen: sent ya+ga hits: window.location.href is %s. History args: action is %s",
         window.location.href, action);
     }
