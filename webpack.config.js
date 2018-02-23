@@ -105,13 +105,22 @@ function run() {
   }
 
   if (!isServer && isProd) {
-    var HtmlWebpackPlugin = require('html-webpack-plugin');
+    const HtmlWebpackPlugin = require('html-webpack-plugin');
     plugins.push(
       new HtmlWebpackPlugin({
         template: './webpack.partial.ejs',
         filename: './webpack.partial.html',
         inject: false,
         cache: true,
+      })
+    );
+
+    const RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin')
+    plugins.push(
+      new RollbarSourceMapPlugin({
+        accessToken: '8d9dee66de9a4cc2acbec93d4ee98fa8',
+        version: process.env.SOURCE_VERSION,
+        publicPath: "https://golangci.com/",
       })
     );
   }

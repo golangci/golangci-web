@@ -47,6 +47,7 @@
     "node-sass": "^4.7.2",
     "nodemon": "^1.14.11",
     "react-svg-loader": "^2.1.0",
+    "rollbar-sourcemap-webpack-plugin": "^2.2.0",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.19.1",
     "svgo": "^1.0.3",
