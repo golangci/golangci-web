@@ -116,10 +116,12 @@ function run() {
     );
 
     const RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin')
+    const sourceVersion = process.env.SOURCE_VERSION;
+    console.log("source version is '%s'", sourceVersion);
     plugins.push(
       new RollbarSourceMapPlugin({
         accessToken: '8d9dee66de9a4cc2acbec93d4ee98fa8',
-        version: process.env.SOURCE_VERSION,
+        version: sourceVersion,
         publicPath: "https://golangci.com/",
       })
     );
