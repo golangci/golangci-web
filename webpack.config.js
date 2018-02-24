@@ -88,8 +88,9 @@ function run() {
   if (isProd || needOptimize) {
     plugins.push(new UglifyJSPlugin({
       uglifyOptions: {
-        ie8: false,
-        ecma: 8,
+        ie8: true,
+        safari10: true,
+        ecma: 5,
         warnings: true,
       }
     }));
@@ -116,7 +117,7 @@ function run() {
     );
 
     const RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin')
-    const sourceVersion = process.env.SOURCE_VERSION;
+    const sourceVersion = process.env.SOURCE_VERSION || "dev";
     console.log("source version is '%s'", sourceVersion);
     plugins.push(
       new RollbarSourceMapPlugin({
