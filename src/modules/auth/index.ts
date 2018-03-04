@@ -5,7 +5,7 @@ import {
   makeApiGetRequest, makeApiPostRequest, makeApiPutRequest,
   IApiResponse, getApiHttpCode, processError
 } from '../api';
-
+import { trackAuthorizedUser } from "../utils/analytics";
 
 enum AuthAction {
   Check = "@@GOLANGCI/AUTH/CHECK",
@@ -30,6 +30,9 @@ export interface IUser {
   id: number;
   name: string;
   avatarUrl: string;
+  githubLogin: string;
+  email: string;
+  createdAt: Date;
 }
 
 const currentUser = (state: IUser = null, action: any): IUser => {
@@ -62,7 +65,9 @@ function* doAuthCheckRequest() {
       yield* processError(apiUrl, resp, "Can't check authorization");
     }
   } else {
-    yield put(onCheckedAuth(resp.data.user));
+    let user: IUser = resp.data.user;
+    yield put(onCheckedAuth(user));
+    yield call(trackAuthorizedUser, user);
   }
 }
 

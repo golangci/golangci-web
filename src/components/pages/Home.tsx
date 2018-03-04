@@ -7,7 +7,7 @@ import Octicon from 'react-component-octicons';
 import Go from '../../assets/images/logo/go.svg';
 import prCommentDemoImage from '../../assets/images/home/pr-comment-demo.png';
 import githubStatusImage from '../../assets/images/home/github-status.png';
-import reachGoal, { trackEvent } from '../../modules/utils/goals';
+import reachGoal, { trackEvent } from '../../modules/utils/analytics';
 
 export default class Home extends React.Component<any> {
   private renderLintersSection() {

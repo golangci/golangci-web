@@ -14,9 +14,9 @@ import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
 import buildRoutes from './routes/routes';
 import rootSaga from './sagas';
-import reachGoal from './modules/utils/goals';
+import reachGoal from './modules/utils/analytics';
 import { toastr } from 'react-redux-toastr';
-import { reportError } from './modules/utils/errors';
+import { reportError } from './modules/utils/analytics';
 
 export default class ClientApp {
   private sendStatHit(action: string) {

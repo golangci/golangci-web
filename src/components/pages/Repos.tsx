@@ -7,7 +7,7 @@ import { IAppStore } from '../../reducers';
 import { List, Icon, Row, Col, Button } from 'antd';
 import { fetchRepos, activateRepo, IRepo } from "../../modules/repos";
 import { MobileScreen, DesktopScreen } from 'react-responsive-redux';
-import { trackEvent } from '../../modules/utils/goals';
+import { trackEvent } from '../../modules/utils/analytics';
 
 interface IStateProps {
   repos: IRepo[];

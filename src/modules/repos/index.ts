@@ -5,7 +5,7 @@ import {
   makeApiGetRequest, makeApiPostRequest, makeApiPutRequest, makeApiDeleteRequest,
   IApiResponse, getApiHttpCode, processError
 } from '../api';
-import reachGoal from '../utils/goals';
+import reachGoal from '../utils/analytics';
 
 enum ReposAction {
   FetchList = "@@GOLANGCI/REPOS/LIST/FETCH",
