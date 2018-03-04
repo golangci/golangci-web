@@ -51,19 +51,32 @@ export function trackEvent(text: string): void {
 
 export function trackAuthorizedUser(user: IUser): void {
   let mp = getWindowProperty("mixpanel");
-  if (!mp) {
-    return;
+  if (mp) {
+    mp.identify(user.id.toString());
+    let u = {
+        "$first_name": user.name,
+        "$created": user.createdAt,
+        "$email": user.email,
+        "GithubLogin": user.githubLogin,
+    };
+    mp.people.set(u);
+    console.info("tracked user login to mixpanel:", u);
   }
 
-  mp.identify(user.id.toString());
-  let u = {
-      "$first_name": user.name,
-      "$created": user.createdAt,
-      "$email": user.email,
-      "GithubLogin": user.githubLogin,
-  };
-  mp.people.set(u);
-  console.info("tracked user login:", u);
+  let rb = getWindowProperty("Rollbar");
+  if (rb) {
+    let p = {
+      id: user.id,
+      username: user.githubLogin,
+      email: user.email,
+    };
+    rb.configure({
+      payload: {
+        person: p,
+      },
+    });
+    console.info("tracked user login to rollbar:", p);
+  }
 }
 
 export function reportError(e: any, data?: any): void {
