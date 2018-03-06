@@ -1,4 +1,4 @@
-import { all } from 'redux-saga/effects';
+import { all } from "redux-saga/effects";
 import { getWatchers as authWatchers } from "../modules/auth";
 import { getWatchers as reposWatchers } from "../modules/repos";
 

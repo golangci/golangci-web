@@ -1,0 +1,10 @@
+extends:
+  - "tslint:latest"
+rules:
+    "no-submodule-imports": false
+    "no-unused-variable": true
+    "no-console": false
+    "ordered-imports": false
+    "no-empty-interface": false
+    "object-literal-sort-keys": false
+    "max-line-length": false

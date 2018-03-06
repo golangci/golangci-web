@@ -1,37 +1,38 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import StackTrace from 'stacktrace-js';
+import StackTrace from "stacktrace-js";
 
-import configureStore from './store/configure';
+import configureStore from "./store/configure";
 
-import { createBrowserHistory } from 'history';
-import { syncHistoryWithStore } from 'react-router-redux';
+import { createBrowserHistory } from "history";
+import { syncHistoryWithStore } from "react-router-redux";
 
-import App from './components/App';
-import { IAppStore } from './reducers';
+import { IAppStore } from "./reducers";
 
-import { Provider } from 'react-redux';
-import { Router } from 'react-router-dom';
-import buildRoutes from './routes/routes';
-import rootSaga from './sagas';
-import reachGoal from './modules/utils/analytics';
-import { toastr } from 'react-redux-toastr';
-import { reportError } from './modules/utils/analytics';
+import { Provider } from "react-redux";
+import { Router } from "react-router-dom";
+import buildRoutes from "./routes/routes";
+import rootSaga from "./sagas";
+import { reportError } from "./modules/utils/analytics";
 
 export default class ClientApp {
+  public run(): void {
+    this.runImpl();
+  }
+
   private sendStatHit(action: string) {
     if (__DEV__) {
       return;
     }
 
-    let w = (window as any);
+    const w = (window as any);
     if (w.yaCounter47296422 !== undefined) {
       w.yaCounter47296422.hit(window.location.href);
     } else {
       console.warn("history.listen: w.yaCounter is undefined, can't send hit");
     }
     if (w.ga !== undefined) {
-      w.ga('send', 'pageview');
+      w.ga("send", "pageview");
     } else {
       console.warn("history.listen: w.ga is undefined, can't send hit");
     }
@@ -44,12 +45,12 @@ export default class ClientApp {
 
   private runImpl(): void {
     this.wrapSafe(() => {
-      let history = createBrowserHistory();
-      let stateFromServer = (window as any).__INITIAL_STATE__;
-      let initialState: IAppStore =  stateFromServer ? stateFromServer : {
+      const history = createBrowserHistory();
+      const stateFromServer = (window as any).__INITIAL_STATE__;
+      const initialState: IAppStore =  stateFromServer ? stateFromServer : {
       };
       console.info("initial state is", initialState);
-      let store = configureStore(initialState, history);
+      const store = configureStore(initialState, history);
 
       history.listen((location, action) => {
         console.info("history change: %s:", action, location);
@@ -69,7 +70,7 @@ export default class ClientApp {
             {buildRoutes()}
           </Router>
         </Provider>,
-        document.getElementById('react-app')
+        document.getElementById("react-app"),
       );
     });
   }
@@ -87,16 +88,12 @@ export default class ClientApp {
     }
   }
 
-  public run(): void {
-    this.runImpl();
-  }
-
   private onError(msg: string, url: string, lineNo: number, columnNo: number, error: any): boolean {
     try {
       StackTrace
         .fromError(error)
         .then((stackframes) => {
-          let stack = stackframes.map((sf) => sf.toString()).join("\n");
+          const stack = stackframes.map((sf) => sf.toString()).join("\n");
           this.sendError({msg, url, lineNo, columnNo, error, stack});
         })
         .catch((err) => {
@@ -115,5 +112,5 @@ export default class ClientApp {
   }
 }
 
-let app = new ClientApp();
+const app = new ClientApp();
 app.run();

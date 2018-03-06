@@ -11,11 +11,14 @@
     "build_server": "IS_SERVER=1 webpack --progress",
     "build_all": "npm run build_client && npm run build_server",
     "heroku-postbuild": "rm -rf dist && mkdir -p dist/prod && NODE_ENV=production npm run build_all",
-    "gen_favicon": "real-favicon generate src/faviconDescription.json faviconData.json src/public/favicon/ && real-favicon inject faviconData.json src/public/favicon src/dev/index.html"
+    "gen_favicon": "real-favicon generate src/faviconDescription.json faviconData.json src/public/favicon/ && real-favicon inject faviconData.json src/public/favicon src/dev/index.html",
+    "lint": "tslint --project . --exclude **/*.d.ts src/**/*.ts src/**/*.tsx src/*.ts src/*.tsx",
+    "lint_fix": "tslint --fix --project . --exclude **/*.d.ts src/**/*.ts src/**/*.tsx src/*.ts src/*.tsx"
   },
   "devDependencies": {
     "@types/classnames": "^2.2.3",
     "@types/express": "^4.11.0",
+    "@types/history": "^4.6.2",
     "@types/query-string": "^5.0.1",
     "@types/react": "^16.0.34",
     "@types/react-dom": "^16.0.3",
@@ -71,6 +74,7 @@
     "console-stamp": "^0.2.6",
     "express": "^4.16.2",
     "font-awesome": "^4.7.0",
+    "history": "^4.7.2",
     "query-string": "^5.0.1",
     "react": "^16.2.0",
     "react-component-octicons": "^1.4.1",

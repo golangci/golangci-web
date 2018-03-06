@@ -1,49 +1,41 @@
-import { match } from 'react-router';
-import { createMemoryHistory } from 'history';
-import React from 'react';
-import {renderToString} from 'react-dom/server';
-import {Provider} from 'react-redux';
-import * as express from 'express';
-//import createRoutes from './routes';
-import configureStore from './store/configure';
-import Helmet from 'react-helmet';
-import {syncHistoryWithStore} from 'react-router-redux';
-import * as queryString from 'query-string';
-import buildRoutes from './routes/routes';
-import { IAppStore } from './reducers';
-import rootSaga from './sagas';
-import { StaticRouter } from 'react-router-dom';
-import { setMobileDetect, mobileParser } from 'react-responsive-redux'
+import { createMemoryHistory } from "history";
+import React from "react";
+import {renderToString} from "react-dom/server";
+import {Provider} from "react-redux";
+import * as express from "express";
+import configureStore from "./store/configure";
+import Helmet from "react-helmet";
+import {syncHistoryWithStore} from "react-router-redux";
+import buildRoutes from "./routes/routes";
+import { IAppStore } from "./reducers";
+import rootSaga from "./sagas";
+import { StaticRouter } from "react-router-dom";
+import { setMobileDetect, mobileParser } from "react-responsive-redux";
 
-
-const env = process.env;
-
-var webpackPartialTmpl: string;
+let webpackPartialTmpl: string;
 
 const render = (req: express.Request, res: express.Response) => {
-  let startedAt = Date.now();
-  let qs = "?" + queryString.stringify(req.query);
-
+  const startedAt = Date.now();
   const memoryHistory = createMemoryHistory();
 
-  let initialState: IAppStore = {
+  const initialState: IAppStore = {
     auth: {
       cookie: (req.headers.cookie || "").toString(),
-    }
+    },
   };
   console.log("initial state is", initialState);
   const store: any = configureStore(initialState, memoryHistory);
-  const history = syncHistoryWithStore(memoryHistory, store);
+  const history = syncHistoryWithStore(memoryHistory, store); // tslint:disable-line
 
   // do our mobile detection
-  const mobileDetect = mobileParser(req)
+  const mobileDetect = mobileParser(req);
 
   // set mobile detection for our responsive store
-  store.dispatch(setMobileDetect(mobileDetect))
+  store.dispatch(setMobileDetect(mobileDetect));
 
   const routes = buildRoutes();
 
-  let context: any = {};
+  const context: any = {};
   const rootComp = (
     <Provider store={store}>
       <StaticRouter location={req.url} context={context}>
@@ -54,10 +46,10 @@ const render = (req: express.Request, res: express.Response) => {
 
   // When first render is done and all saga's are run, render again with updated store.
   store.runSaga(rootSaga).done.then(() => {
-    let preloadedAt = Date.now();
+    const preloadedAt = Date.now();
     const html = renderToString(rootComp);
-    let state: IAppStore = store.getState();
-    if (state.result.apiResultHttpCode != 200) {
+    const state: IAppStore = store.getState();
+    if (state.result.apiResultHttpCode !== 200) {
       console.warn("request %s was processed for %sms: return %d",
         req.url, Date.now() - startedAt, state.result.apiResultHttpCode);
       res.sendStatus(state.result.apiResultHttpCode);
@@ -71,15 +63,15 @@ const render = (req: express.Request, res: express.Response) => {
       return;
     }
 
-    let renderedAt = Date.now();
-    let retHtml = renderHtml(html, state);
-    let htmlCreatedAt = Date.now();
+    const renderedAt = Date.now();
+    const retHtml = renderHtml(html, state);
+    const htmlCreatedAt = Date.now();
     res.status(200).send(retHtml);
-    let sentAt = Date.now();
+    const sentAt = Date.now();
     console.info("request %s was processed for %sms: preload=%sms, render=%sms, html=%sms, send=%sms",
       req.url, Date.now() - startedAt,
       preloadedAt - startedAt, renderedAt - preloadedAt,
-      htmlCreatedAt - renderedAt, sentAt - htmlCreatedAt
+      htmlCreatedAt - renderedAt, sentAt - htmlCreatedAt,
     );
   });
 
@@ -88,7 +80,7 @@ const render = (req: express.Request, res: express.Response) => {
 
   // When the first render is finished, send the END action to redux-saga.
   store.close();
-}
+};
 
 const faviconHtml = `
 <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
@@ -112,10 +104,10 @@ const loadWebpackPartialTmpl = () => {
     return;
   }
 
-  let fs = require('fs')
+  const fs = require("fs");
   webpackPartialTmpl = fs.readFileSync("./dist/prod/webpack.partial.html");
   console.log("loaded webpack partial");
-}
+};
 
 const amplitudeScript = `
 <script type="text/javascript">
@@ -254,7 +246,7 @@ const renderHtml = (content: string, state: IAppStore) => {
       ${headEndScripts}
     </head>
     <body data-spy="scroll"><div id="react-app">${content}</div></body>
-  </html>`
-}
+  </html>`;
+};
 
 export default render;
