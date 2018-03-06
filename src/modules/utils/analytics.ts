@@ -41,12 +41,16 @@ export default function reachGoal(category: string, action: string, label?: stri
 
 export function trackEvent(text: string): void {
   let mp = getWindowProperty("mixpanel");
-  if (!mp) {
-    return;
+  if (mp) {
+    mp.track(text);
+    console.debug("tracked event '%s' into mixpanel", text);
   }
 
-  mp.track(text);
-  console.debug("tracked event '%s'", text);
+  let amplitude = getWindowProperty("amplitude");
+  if (amplitude) {
+    amplitude.getInstance().logEvent(text);
+    console.debug("tracked event '%s' into amplitude", text);
+  }
 }
 
 export function trackAuthorizedUser(user: IUser): void {
@@ -55,12 +59,24 @@ export function trackAuthorizedUser(user: IUser): void {
     mp.identify(user.id.toString());
     let u = {
         "$first_name": user.name,
-        "$created": user.createdAt,
         "$email": user.email,
         "GithubLogin": user.githubLogin,
     };
     mp.people.set(u);
     console.info("tracked user login to mixpanel:", u);
+  }
+
+  let amplitude = getWindowProperty("amplitude");
+  if (amplitude) {
+    let ai = amplitude.getInstance();
+    ai.setUserId(user.id.toString());
+    var userProperties = {
+        "name": user.name,
+        "email": user.email,
+        "githubLogin": user.githubLogin,
+    };
+    ai.setUserProperties(userProperties);
+    console.info("tracked user login to amplitude:", user);
   }
 
   let rb = getWindowProperty("Rollbar");
