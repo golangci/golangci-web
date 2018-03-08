@@ -12,8 +12,8 @@
     "build_all": "npm run build_client && npm run build_server",
     "heroku-postbuild": "rm -rf dist && mkdir -p dist/prod && NODE_ENV=production npm run build_all",
     "gen_favicon": "real-favicon generate src/faviconDescription.json faviconData.json src/public/favicon/ && real-favicon inject faviconData.json src/public/favicon src/dev/index.html",
-    "lint": "tslint --project . --exclude **/*.d.ts src/**/*.ts src/**/*.tsx src/*.ts src/*.tsx",
-    "lint_fix": "tslint --fix --project . --exclude **/*.d.ts src/**/*.ts src/**/*.tsx src/*.ts src/*.tsx"
+    "lint": "find src -name '*.ts*' | fgrep -v .d.ts | xargs -t ./node_modules/.bin/tslint --project .",
+    "lint_fix": "find src -name '*.ts*' | fgrep -v .d.ts | xargs -t ./node_modules/.bin/tslint --fix --project ."
   },
   "devDependencies": {
     "@types/classnames": "^2.2.3",

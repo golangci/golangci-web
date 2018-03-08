@@ -1,11 +1,10 @@
-import { combineReducers } from 'redux';
-import { put, takeEvery, call, select, fork } from 'redux-saga/effects';
-import { IAppStore } from '../../reducers';
+import { combineReducers } from "redux";
+import { put, takeEvery, call, select, fork } from "redux-saga/effects";
+import { IAppStore } from "../../reducers";
 import {
-  makeApiGetRequest, makeApiPostRequest, makeApiPutRequest, makeApiDeleteRequest,
-  IApiResponse, getApiHttpCode, processError
-} from '../api';
-import reachGoal from '../utils/analytics';
+  makeApiGetRequest, makeApiPutRequest, makeApiDeleteRequest, processError,
+} from "../api";
+import reachGoal from "../utils/analytics";
 
 enum ReposAction {
   FetchList = "@@GOLANGCI/REPOS/LIST/FETCH",
@@ -37,7 +36,7 @@ const onReposFetched = (repos: IRepo[]) => ({
 
 export interface IRepoStore {
   github?: IRepo[];
-};
+}
 
 export interface IRepo {
   name: string;
@@ -53,29 +52,28 @@ const github = (state: IRepo[] = null, action: any): IRepo[] => {
       return null;
     case ReposAction.Activate:
       let repos: IRepo[] = [];
-      for (let r of state) {
-        repos.push(Object.assign({}, r, {isActivatingNow: r.name === action.name ? true : r.isActivatingNow}));
+      for (const r of state) {
+        repos.push({...r, isActivatingNow: r.name === action.name ? true : r.isActivatingNow});
       }
       return repos;
     case ReposAction.Activated:
       repos = [];
-      for (let r of state) {
-        let p = (r.name === action.name) ? {
+      for (const r of state) {
+        const p = (r.name === action.name) ? {
           isActivatingNow: false,
           isActivated: action.isActivated,
         } : {};
-        repos.push(Object.assign({}, r, p));
+        repos.push({...r, ...p});
       }
       return repos;
     default:
       return state;
   }
-}
+};
 
 export const reducer = combineReducers<IRepoStore>({
   github,
-})
-
+});
 
 function* doReposFetching() {
   const state: IAppStore = yield select();
@@ -94,7 +92,7 @@ function* fetchReposWatcher() {
 
 function* doActivateRepoRequest({activate, name}: any) {
   const state: IAppStore = yield select();
-  let apiUrl = `/v1/repos/${name}`;
+  const apiUrl = `/v1/repos/${name}`;
   const resp = yield call(activate ? makeApiPutRequest : makeApiDeleteRequest, apiUrl, state.auth.cookie);
   if (!resp || resp.error) {
     yield* processError(apiUrl, resp, "Can't activate repo");
@@ -112,5 +110,5 @@ export function getWatchers() {
   return [
     fork(fetchReposWatcher),
     fork(activateRepoWatcher),
-  ]
+  ];
 }

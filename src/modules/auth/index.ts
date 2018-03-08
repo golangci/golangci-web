@@ -1,10 +1,9 @@
-import { combineReducers } from 'redux';
-import { put, takeEvery, call, select, fork } from 'redux-saga/effects';
-import { IAppStore } from '../../reducers';
+import { combineReducers } from "redux";
+import { put, takeEvery, call, select, fork } from "redux-saga/effects";
+import { IAppStore } from "../../reducers";
 import {
-  makeApiGetRequest, makeApiPostRequest, makeApiPutRequest,
-  IApiResponse, getApiHttpCode, processError
-} from '../api';
+  makeApiGetRequest, getApiHttpCode, processError,
+} from "../api";
 import { trackAuthorizedUser } from "../utils/analytics";
 
 enum AuthAction {
@@ -16,15 +15,15 @@ export const checkAuth = () => ({
   type: AuthAction.Check,
 });
 
-export const onCheckedAuth = (currentUser: IUser) => ({
+export const onCheckedAuth = (cu: IUser) => ({
   type: AuthAction.Checked,
-  currentUser,
+  currentUser: cu,
 });
 
 export interface IAuthStore {
   currentUser?: IUser;
   cookie?: string;
-};
+}
 
 export interface IUser {
   id: number;
@@ -42,16 +41,16 @@ const currentUser = (state: IUser = null, action: any): IUser => {
     default:
       return state;
   }
-}
+};
 
 const cookie = (state: string = null, action: any): string => {
     return state;
-}
+};
 
 export const reducer = combineReducers<IAuthStore>({
   currentUser,
   cookie,
-})
+});
 
 function* doAuthCheckRequest() {
   const state: IAppStore = yield select();
@@ -60,12 +59,12 @@ function* doAuthCheckRequest() {
   if (!resp || resp.error) {
     if (getApiHttpCode(resp) === 403) {
       // user isn't authorized
-      yield put(onCheckedAuth(null))
+      yield put(onCheckedAuth(null));
     } else {
       yield* processError(apiUrl, resp, "Can't check authorization");
     }
   } else {
-    let user: IUser = resp.data.user;
+    const user: IUser = resp.data.user;
     yield put(onCheckedAuth(user));
     yield call(trackAuthorizedUser, user);
   }
@@ -78,5 +77,5 @@ function* checkAuthWatcher() {
 export function getWatchers() {
   return [
     fork(checkAuthWatcher),
-  ]
+  ];
 }

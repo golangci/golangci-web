@@ -1,4 +1,4 @@
-declare module 'react-responsive-redux' {
+declare module "react-responsive-redux" {
   export function setMobileDetect(md: any): any;
   export function mobileParser(req: any): any;
 

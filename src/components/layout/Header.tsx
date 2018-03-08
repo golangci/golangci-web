@@ -1,17 +1,14 @@
-import * as React from 'react';
-import { Link } from 'react-router-dom';
-import classNames from 'classnames';
-import { connect } from 'react-redux';
-import { RouteComponentProps, withRouter } from 'react-router';
-import { IAppStore } from '../../reducers';
-import { Layout, Menu, Popover, Icon, Row, Avatar } from 'antd';
-import { MenuMode } from 'antd/lib/menu';
-import Golangci from '../../assets/images/logo/golangci.svg';
-import Go from '../../assets/images/logo/go.svg';
-import Responsive from 'react-responsive';
+import * as React from "react";
+import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import { IAppStore } from "../../reducers";
+import { Layout, Menu, Popover, Icon, Row, Avatar } from "antd";
+import { MenuMode } from "antd/lib/menu";
+import Golangci from "../../assets/images/logo/golangci.svg";
+import Go from "../../assets/images/logo/go.svg";
 import { toggle } from "../../modules/toggle";
 import { checkAuth, IUser } from "../../modules/auth";
-import { MobileScreen, DesktopScreen } from 'react-responsive-redux'
+import { MobileScreen, DesktopScreen } from "react-responsive-redux";
 
 const isMobileMenuOpenedKey: string = "isMobileMenuOpened";
 
@@ -36,7 +33,7 @@ class MyHeader extends React.Component<IProps> {
     this.props.toggle(isMobileMenuOpenedKey, visible);
   }
 
-  componentWillMount() {
+  public componentWillMount() {
     this.props.checkAuth();
   }
 
@@ -45,8 +42,8 @@ class MyHeader extends React.Component<IProps> {
       <Menu
         theme="light"
         mode={mode}
-        defaultSelectedKeys={['2']}
-        style={{ lineHeight: '64px' }}
+        defaultSelectedKeys={["2"]}
+        style={{ lineHeight: "64px" }}
       >
         {!this.props.currentUser && <Menu.Item key="1"><a href="/#integrated-with-github">Product</a></Menu.Item>}
         {!this.props.currentUser && <Menu.Item key="2"><a href="/#pricing">Pricing</a></Menu.Item>}
@@ -54,7 +51,7 @@ class MyHeader extends React.Component<IProps> {
     );
   }
 
-  render() {
+  public render() {
     return (
       <Layout.Header>
         <Row type="flex" className="header-row">
@@ -101,14 +98,14 @@ class MyHeader extends React.Component<IProps> {
           )}
         </Row>
       </Layout.Header>
-    )
+    );
   }
 }
 
 const mapStateToProps = (state: IAppStore): any => ({
   isMobileMenuOpened: state.toggle.store[isMobileMenuOpenedKey],
   currentUser: state.auth.currentUser,
-})
+});
 
 const mapDispatchToProps = {
   toggle,

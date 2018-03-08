@@ -1,13 +1,10 @@
-import * as React from 'react';
-import { Link } from 'react-router-dom';
-import classNames from 'classnames';
-import { connect } from 'react-redux';
-import { RouteComponentProps, withRouter } from 'react-router';
-import { IAppStore } from '../../reducers';
-import { List, Icon, Row, Col, Button } from 'antd';
+import * as React from "react";
+import { connect } from "react-redux";
+import { RouteComponentProps } from "react-router";
+import { IAppStore } from "../../reducers";
+import { List, Row, Col, Button } from "antd";
 import { fetchRepos, activateRepo, IRepo } from "../../modules/repos";
-import { MobileScreen, DesktopScreen } from 'react-responsive-redux';
-import { trackEvent } from '../../modules/utils/analytics';
+import { trackEvent } from "../../modules/utils/analytics";
 
 interface IStateProps {
   repos: IRepo[];
@@ -22,11 +19,7 @@ interface IDispatchProps {
 interface IProps extends IStateProps, IDispatchProps, RouteComponentProps<IParams> {}
 
 class Repos extends React.Component<IProps> {
-  private handleRefreshClick() {
-    this.props.fetchRepos();
-  }
-
-  componentWillMount() {
+  public componentWillMount() {
     if (this.props.repos === null) { // false if SSR-ed
       this.props.fetchRepos();
     }
@@ -43,12 +36,6 @@ class Repos extends React.Component<IProps> {
     trackEvent(`${activate ? "connect" : "disconnect"} repo`, {repoName: name});
   }
 
-  private renderRepo(): JSX.Element {
-    return (
-      <div/>
-    );
-  }
-
   private renderList() {
     return (
       <List
@@ -58,7 +45,7 @@ class Repos extends React.Component<IProps> {
         renderItem={(r: IRepo) => (
           <List.Item actions={[r.isActivated ?
             (<Button onClick={() => this.onClick(false, r.name)} icon="close" type="danger" loading={r.isActivatingNow}>Disconnect Repo</Button>) :
-            (<Button onClick={() => this.onClick(true, r.name)} loading={r.isActivatingNow}>Connect Repo</Button>)
+            (<Button onClick={() => this.onClick(true, r.name)} loading={r.isActivatingNow}>Connect Repo</Button>),
           ]}>
             <List.Item.Meta
               title={r.name}
@@ -69,14 +56,14 @@ class Repos extends React.Component<IProps> {
     );
   }
 
-  render() {
+  public render() {
     return (
       <Row>
         <Col offset={4} span={16}>
           {this.renderList()}
         </Col>
       </Row>
-    )
+    );
   }
 }
 
@@ -87,8 +74,8 @@ const mapStateToProps = (state: IAppStore, routeProps: RouteComponentProps<IPara
   return {
     repos: state.repos.github,
     isAfterLogin: routeProps.location.search.includes("after=login"),
-  }
-}
+  };
+};
 
 const mapDispatchToProps = {
   fetchRepos,

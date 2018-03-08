@@ -8,3 +8,4 @@ rules:
     "no-empty-interface": false
     "object-literal-sort-keys": false
     "max-line-length": false
+    "member-ordering": false

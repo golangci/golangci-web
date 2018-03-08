@@ -1,7 +1,7 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from "redux";
 
 enum ResultActions {
-  GotApiResult = "@@GOLANGCI/RESULT/API"
+  GotApiResult = "@@GOLANGCI/RESULT/API",
 }
 
 export interface IResultStore {
@@ -20,8 +20,8 @@ const apiResultHttpCode = (state: number = 200, action: any): number => {
     default:
       return state;
   }
-}
+};
 
 export const reducer = combineReducers<IResultStore>({
   apiResultHttpCode,
-})
+});

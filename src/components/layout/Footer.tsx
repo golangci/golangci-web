@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { Layout, Row } from 'antd';
+import * as React from "react";
+import { Layout, Row } from "antd";
 
 const MyFooter: React.StatelessComponent<any> = () => (
     <Layout.Footer>

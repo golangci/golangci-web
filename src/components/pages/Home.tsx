@@ -1,13 +1,11 @@
-import * as React from 'react';
-import { connect } from 'react-redux';
-import { RouteComponentProps } from 'react-router';
-import { Button, Icon, Row, Col, List } from 'antd';
+import * as React from "react";
+import { Button, Icon, Row, Col, List } from "antd";
 import { Helmet } from "react-helmet";
-import Octicon from 'react-component-octicons';
-import Go from '../../assets/images/logo/go.svg';
-import prCommentDemoImage from '../../assets/images/home/pr-comment-demo.png';
-import githubStatusImage from '../../assets/images/home/github-status.png';
-import reachGoal, { trackEvent } from '../../modules/utils/analytics';
+import Octicon from "react-component-octicons";
+import Go from "../../assets/images/logo/go.svg";
+import prCommentDemoImage from "../../assets/images/home/pr-comment-demo.png";
+import githubStatusImage from "../../assets/images/home/github-status.png";
+import reachGoal, { trackEvent } from "../../modules/utils/analytics";
 
 export default class Home extends React.Component<any> {
   private renderLintersSection() {
@@ -59,7 +57,7 @@ export default class Home extends React.Component<any> {
           </Row>
         </div>
       </section>
-    )
+    );
   }
 
   private onGithubAuthClick(): boolean {
@@ -86,7 +84,7 @@ export default class Home extends React.Component<any> {
           </a>
         </Row>
       </section>
-    )
+    );
   }
 
   private renderWhyDoYouNeedSection() {
@@ -142,7 +140,7 @@ export default class Home extends React.Component<any> {
           </Row>
         </div>
       </section>
-    )
+    );
   }
 
   private renderGithubIntegrationSection() {
@@ -167,7 +165,7 @@ export default class Home extends React.Component<any> {
           </Row>
         </div>
       </section>
-    )
+    );
   }
 
   private renderPricingSection() {
@@ -187,13 +185,13 @@ export default class Home extends React.Component<any> {
           </Row>
         </div>
       </section>
-    )
+    );
   }
 
   private renderWhyUsSection() {
     const lines: JSX.Element[] = [
       (<>You will get perfect Go code review because we are focused only on one language - <b>Go</b>. We are fine-tuning our tools for the best go code analysis.</>),
-      (<>GolangCI is built by developers for developers. We believe in open source and GolangCI is an <a target="_blank" href="https://github.com/golangci/golangci?utm_source=golangci.com&utm_content=home_open_source">open source project</a>.</>)
+      (<>GolangCI is built by developers for developers. We believe in open source and GolangCI is an <a target="_blank" href="https://github.com/golangci/golangci?utm_source=golangci.com&utm_content=home_open_source">open source project</a>.</>),
     ];
     return (
       <section className="home-section home-section-padded">
@@ -213,14 +211,14 @@ export default class Home extends React.Component<any> {
           </Row>
         </div>
       </section>
-    )
+    );
   }
 
   private renderHead() {
-    return <Helmet title="Automated code review for Go" />
+    return <Helmet title="Automated code review for Go" />;
   }
 
-  render() {
+  public render() {
     return (
       <>
         {this.renderHead()}
@@ -231,6 +229,6 @@ export default class Home extends React.Component<any> {
         {this.renderWhyUsSection()}
         {this.renderLintersSection()}
       </>
-    )
+    );
   }
 }
