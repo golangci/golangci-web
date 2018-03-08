@@ -39,16 +39,16 @@ export default function reachGoal(category: string, action: string, label?: stri
   }
 }
 
-export function trackEvent(text: string): void {
+export function trackEvent(text: string, payload?: object): void {
   let mp = getWindowProperty("mixpanel");
   if (mp) {
-    mp.track(text);
+    mp.track(text, payload);
     console.debug("tracked event '%s' into mixpanel", text);
   }
 
   let amplitude = getWindowProperty("amplitude");
   if (amplitude) {
-    amplitude.getInstance().logEvent(text);
+    amplitude.getInstance().logEvent(text, payload);
     console.debug("tracked event '%s' into amplitude", text);
   }
 }

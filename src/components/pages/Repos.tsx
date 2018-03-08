@@ -40,7 +40,7 @@ class Repos extends React.Component<IProps> {
 
   private onClick(activate: boolean, name: string) {
     this.props.activateRepo(activate, name);
-    trackEvent(`${activate ? "connect" : "disconnect"} repo`);
+    trackEvent(`${activate ? "connect" : "disconnect"} repo`, {repoName: name});
   }
 
   private renderRepo(): JSX.Element {
