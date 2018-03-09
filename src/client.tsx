@@ -13,7 +13,7 @@ import { Provider } from "react-redux";
 import { Router } from "react-router-dom";
 import buildRoutes from "./routes/routes";
 import rootSaga from "./sagas";
-import { reportError } from "./modules/utils/analytics";
+import { reportError, trackAuthorizedUser } from "./modules/utils/analytics";
 
 export default class ClientApp {
   public run(): void {
@@ -63,6 +63,10 @@ export default class ClientApp {
       store.runSaga(rootSaga);
 
       syncHistoryWithStore(history, store); // XXX: fucking magic, should be a bug in react-router-redux
+
+      if (initialState.auth && initialState.auth.currentUser) {
+        trackAuthorizedUser(initialState.auth.currentUser);
+      }
 
       ReactDOM.render(
         <Provider store={store}>

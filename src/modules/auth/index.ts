@@ -4,7 +4,6 @@ import { IAppStore } from "../../reducers";
 import {
   makeApiGetRequest, getApiHttpCode, processError,
 } from "../api";
-import { trackAuthorizedUser } from "../utils/analytics";
 
 enum AuthAction {
   Check = "@@GOLANGCI/AUTH/CHECK",
@@ -66,7 +65,6 @@ function* doAuthCheckRequest() {
   } else {
     const user: IUser = resp.data.user;
     yield put(onCheckedAuth(user));
-    yield call(trackAuthorizedUser, user);
   }
 }
 

@@ -34,7 +34,9 @@ class MyHeader extends React.Component<IProps> {
   }
 
   public componentWillMount() {
-    this.props.checkAuth();
+    if (!this.props.currentUser) {
+      this.props.checkAuth();
+    }
   }
 
   private getMenu(mode: MenuMode): JSX.Element {
