@@ -26,6 +26,11 @@ export default class Home extends React.Component<any> {
         icon: <Octicon name="checklist" />,
       },
       {
+        name: "go vet",
+        desc: (<>Vet examines Go source code and reports suspicious constructs, such as Printf calls whose arguments do not align with the format string.</>),
+        icon: <Octicon name="bug" />,
+      },
+      {
         name: "errcheck",
         desc: (<>Errcheck is a program for checking for unchecked errors in go programs. These unchecked errors can be critical bugs in some cases.</>),
         icon: <Octicon name="alert" />,
