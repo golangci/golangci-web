@@ -40,15 +40,21 @@ class MyHeader extends React.Component<IProps> {
   }
 
   private getMenu(mode: MenuMode): JSX.Element {
+    const menuItems = [];
+    if (!this.props.currentUser) {
+      menuItems.push(<Menu.Item key="1"><a href="/#integrated-with-github">Product</a></Menu.Item>);
+      menuItems.push(<Menu.Item key="2"><a href="/#pricing">Pricing</a></Menu.Item>);
+    } else if (mode === "inline") {
+      menuItems.push(<Menu.Item key="3"><Link to="/repos/github">Repos</Link></Menu.Item>);
+      menuItems.push(<Menu.Item key="4">
+        <a className="header-account-logout" href={`${API_HOST}/v1/auth/logout`}>
+          Logout
+        </a>
+      </Menu.Item>);
+    }
     return (
-      <Menu
-        theme="light"
-        mode={mode}
-        defaultSelectedKeys={["2"]}
-        style={{ lineHeight: "64px" }}
-      >
-        {!this.props.currentUser && <Menu.Item key="1"><a href="/#integrated-with-github">Product</a></Menu.Item>}
-        {!this.props.currentUser && <Menu.Item key="2"><a href="/#pricing">Pricing</a></Menu.Item>}
+      <Menu theme="light" mode={mode} style={{ lineHeight: "64px" }}>
+        {menuItems}
       </Menu>
     );
   }
@@ -65,7 +71,9 @@ class MyHeader extends React.Component<IProps> {
               </svg>
             </a>
           </div>
-          <DesktopScreen>{this.getMenu("horizontal")}</DesktopScreen>
+          <DesktopScreen>
+            {this.getMenu("horizontal")}
+          </DesktopScreen>
           <MobileScreen>
             <Popover
                 overlayClassName="popover-menu"
@@ -83,6 +91,7 @@ class MyHeader extends React.Component<IProps> {
                 />
               </Popover>
           </MobileScreen>
+          <DesktopScreen>
           {this.props.currentUser && (
             <div className="header-account-block" >
               <Link to="/repos/github">
@@ -98,6 +107,7 @@ class MyHeader extends React.Component<IProps> {
               </a>
             </div>
           )}
+          </DesktopScreen>
         </Row>
       </Layout.Header>
     );

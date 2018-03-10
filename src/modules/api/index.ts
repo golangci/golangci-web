@@ -2,6 +2,7 @@ import axios from "axios";
 import { onGotApiResult } from "../result";
 import { put } from "redux-saga/effects";
 import { reportError } from "../utils/analytics";
+import { toastr } from "react-redux-toastr";
 
 export const makeApiGetRequest = (path: string, cookie?: string): Promise<IApiResponse> => {
   return makeApiRequest(path, "GET", cookie);
@@ -57,4 +58,5 @@ export function* processError(apiUrl: string, resp: IApiResponse, message: strin
   yield put(onGotApiResult(getApiHttpCode(resp)));
   reportError("api error", {error: !resp ? "no response" : resp.error, apiUrl});
   console.error("api error:", message, resp);
+  toastr.error("Error", message);
 }

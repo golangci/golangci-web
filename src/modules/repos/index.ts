@@ -11,6 +11,7 @@ enum ReposAction {
   FetchedList = "@@GOLANGCI/REPOS/LIST/FETCHED",
   Activate = "@@GOLANGCI/REPOS/ACTIVATE",
   Activated = "@@GOLANGCI/REPOS/ACTIVATED",
+  UpdateSearchQuery = "@@GOLANGCI/REPOS/SEARCH/UPDATE",
 }
 
 export const activateRepo = (activate: boolean, name: string) => ({
@@ -19,14 +20,20 @@ export const activateRepo = (activate: boolean, name: string) => ({
   name,
 });
 
+export const updateSearchQuery = (q: string) => ({
+  type: ReposAction.UpdateSearchQuery,
+  q,
+});
+
 const onActivatedRepo = (name: string, isActivated: boolean) => ({
   type: ReposAction.Activated,
   name,
   isActivated,
 });
 
-export const fetchRepos = () => ({
+export const fetchRepos = (refresh?: boolean) => ({
   type: ReposAction.FetchList,
+  refresh,
 });
 
 const onReposFetched = (repos: IRepo[]) => ({
@@ -36,6 +43,7 @@ const onReposFetched = (repos: IRepo[]) => ({
 
 export interface IRepoStore {
   github?: IRepo[];
+  searchQuery?: string;
 }
 
 export interface IRepo {
@@ -71,16 +79,26 @@ const github = (state: IRepo[] = null, action: any): IRepo[] => {
   }
 };
 
+const searchQuery = (state: string = null, action: any): string => {
+  switch (action.type) {
+    case ReposAction.UpdateSearchQuery:
+      return action.q.toLowerCase();
+    default:
+      return state;
+  }
+};
+
 export const reducer = combineReducers<IRepoStore>({
   github,
+  searchQuery,
 });
 
-function* doReposFetching() {
+function* doReposFetching({refresh}: any) {
   const state: IAppStore = yield select();
-  const apiUrl = "/v1/repos";
+  const apiUrl = `/v1/repos?refresh=${refresh ? 1 : 0}`;
   const resp = yield call(makeApiGetRequest, apiUrl, state.auth.cookie);
   if (!resp || resp.error) {
-    yield* processError(apiUrl, resp, "Can't check authorization");
+    yield* processError(apiUrl, resp, "Can't fetch repo list");
   } else {
     yield put(onReposFetched(resp.data.repos));
   }
@@ -95,7 +113,8 @@ function* doActivateRepoRequest({activate, name}: any) {
   const apiUrl = `/v1/repos/${name}`;
   const resp = yield call(activate ? makeApiPutRequest : makeApiDeleteRequest, apiUrl, state.auth.cookie);
   if (!resp || resp.error) {
-    yield* processError(apiUrl, resp, "Can't activate repo");
+    yield* processError(apiUrl, resp, `Can't ${activate ? "" : "de"}activate repo`);
+    yield put(onActivatedRepo(name, !activate));
   } else {
     yield put(onActivatedRepo(name, activate));
     yield call(reachGoal, "repos", activate ? "connect" : "disconnect");

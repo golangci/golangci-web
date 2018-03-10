@@ -2,18 +2,22 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router";
 import { IAppStore } from "../../reducers";
-import { List, Row, Col, Button } from "antd";
-import { fetchRepos, activateRepo, IRepo } from "../../modules/repos";
+import { List, Row, Col, Button, Input } from "antd";
+import { fetchRepos, activateRepo, updateSearchQuery, IRepo } from "../../modules/repos";
 import { trackEvent } from "../../modules/utils/analytics";
+import { createSelector } from "reselect";
+import Highlighter from "react-highlight-words";
 
 interface IStateProps {
   repos: IRepo[];
   isAfterLogin: boolean;
+  searchQuery: string;
 }
 
 interface IDispatchProps {
-  fetchRepos(): void;
+  fetchRepos(refresh?: boolean): void;
   activateRepo(activate: boolean, name: string): void;
+  updateSearchQuery(q: string): void;
 }
 
 interface IProps extends IStateProps, IDispatchProps, RouteComponentProps<IParams> {}
@@ -36,6 +40,20 @@ class Repos extends React.Component<IProps> {
     trackEvent(`${activate ? "connect" : "disconnect"} repo`, {repoName: name});
   }
 
+  private refreshRepos() {
+    this.props.fetchRepos(true);
+    trackEvent("refresh repos list");
+  }
+
+  private highlightRepoName(name: string) {
+    return <Highlighter
+      highlightClassName="repos-highlighted-name"
+      searchWords={[this.props.searchQuery]}
+      autoEscape={true}
+      textToHighlight={name}
+    />;
+  }
+
   private renderList() {
     return (
       <List
@@ -48,21 +66,49 @@ class Repos extends React.Component<IProps> {
             (<Button onClick={() => this.onClick(true, r.name)} loading={r.isActivatingNow}>Connect Repo</Button>),
           ]}>
             <List.Item.Meta
-              title={r.name}
+              title={this.props.searchQuery ? this.highlightRepoName(r.name) : r.name}
             />
           </List.Item>
         )}
+        locale={{emptyText: "No repos"}}
       />
+    );
+  }
+
+  private renderToolbox() {
+    return (
+      <>
+        <Col sm={24} md={8} className="repos-toolbox-row">
+          <Button
+            onClick={this.refreshRepos.bind(this)}
+            className="repos-refresh-btn" icon="sync">
+            Refresh list
+          </Button>
+        </Col>
+        <Col sm={24} md={16} className="repos-toolbox-row">
+          <Input.Search
+            value={this.props.searchQuery}
+            placeholder="Search by repo..."
+            onChange={(v: any) => this.props.updateSearchQuery(v.target.value)}
+          />
+        </Col>
+      </>
     );
   }
 
   public render() {
     return (
-      <Row>
-        <Col offset={4} span={16}>
-          {this.renderList()}
-        </Col>
-      </Row>
+      <>
+        <Row>
+          <Col offset={4} span={16}>
+            <Row>
+              {this.renderToolbox()}
+            </Row>
+
+            {this.renderList()}
+          </Col>
+        </Row>
+      </>
     );
   }
 }
@@ -70,16 +116,29 @@ class Repos extends React.Component<IProps> {
 interface IParams {
 }
 
+const getAllRepos = (state: IAppStore) => state.repos.github;
+const getSearchQuery = (state: IAppStore) => state.repos.searchQuery || "";
+const filterReposBySearchQuery = (repos: IRepo[], q: string) => {
+  if (q === "") {
+    return repos;
+  }
+
+  return repos.filter((r) => r.name.toLowerCase().includes(q));
+};
+const getRepos = createSelector([getAllRepos, getSearchQuery], filterReposBySearchQuery);
+
 const mapStateToProps = (state: IAppStore, routeProps: RouteComponentProps<IParams>): any => {
   return {
-    repos: state.repos.github,
+    repos: getRepos(state),
     isAfterLogin: routeProps.location.search.includes("after=login"),
+    searchQuery: getSearchQuery(state),
   };
 };
 
 const mapDispatchToProps = {
   fetchRepos,
   activateRepo,
+  updateSearchQuery,
 };
 
 export default connect<IStateProps, IDispatchProps, RouteComponentProps<IParams>>(mapStateToProps, mapDispatchToProps)(Repos);
