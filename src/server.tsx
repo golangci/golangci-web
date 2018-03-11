@@ -213,7 +213,6 @@ const renderHtml = (content: string, state: IAppStore) => {
   const head = Helmet.rewind();
 
   const headEndScripts = __DEV__ ? "" : `
-    ${amplitudeScript}
     ${mixpanelScript}
     ${gaScript}
     ${yaMetrikaScript}
@@ -236,6 +235,7 @@ const renderHtml = (content: string, state: IAppStore) => {
       ${faviconHtml}
 
       ${rollbarScript}
+      ${amplitudeScript}
 
       <script>
         window.__INITIAL_STATE__ = JSON.parse(decodeURIComponent("${encodeURIComponent(JSON.stringify(state))}"));
