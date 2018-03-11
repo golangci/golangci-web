@@ -54,6 +54,31 @@ class Repos extends React.Component<IProps> {
     />;
   }
 
+  private renderActionForRepo(r: IRepo) {
+    if (!r.isAdmin) {
+      return <span>Only repo admins can connect repo</span>;
+    }
+
+    if (r.isActivated) {
+      return (
+        <Button
+          onClick={() => this.onClick(false, r.name)}
+          icon="close" type="danger"
+          loading={r.isActivatingNow}>
+          Disconnect Repo
+        </Button>
+      );
+    }
+
+    return (
+      <Button
+        onClick={() => this.onClick(true, r.name)}
+        loading={r.isActivatingNow}>
+        Connect Repo
+      </Button>
+    );
+  }
+
   private renderList() {
     return (
       <List
@@ -61,10 +86,7 @@ class Repos extends React.Component<IProps> {
         itemLayout="horizontal"
         dataSource={this.props.repos || []}
         renderItem={(r: IRepo) => (
-          <List.Item actions={[r.isActivated ?
-            (<Button onClick={() => this.onClick(false, r.name)} icon="close" type="danger" loading={r.isActivatingNow}>Disconnect Repo</Button>) :
-            (<Button onClick={() => this.onClick(true, r.name)} loading={r.isActivatingNow}>Connect Repo</Button>),
-          ]}>
+          <List.Item actions={[this.renderActionForRepo(r)]}>
             <List.Item.Meta
               title={this.props.searchQuery ? this.highlightRepoName(r.name) : r.name}
             />

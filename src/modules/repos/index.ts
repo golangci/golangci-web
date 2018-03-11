@@ -48,6 +48,7 @@ export interface IRepoStore {
 
 export interface IRepo {
   name: string;
+  isAdmin: boolean;
   isActivated: boolean;
   isActivatingNow?: boolean;
 }
