@@ -60,7 +60,7 @@ function* doAuthCheckRequest() {
       // user isn't authorized
       yield put(onCheckedAuth(null));
     } else {
-      yield* processError(apiUrl, resp, "Can't check authorization");
+      yield* processError(apiUrl, resp, "Can't check authorization", true);
     }
   } else {
     const user: IUser = resp.data.user;

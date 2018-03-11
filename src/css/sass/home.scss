@@ -18,7 +18,7 @@ $home-section-gradient-bottom: $blue;
   color: $home-gradient-text-color;
   background: linear-gradient(to bottom left, $home-section-gradient-top, $home-section-gradient-bottom);
 
-  padding: $large-spacing 10% ($large-spacing * 2);
+  padding: $large-spacing 10% $large-spacing;
 }
 
 .home-section-content {
@@ -102,4 +102,16 @@ $home-section-gradient-bottom: $blue;
 
 .home-section-linters-description {
   font-size: 1.3em;
+}
+
+.home-pricing-card {
+  margin: 0 5vw 8vh;
+}
+
+.home-pricing-card-title {
+  font-size: 2em;
+}
+
+.home-pricing-card-description {
+  font-size: 1.5em;
 }

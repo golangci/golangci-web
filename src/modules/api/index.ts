@@ -54,9 +54,11 @@ export const getApiHttpCode = (resp: IApiResponse): number => {
   return code;
 };
 
-export function* processError(apiUrl: string, resp: IApiResponse, message: string) {
+export function* processError(apiUrl: string, resp: IApiResponse, message: string, dontShowToast?: boolean) {
   yield put(onGotApiResult(getApiHttpCode(resp)));
   reportError("api error", {error: !resp ? "no response" : resp.error, apiUrl});
   console.error("api error:", message, resp);
-  toastr.error("Error", message);
+  if (!dontShowToast) {
+    toastr.error("Error", message);
+  }
 }

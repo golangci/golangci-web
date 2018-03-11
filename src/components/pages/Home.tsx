@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Button, Icon, Row, Col, List } from "antd";
+import { Button, Icon, Row, Col, List, Card } from "antd";
 import { Helmet } from "react-helmet";
 import Octicon from "react-component-octicons";
 import Go from "../../assets/images/logo/go.svg";
@@ -75,7 +75,7 @@ export default class Home extends React.Component<any> {
     return (
       <section className="home-jumbotron">
         <Row type="flex" justify="center">
-          <h1 className="home-jumbotron-header">Automated code review for Go</h1>
+          <h1 className="home-jumbotron-header">Continuous Code Quality for Go</h1>
         </Row>
         <Row type="flex" justify="center">
           <p className="home-jumbotron-subheader">GolangCI comments on issues in Github pull requests: bugs, style violations, anti-pattern instances</p>
@@ -97,7 +97,7 @@ export default class Home extends React.Component<any> {
       <section className="home-section-gradient home-section">
         <div className="home-section-content">
           <Row type="flex" justify="center">
-            <p className="home-section-header home-section-gradient-header">Why do you need automated code review tool?</p>
+            <p className="home-section-header home-section-gradient-header">Why do you need it?</p>
           </Row>
           <Row className="home-matter-row0">
             <Col md={2} sm={3} xs={6}>
@@ -178,16 +178,33 @@ export default class Home extends React.Component<any> {
       <section className="home-section-gradient home-section">
         <div className="home-section-content">
           <Row type="flex" justify="center">
-            <p id="pricing" className="home-section-header home-section-gradient-header">Free for Open Source. Forever</p>
+            <p id="pricing" className="home-section-header home-section-gradient-header">Pricing</p>
           </Row>
           <Row type="flex" justify="center">
-            <a href={`${API_HOST}/v1/auth/github`}>
-              <Button onClick={this.onGithubAuthClick} type="primary" size="large">
-                <Icon type="github" />
-                Signup via Github
-              </Button>
-            </a>
+            <div className="home-pricing-card">
+              <Card title={<span className="home-pricing-card-title">Public Repos</span>}>
+                <p className="home-pricing-card-description">Free for Open Source. Forever</p>
+                <Row type="flex" justify="center">
+                  <a href={`${API_HOST}/v1/auth/github`}>
+                    <Button onClick={this.onGithubAuthClick} type="primary" size="large">
+                      <Icon type="github" />
+                      Signup via Github
+                    </Button>
+                  </a>
+                </Row>
+              </Card>
+            </div>
+            <div className="home-pricing-card">
+              <Card title={<span className="home-pricing-card-title">Private Repos</span>}>
+                <p className="home-pricing-card-description">
+                  <a target="_blank" href="https://github.com/golangci/golangci/issues/4">
+                    Paid plans are coming soon
+                  </a>
+                </p>
+              </Card>
+            </div>
           </Row>
+
         </div>
       </section>
     );
