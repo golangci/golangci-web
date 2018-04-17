@@ -15,6 +15,11 @@ import { setMobileDetect, mobileParser } from "react-responsive-redux";
 let webpackPartialTmpl: string;
 
 const render = (req: express.Request, res: express.Response) => {
+  if (!req.host.endsWith("golangci.com")) {
+    res.redirect(307, "https://golangci.com/");
+    return;
+  }
+
   const startedAt = Date.now();
   const memoryHistory = createMemoryHistory();
 
