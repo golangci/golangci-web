@@ -12,7 +12,7 @@ export default class Home extends React.Component<any> {
     const linters: any[] = [
       {
         name: "gofmt",
-        desc: (<>Gofmt checks that code was gofmt-ed. We run this tool with <i>-s</i> option to check for simplification of code.</>),
+        desc: (<>Gofmt checks whether code was gofmt-ed. We run this tool with <i>-s</i> option to check for code simplification.</>),
         icon: <Octicon name="clippy" />,
       },
       {
@@ -78,7 +78,7 @@ export default class Home extends React.Component<any> {
           <h1 className="home-jumbotron-header">Continuous Code Quality for Go</h1>
         </Row>
         <Row type="flex" justify="center">
-          <p className="home-jumbotron-subheader">GolangCI comments on issues in Github pull requests: bugs, style violations, anti-pattern instances</p>
+          <p className="home-jumbotron-subheader">GolangCI detects and comments issues in Github pull requests: bugs, style violations, anti-pattern instances</p>
         </Row>
         <Row type="flex" justify="center">
           <a href={`${API_HOST}/v1/auth/github`}>
@@ -107,8 +107,8 @@ export default class Home extends React.Component<any> {
             </Col>
             <Col md={10} sm={9} xs={18}>
               <p className="home-matter-column-header">Reduce time spent on reviews</p>
-              <p className="home-matter-column-text">GolangCI automatically detects issues instead of reviewers and writes comments in Github pull request.
-              It dramatically saves time of reviewer.</p>
+              <p className="home-matter-column-text">GolangCI automatically detects issues and writes comments in Github pull request.
+              It dramatically saves reviewer’s time.</p>
             </Col>
 
             <Col md={2} sm={3} xs={6}>
@@ -118,7 +118,7 @@ export default class Home extends React.Component<any> {
             </Col>
             <Col md={10} sm={9} xs={18}>
               <p className="home-matter-column-header">Reduce cost of code support</p>
-              <p className="home-matter-column-text">When every line of code is written in the same style, the whole codebase becomes easier to read, understand and de-bug.</p>
+              <p className="home-matter-column-text">When every line of code is written in the same style, the whole codebase becomes easier to read, understand and debug.</p>
             </Col>
           </Row>
 
@@ -140,7 +140,7 @@ export default class Home extends React.Component<any> {
             </Col>
             <Col md={10} sm={9} xs={18}>
               <p className="home-matter-column-header">Reduce release cycle time</p>
-              <p className="home-matter-column-text">Review faster, merge faster, deliver software faster. With competitors increasingly able to release new features within days or even hours, companies can no longer afford unpredictable, lengthy, and inefficient release processes.</p>
+              <p className="home-matter-column-text">Review faster, merge faster, and deliver software faster. With competitors increasingly able to release new features within days or even hours, companies can no longer afford unpredictable, lengthy, and inefficient release processes.</p>
             </Col>
           </Row>
         </div>
