@@ -109,8 +109,8 @@ function run() {
     const HtmlWebpackPlugin = require('html-webpack-plugin');
     plugins.push(
       new HtmlWebpackPlugin({
-        template: './webpack.partial.ejs',
-        filename: './webpack.partial.html',
+        template: './src/webpack.partial.ejs',
+        filename: './src/webpack.partial.html',
         inject: false,
         cache: true,
       })
@@ -143,8 +143,6 @@ function run() {
     },
     plugins: plugins,
 
-    context: path.join(__dirname, 'src'),
-
     // Enable sourcemaps for debugging webpack's output.
     //devtool: "source-map",
 
@@ -155,6 +153,11 @@ function run() {
           ".scss", ".less", ".css",
           ".js", ".jsx", ".json",
           ".svg",
+        ],
+
+        modules: [
+          path.resolve('./src'),
+          path.resolve('./node_modules'),
         ],
     },
 
@@ -245,7 +248,7 @@ function run() {
     config = Object.assign({}, commonConfig, {
       name: 'server-side rendering',
       entry: {
-        app: ['babel-polyfill', './server'],
+        app: ['babel-polyfill', './src/server'],
       },
       target: 'node',
       output: {
@@ -257,7 +260,7 @@ function run() {
   } else {
     config = Object.assign({}, commonConfig, {
       entry: {
-        app: ['babel-polyfill', './client'],
+        app: ['babel-polyfill', './src/client'],
       },
       name: 'browser',
       output: {

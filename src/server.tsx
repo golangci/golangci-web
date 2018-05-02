@@ -110,7 +110,7 @@ const loadWebpackPartialTmpl = () => {
   }
 
   const fs = require("fs");
-  webpackPartialTmpl = fs.readFileSync("./dist/prod/webpack.partial.html");
+  webpackPartialTmpl = fs.readFileSync("./dist/prod/src/webpack.partial.html");
   console.log("loaded webpack partial");
 };
 

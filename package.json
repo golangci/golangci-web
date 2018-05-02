@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "mkdir -p dist/dev && NODE_ENV=development webpack-dev-server --hot --inline --public dev.golangci.com",
     "start": "node src/express.js",
-    "build_client": "webpack --progress",
+    "build_client": "webpack --progress --display-error-details",
     "build_server": "IS_SERVER=1 webpack --progress",
     "build_all": "npm run build_client && npm run build_server",
     "heroku-postbuild": "rm -rf dist && mkdir -p dist/prod && NODE_ENV=production npm run build_all",

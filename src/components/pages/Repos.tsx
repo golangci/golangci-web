@@ -1,30 +1,37 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router";
-import { IAppStore } from "../../reducers";
-import { List, Row, Col, Button, Input } from "antd";
-import { fetchRepos, activateRepo, updateSearchQuery, IRepo } from "../../modules/repos";
-import { trackEvent } from "../../modules/utils/analytics";
+import { List, Row, Col, Button, Input, Modal } from "antd";
 import { createSelector } from "reselect";
 import Highlighter from "react-highlight-words";
+import { IAppStore } from "reducers";
+import { fetchRepos, activateRepo, updateSearchQuery, IRepo } from "modules/repos";
+import { trackEvent } from "modules/utils/analytics";
+import { toggle } from "modules/toggle";
 
 interface IStateProps {
-  repos: IRepo[];
+  publicRepos: IRepo[];
+  privateRepos: IRepo[];
+  privateReposWereFetched: boolean;
   isAfterLogin: boolean;
   searchQuery: string;
+  isModalNotImplementedVisible: boolean;
 }
 
 interface IDispatchProps {
   fetchRepos(refresh?: boolean): void;
   activateRepo(activate: boolean, name: string): void;
   updateSearchQuery(q: string): void;
+  toggle(name: string, value?: boolean): void;
 }
 
 interface IProps extends IStateProps, IDispatchProps, RouteComponentProps<IParams> {}
 
+const modalNotImplementedToggleName = "private repos not implemented";
+
 class Repos extends React.Component<IProps> {
   public componentWillMount() {
-    if (this.props.repos === null) { // false if SSR-ed
+    if (this.props.publicRepos === null) { // false if SSR-ed
       this.props.fetchRepos();
     }
 
@@ -35,7 +42,13 @@ class Repos extends React.Component<IProps> {
     trackEvent("view repos list");
   }
 
-  private onClick(activate: boolean, name: string) {
+  private onClick(activate: boolean, isPrivate: boolean, name: string) {
+    if (isPrivate) {
+      this.props.toggle(modalNotImplementedToggleName, true);
+      trackEvent("click to activate private repo");
+      return;
+    }
+
     this.props.activateRepo(activate, name);
     trackEvent(`${activate ? "connect" : "disconnect"} repo`, {repoName: name});
   }
@@ -54,6 +67,10 @@ class Repos extends React.Component<IProps> {
     />;
   }
 
+  private closeModalNotImplemented() {
+    this.props.toggle(modalNotImplementedToggleName, false);
+  }
+
   private renderActionForRepo(r: IRepo) {
     if (!r.isAdmin) {
       return <span>Only repo admins can connect repo</span>;
@@ -62,7 +79,7 @@ class Repos extends React.Component<IProps> {
     if (r.isActivated) {
       return (
         <Button
-          onClick={() => this.onClick(false, r.name)}
+          onClick={() => this.onClick(false, r.isPrivate, r.name)}
           icon="close" type="danger"
           loading={r.isActivatingNow}>
           Disconnect Repo
@@ -72,19 +89,19 @@ class Repos extends React.Component<IProps> {
 
     return (
       <Button
-        onClick={() => this.onClick(true, r.name)}
+        onClick={() => this.onClick(true, r.isPrivate, r.name)}
         loading={r.isActivatingNow}>
         Connect Repo
       </Button>
     );
   }
 
-  private renderList() {
+  private renderList(repos: IRepo[]) {
     return (
       <List
-        loading={this.props.repos === null}
+        loading={repos === null}
         itemLayout="horizontal"
-        dataSource={this.props.repos || []}
+        dataSource={repos || []}
         renderItem={(r: IRepo) => (
           <List.Item actions={[this.renderActionForRepo(r)]}>
             <List.Item.Meta
@@ -118,6 +135,21 @@ class Repos extends React.Component<IProps> {
     );
   }
 
+  private renderGrantAccessBtn() {
+    return (
+      <>
+        <span>We need access to private repos in GitHub to show them</span>
+        <a href={`${API_HOST}/v1/auth/github/private`}>
+          <Button
+            type="primary"
+            className="repos-grant-access-btn" icon="login">
+            Grant Access
+          </Button>
+        </a>
+      </>
+    );
+  }
+
   public render() {
     return (
       <>
@@ -127,7 +159,23 @@ class Repos extends React.Component<IProps> {
               {this.renderToolbox()}
             </Row>
 
-            {this.renderList()}
+            <h1 className="hr-title">Public Repos</h1>
+            {this.renderList(this.props.publicRepos)}
+            <h1 className="hr-title">Private Repos</h1>
+            {this.props.privateReposWereFetched === false ?
+              this.renderGrantAccessBtn() :
+              this.renderList(this.props.privateRepos)
+            }
+
+            <Modal
+              title="Sorry, not implemented"
+              visible={this.props.isModalNotImplementedVisible}
+              onCancel={this.closeModalNotImplemented.bind(this)}
+              onOk={this.closeModalNotImplemented.bind(this)}
+            >
+              <p>Private repos aren't supported now :( We will inform you when it will be supported.</p>
+              <p>Progress on this feature can be tracked via <a href="https://github.com/golangci/golangci/issues/4" target="_blank">GitHub Issue</a>.</p>
+            </Modal>
           </Col>
         </Row>
       </>
@@ -138,7 +186,8 @@ class Repos extends React.Component<IProps> {
 interface IParams {
 }
 
-const getAllRepos = (state: IAppStore) => state.repos.github;
+const getAllPublicRepos = (state: IAppStore) => state.repos.list ? state.repos.list.public : null;
+const getAllPrivateRepos = (state: IAppStore) => state.repos.list ? state.repos.list.private : null;
 const getSearchQuery = (state: IAppStore) => state.repos.searchQuery || "";
 const filterReposBySearchQuery = (repos: IRepo[], q: string) => {
   if (q === "") {
@@ -147,13 +196,17 @@ const filterReposBySearchQuery = (repos: IRepo[], q: string) => {
 
   return repos.filter((r) => r.name.toLowerCase().includes(q));
 };
-const getRepos = createSelector([getAllRepos, getSearchQuery], filterReposBySearchQuery);
+const getPublicRepos = createSelector([getAllPublicRepos, getSearchQuery], filterReposBySearchQuery);
+const getPrivateRepos = createSelector([getAllPrivateRepos, getSearchQuery], filterReposBySearchQuery);
 
 const mapStateToProps = (state: IAppStore, routeProps: RouteComponentProps<IParams>): any => {
   return {
-    repos: getRepos(state),
+    publicRepos: getPublicRepos(state),
+    privateRepos: getPrivateRepos(state),
+    privateReposWereFetched: state.repos.list ? state.repos.list.privateReposWereFetched : null,
     isAfterLogin: routeProps.location.search.includes("after=login"),
     searchQuery: getSearchQuery(state),
+    isModalNotImplementedVisible: state.toggle.store[modalNotImplementedToggleName],
   };
 };
 
@@ -161,6 +214,7 @@ const mapDispatchToProps = {
   fetchRepos,
   activateRepo,
   updateSearchQuery,
+  toggle,
 };
 
 export default connect<IStateProps, IDispatchProps, RouteComponentProps<IParams>>(mapStateToProps, mapDispatchToProps)(Repos);

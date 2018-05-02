@@ -16,7 +16,7 @@
           "src/typings"
         ],
         "paths": {
-          "*" : ["./node_modules/@types/*", "*"]
+          "*" : ["./node_modules/@types/*", "*", "src/*"]
         }
     },
     "exclude": [

@@ -9,3 +9,33 @@
 .repos-highlighted-name {
   background-color: #FFFF00;
 }
+
+h1 {
+  overflow: hidden;
+  text-align: center;
+}
+
+h1.hr-title:before,
+h1.hr-title:after {
+  background-color: $hr-color;
+  content: "";
+  display: inline-block;
+  height: 1px;
+  position: relative;
+  vertical-align: middle;
+  width: 50%;
+}
+
+h1.hr-title:before {
+  right: 0.5em;
+  margin-left: -50%;
+}
+
+h1.hr-title:after {
+  left: 0.5em;
+  margin-right: -50%;
+}
+
+.repos-grant-access-btn {
+  margin-left: 1vw;
+}

@@ -36,45 +36,71 @@ export const fetchRepos = (refresh?: boolean) => ({
   refresh,
 });
 
-const onReposFetched = (repos: IRepo[]) => ({
+const onReposFetched = (publicRepos: IRepo[], privateRepos: IRepo[], privateReposWereFetched: boolean) => ({
   type: ReposAction.FetchedList,
-  repos,
+  publicRepos,
+  privateRepos,
+  privateReposWereFetched,
 });
 
+interface IRepoList {
+  public?: IRepo[];
+  private?: IRepo[];
+  privateReposWereFetched?: boolean;
+}
+
 export interface IRepoStore {
-  github?: IRepo[];
+  list?: IRepoList;
   searchQuery?: string;
 }
 
 export interface IRepo {
   name: string;
   isAdmin: boolean;
+  isPrivate: boolean;
   isActivated: boolean;
   isActivatingNow?: boolean;
 }
 
-const github = (state: IRepo[] = null, action: any): IRepo[] => {
+const transformRepos = (repos: IRepo[], f: (r: IRepo) => IRepo): IRepo[] => {
+  let ret: IRepo[] = []; // tslint:disable-line
+  for (const r of repos) {
+    ret.push(f(r));
+  }
+
+  return ret;
+};
+
+const transformRepoList = (repoList: IRepoList, f: (r: IRepo) => IRepo): IRepoList => {
+  return {
+    public: transformRepos(repoList.public, f),
+    private: transformRepos(repoList.private, f),
+    privateReposWereFetched: repoList.privateReposWereFetched,
+  };
+};
+
+const list = (state: IRepoList = null, action: any): IRepoList => {
   switch (action.type) {
     case ReposAction.FetchedList:
-      return action.repos;
+      return {
+        public: action.publicRepos,
+        private: action.privateRepos,
+        privateReposWereFetched: action.privateReposWereFetched,
+      };
     case ReposAction.FetchList:
       return null;
     case ReposAction.Activate:
-      let repos: IRepo[] = [];
-      for (const r of state) {
-        repos.push({...r, isActivatingNow: r.name === action.name ? true : r.isActivatingNow});
-      }
-      return repos;
+      return transformRepoList(state, (r: IRepo): IRepo => {
+        return {...r, isActivatingNow: r.name === action.name ? true : r.isActivatingNow};
+      });
     case ReposAction.Activated:
-      repos = [];
-      for (const r of state) {
+      return transformRepoList(state, (r: IRepo): IRepo => {
         const p = (r.name === action.name) ? {
           isActivatingNow: false,
           isActivated: action.isActivated,
         } : {};
-        repos.push({...r, ...p});
-      }
-      return repos;
+        return {...r, ...p};
+      });
     default:
       return state;
   }
@@ -90,7 +116,7 @@ const searchQuery = (state: string = null, action: any): string => {
 };
 
 export const reducer = combineReducers<IRepoStore>({
-  github,
+  list,
   searchQuery,
 });
 
@@ -101,7 +127,8 @@ function* doReposFetching({refresh}: any) {
   if (!resp || resp.error) {
     yield* processError(apiUrl, resp, "Can't fetch repo list");
   } else {
-    yield put(onReposFetched(resp.data.repos));
+    yield put(onReposFetched(resp.data.repos,
+      resp.data.privateRepos, resp.data.privateReposWereFetched));
   }
 }
 
