@@ -1,7 +1,7 @@
 import axios from "axios";
-import { onGotApiResult } from "../result";
+import { onGotApiResult } from "modules/result";
 import { put } from "redux-saga/effects";
-import { reportError } from "../utils/analytics";
+import { reportError } from "modules/utils/analytics";
 import { toastr } from "react-redux-toastr";
 
 export const makeApiGetRequest = (path: string, cookie?: string): Promise<IApiResponse> => {

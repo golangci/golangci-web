@@ -1,9 +1,9 @@
 import { combineReducers } from "redux";
-import { put, takeEvery, call, select, fork } from "redux-saga/effects";
-import { IAppStore } from "../../reducers";
+import { put, call, select, fork, take } from "redux-saga/effects";
+import { IAppStore } from "reducers";
 import {
   makeApiGetRequest, getApiHttpCode, processError,
-} from "../api";
+} from "modules/api";
 
 enum AuthAction {
   Check = "@@GOLANGCI/AUTH/CHECK",
@@ -21,6 +21,7 @@ export const onCheckedAuth = (cu: IUser) => ({
 
 export interface IAuthStore {
   currentUser?: IUser;
+  authWasChecked?: boolean;
   cookie?: string;
 }
 
@@ -42,17 +43,36 @@ const currentUser = (state: IUser = null, action: any): IUser => {
   }
 };
 
+const authWasChecked = (state: boolean = false, action: any): boolean => {
+  switch (action.type) {
+    case AuthAction.Checked:
+      return true;
+    default:
+      return state;
+  }
+};
+
 const cookie = (state: string = null, action: any): string => {
     return state;
 };
 
 export const reducer = combineReducers<IAuthStore>({
   currentUser,
+  authWasChecked,
   cookie,
 });
 
 function* doAuthCheckRequest() {
   const state: IAppStore = yield select();
+  if (__SERVER__ && !state.auth.cookie) { // don't make extra request
+    yield put(onCheckedAuth(null));
+    return;
+  }
+
+  if (state.auth.authWasChecked) { // don't check auth twice
+    return;
+  }
+
   const apiUrl = "/v1/auth/check";
   const resp = yield call(makeApiGetRequest, apiUrl, state.auth.cookie);
   if (!resp || resp.error) {
@@ -68,8 +88,15 @@ function* doAuthCheckRequest() {
   }
 }
 
+const takeLeading = (patternOrChannel: any, saga: any, ...args: any[]) => fork(function*() {
+  while (true) {
+    const action = yield take(patternOrChannel);
+    yield call(saga, ...args.concat(action));
+  }
+});
+
 function* checkAuthWatcher() {
-  yield takeEvery(AuthAction.Check, doAuthCheckRequest);
+yield takeLeading(AuthAction.Check, doAuthCheckRequest);
 }
 
 export function getWatchers() {

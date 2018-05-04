@@ -1,6 +1,6 @@
 import { createStore, applyMiddleware, compose, Middleware } from "redux";
 import { routerMiddleware } from "react-router-redux";
-import { rootReducer, IAppStore } from "../reducers";
+import { rootReducer, IAppStore } from "reducers";
 import createSagaMiddleware, { END } from "redux-saga";
 
 const configureStore = (initialState: IAppStore, history: any) => {

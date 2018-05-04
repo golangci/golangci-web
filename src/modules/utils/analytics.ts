@@ -1,4 +1,4 @@
-import { IUser } from "../auth";
+import { IUser } from "modules/auth";
 
 function getWindowProperty(name: string): any {
   if (typeof window === "undefined") {

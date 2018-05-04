@@ -1,10 +1,10 @@
 import { combineReducers } from "redux";
 import { put, takeEvery, call, select, fork } from "redux-saga/effects";
-import { IAppStore } from "../../reducers";
+import { IAppStore } from "reducers";
 import {
   makeApiGetRequest, makeApiPutRequest, makeApiDeleteRequest, processError,
-} from "../api";
-import reachGoal from "../utils/analytics";
+} from "modules/api";
+import reachGoal from "modules/utils/analytics";
 
 enum ReposAction {
   FetchList = "@@GOLANGCI/REPOS/LIST/FETCH",

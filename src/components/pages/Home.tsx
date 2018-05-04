@@ -2,12 +2,30 @@ import * as React from "react";
 import { Button, Icon, Row, Col, List, Card } from "antd";
 import { Helmet } from "react-helmet";
 import Octicon from "react-component-octicons";
-import Go from "../../assets/images/logo/go.svg";
-import prCommentDemoImage from "../../assets/images/home/pr-comment-demo.png";
-import githubStatusImage from "../../assets/images/home/github-status.png";
-import reachGoal, { trackEvent } from "../../modules/utils/analytics";
+import Go from "assets/images/logo/go.svg";
+import prCommentDemoImage from "assets/images/home/pr-comment-demo.png";
+import githubStatusImage from "assets/images/home/github-status.png";
+import reachGoal, { trackEvent } from "modules/utils/analytics";
+import { connect } from "react-redux";
+import { IAppStore } from "reducers";
+import { checkAuth, IUser } from "modules/auth";
+import { Link } from "react-router-dom";
 
-export default class Home extends React.Component<any> {
+interface IStateProps {
+  currentUser?: IUser;
+}
+
+interface IDispatchProps {
+  checkAuth(): void;
+}
+
+interface IProps extends IStateProps, IDispatchProps {}
+
+class Home extends React.Component<IProps> {
+  public componentWillMount() {
+    this.props.checkAuth();
+  }
+
   private renderLintersSection() {
     const linters: any[] = [
       {
@@ -71,6 +89,24 @@ export default class Home extends React.Component<any> {
     return true;
   }
 
+  private renderPrimaryButton() {
+    return this.props.currentUser ? (
+      <Link to="/repos/github">
+        <Button onClick={this.onGithubAuthClick} type="primary" size="large">
+          <Icon type="bars" />
+          My Repos
+        </Button>
+      </Link>
+    ) : (
+      <a href={`${API_HOST}/v1/auth/github`}>
+        <Button onClick={this.onGithubAuthClick} type="primary" size="large">
+          <Icon type="github" />
+          Signup via Github
+        </Button>
+      </a>
+    );
+  }
+
   private renderJumbotron() {
     return (
       <section className="home-jumbotron">
@@ -81,12 +117,7 @@ export default class Home extends React.Component<any> {
           <p className="home-jumbotron-subheader">GolangCI detects and comments issues in Github pull requests: bugs, style violations, anti-pattern instances</p>
         </Row>
         <Row type="flex" justify="center">
-          <a href={`${API_HOST}/v1/auth/github`}>
-            <Button onClick={this.onGithubAuthClick} type="primary" size="large">
-              <Icon type="github" />
-              Signup via Github
-            </Button>
-          </a>
+          {this.renderPrimaryButton()}
         </Row>
       </section>
     );
@@ -185,12 +216,7 @@ export default class Home extends React.Component<any> {
               <Card title={<span className="home-pricing-card-title">Public Repos</span>}>
                 <p className="home-pricing-card-description">Free for Open Source. Forever</p>
                 <Row type="flex" justify="center">
-                  <a href={`${API_HOST}/v1/auth/github`}>
-                    <Button onClick={this.onGithubAuthClick} type="primary" size="large">
-                      <Icon type="github" />
-                      Signup via Github
-                    </Button>
-                  </a>
+                  {this.renderPrimaryButton()}
                 </Row>
               </Card>
             </div>
@@ -254,3 +280,13 @@ export default class Home extends React.Component<any> {
     );
   }
 }
+
+const mapStateToProps = (state: IAppStore): any => ({
+  currentUser: state.auth.currentUser,
+});
+
+const mapDispatchToProps = {
+  checkAuth,
+};
+
+export default connect<IStateProps, IDispatchProps, void>(mapStateToProps, mapDispatchToProps)(Home);

@@ -1,13 +1,13 @@
 import * as React from "react";
-import Header from "../components/layout/Header";
-import Footer from "../components/layout/Footer";
+import Header from "components/layout/Header";
+import Footer from "components/layout/Footer";
 import { Helmet } from "react-helmet";
 import { withRouter } from "react-router-dom";
 
 import { Layout } from "antd";
 
-import "../css/sass/main.scss";
-import "../css/less/main.less";
+import "css/sass/main.scss";
+import "css/less/main.less";
 
 import "react-redux-toastr/src/styles/index.scss";
 import ReduxToastr from "react-redux-toastr";

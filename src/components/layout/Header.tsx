@@ -1,13 +1,13 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import { IAppStore } from "../../reducers";
+import { IAppStore } from "reducers";
 import { Layout, Menu, Popover, Icon, Row, Avatar } from "antd";
 import { MenuMode } from "antd/lib/menu";
-import Golangci from "../../assets/images/logo/golangci.svg";
-import Go from "../../assets/images/logo/go.svg";
-import { toggle } from "../../modules/toggle";
-import { checkAuth, IUser } from "../../modules/auth";
+import Golangci from "assets/images/logo/golangci.svg";
+import Go from "assets/images/logo/go.svg";
+import { toggle } from "modules/toggle";
+import { checkAuth, IUser } from "modules/auth";
 import { MobileScreen, DesktopScreen } from "react-responsive-redux";
 
 const isMobileMenuOpenedKey: string = "isMobileMenuOpened";
@@ -34,9 +34,7 @@ class MyHeader extends React.Component<IProps> {
   }
 
   public componentWillMount() {
-    if (!this.props.currentUser) {
-      this.props.checkAuth();
-    }
+    this.props.checkAuth();
   }
 
   private getMenu(mode: MenuMode): JSX.Element {
@@ -64,12 +62,12 @@ class MyHeader extends React.Component<IProps> {
       <Layout.Header>
         <Row type="flex" className="header-row">
           <div className="logo" >
-            <a href="/">
+            <Link to="/">
               <svg className="logo-svg" height="100%" viewBox="0 0 620 100">
                 <Go x={0} height="100%" viewBox="0 0 100 100" />
                 <Golangci x={120} height="100%" viewBox="0 0 500 100" />
               </svg>
-            </a>
+            </Link>
           </div>
           <DesktopScreen>
             {this.getMenu("horizontal")}
