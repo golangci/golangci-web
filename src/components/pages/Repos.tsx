@@ -15,6 +15,7 @@ interface IStateProps {
   privateReposWereFetched: boolean;
   isAfterLogin: boolean;
   searchQuery: string;
+  isModalWithPriceVisible: boolean;
   isModalNotImplementedVisible: boolean;
 }
 
@@ -28,6 +29,7 @@ interface IDispatchProps {
 interface IProps extends IStateProps, IDispatchProps, RouteComponentProps<IParams> {}
 
 const modalNotImplementedToggleName = "private repos not implemented";
+const modalWithPriceToggleName = "price for private repos";
 
 class Repos extends React.Component<IProps> {
   public componentWillMount() {
@@ -43,14 +45,15 @@ class Repos extends React.Component<IProps> {
   }
 
   private onClick(activate: boolean, isPrivate: boolean, name: string) {
+    const analyticsPayload = {repoName: name};
     if (isPrivate) {
-      this.props.toggle(modalNotImplementedToggleName, true);
-      trackEvent("click to activate private repo");
+      this.props.toggle(modalWithPriceToggleName, true);
+      trackEvent("click to activate private repo", analyticsPayload);
       return;
     }
 
     this.props.activateRepo(activate, name);
-    trackEvent(`${activate ? "connect" : "disconnect"} repo`, {repoName: name});
+    trackEvent(`${activate ? "connect" : "disconnect"} repo`, analyticsPayload);
   }
 
   private refreshRepos() {
@@ -69,6 +72,43 @@ class Repos extends React.Component<IProps> {
 
   private closeModalNotImplemented() {
     this.props.toggle(modalNotImplementedToggleName, false);
+  }
+
+  private closeModalWithPrice() {
+    trackEvent("disagreed with price while connecting private repo");
+    this.props.toggle(modalWithPriceToggleName, false);
+  }
+
+  private continueModalWithPrice() {
+    trackEvent("agreed with price while connecting private repo");
+    this.props.toggle(modalWithPriceToggleName, false);
+    this.props.toggle(modalNotImplementedToggleName, true);
+  }
+
+  private renderModals() {
+    return (
+      <>
+        <Modal
+          title="Sorry, not implemented"
+          visible={this.props.isModalNotImplementedVisible}
+          onCancel={this.closeModalNotImplemented.bind(this)}
+          onOk={this.closeModalNotImplemented.bind(this)}
+        >
+          <p>Private repos aren't supported now :( We will inform you when it will be supported.</p>
+          <p>Progress on this feature can be tracked via <a href="https://github.com/golangci/golangci/issues/4" target="_blank">GitHub Issue</a>.</p>
+        </Modal>
+
+        <Modal
+          title="Pricing"
+          visible={this.props.isModalWithPriceVisible}
+          onCancel={this.closeModalWithPrice.bind(this)}
+          onOk={this.continueModalWithPrice.bind(this)}
+          okText="Continue"
+        >
+          <p className="repos-modal-pricing-text">Private repos support costs <b>$20</b> for 1 user per month. Repos count is unlimited.</p>
+        </Modal>
+      </>
+    );
   }
 
   private renderActionForRepo(r: IRepo) {
@@ -167,15 +207,7 @@ class Repos extends React.Component<IProps> {
               this.renderList(this.props.privateRepos)
             }
 
-            <Modal
-              title="Sorry, not implemented"
-              visible={this.props.isModalNotImplementedVisible}
-              onCancel={this.closeModalNotImplemented.bind(this)}
-              onOk={this.closeModalNotImplemented.bind(this)}
-            >
-              <p>Private repos aren't supported now :( We will inform you when it will be supported.</p>
-              <p>Progress on this feature can be tracked via <a href="https://github.com/golangci/golangci/issues/4" target="_blank">GitHub Issue</a>.</p>
-            </Modal>
+            {this.renderModals()}
           </Col>
         </Row>
       </>
@@ -207,6 +239,7 @@ const mapStateToProps = (state: IAppStore, routeProps: RouteComponentProps<IPara
     isAfterLogin: routeProps.location.search.includes("after=login"),
     searchQuery: getSearchQuery(state),
     isModalNotImplementedVisible: state.toggle.store[modalNotImplementedToggleName],
+    isModalWithPriceVisible: state.toggle.store[modalWithPriceToggleName],
   };
 };
 

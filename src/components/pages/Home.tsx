@@ -215,6 +215,11 @@ class Home extends React.Component<IProps> {
             <div className="home-pricing-card">
               <Card title={<span className="home-pricing-card-title">Public Repos</span>}>
                 <p className="home-pricing-card-description">Free for Open Source. Forever</p>
+                <ul>
+                  <li>Unlimited open source repositories</li>
+                  <li>GitHub integration</li>
+                  <li>Automatic comments on pull request</li>
+                </ul>
                 <Row type="flex" justify="center">
                   {this.renderPrimaryButton()}
                 </Row>
@@ -223,10 +228,16 @@ class Home extends React.Component<IProps> {
             <div className="home-pricing-card">
               <Card title={<span className="home-pricing-card-title">Private Repos</span>}>
                 <p className="home-pricing-card-description">
-                  <a target="_blank" href="https://github.com/golangci/golangci/issues/4">
-                    Paid plans are coming soon
-                  </a>
+                  $20 user/month
                 </p>
+                <ul>
+                  <li>Unlimited private repositories</li>
+                  <li>Higher priority</li>
+                  <li>Priority support</li>
+                </ul>
+                <Row type="flex" justify="center">
+                  {this.renderPrimaryButton()}
+                </Row>
               </Card>
             </div>
           </Row>
