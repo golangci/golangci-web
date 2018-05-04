@@ -122,7 +122,7 @@ class Repos extends React.Component<IProps> {
           onClick={() => this.onClick(false, r.isPrivate, r.name)}
           icon="close" type="danger"
           loading={r.isActivatingNow}>
-          Disconnect Repo
+          Disconnect
         </Button>
       );
     }
@@ -131,7 +131,7 @@ class Repos extends React.Component<IProps> {
       <Button
         onClick={() => this.onClick(true, r.isPrivate, r.name)}
         loading={r.isActivatingNow}>
-        Connect Repo
+        Connect
       </Button>
     );
   }
