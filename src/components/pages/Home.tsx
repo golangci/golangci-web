@@ -27,7 +27,77 @@ class Home extends React.Component<IProps> {
   }
 
   private renderLintersSection() {
-    const linters: any[] = [
+    const enabledLinters: any[] = [
+      {
+        name: "go vet",
+        desc: (<>Vet examines Go source code and reports suspicious constructs, such as <i>Printf</i> calls whose arguments do not align with the format string.</>),
+        icon: <Octicon name="bug" />,
+      },
+      {
+        name: "errcheck",
+        desc: (<>Errcheck is a program for checking for unchecked errors in go programs. These unchecked errors can be critical bugs in some cases.</>),
+        icon: <Octicon name="alert" />,
+      },
+      {
+        name: "golint",
+        desc: (<>Golint differs from gofmt. Gofmt reformats Go source code, whereas golint prints out style mistakes.</>),
+        icon: <Octicon name="checklist" />,
+      },
+      {
+        name: "staticcheck",
+        desc: (<>Staticcheck is go vet on steroids, applying a ton of static analysis checks.</>),
+        icon: <Octicon name="flame" />,
+      },
+      {
+        name: "unused",
+        desc: (<>Checks Go code for unused constants, variables, functions and types.</>),
+        icon: <Octicon name="kebab-horizontal" />,
+      },
+      {
+        name: "gosimple",
+        desc: (<>Linter for Go source code that specialises on simplifying code.</>),
+        icon: <Octicon name="primitive-dot" />,
+      },
+      {
+        name: "gas",
+        desc: (<>Inspects source code for security problems.</>),
+        icon: <Octicon name="shield" />,
+      },
+      {
+        name: "structcheck",
+        desc: (<>Finds unused struct fields.</>),
+        icon: <Octicon name="server" />,
+      },
+      {
+        name: "varcheck",
+        desc: (<>Finds unused global variables and constants.</>),
+        icon: <Octicon name="x" />,
+      },
+      {
+        name: "interfacer",
+        desc: (<>Linter that suggests narrower interface types.</>),
+        icon: <Octicon name="fold" />,
+      },
+      {
+        name: "unconvert",
+        desc: (<>Remove unnecessary type conversions.</>),
+        icon: <Octicon name="versions" />,
+      },
+      {
+        name: "ineffassign",
+        desc: (<>Detects when assignments to existing variables are not used.</>),
+        icon: <Octicon name="git-branch" />,
+      },
+      {
+        name: "goconst",
+        desc: (<>Finds repeated strings that could be replaced by a constant.</>),
+        icon: <Octicon name="diff" />,
+      },
+      {
+        name: "deadcode",
+        desc: (<>Finds unused code.</>),
+        icon: <Octicon name="git-compare" />,
+      },
       {
         name: "gofmt",
         desc: (<>Gofmt checks whether code was gofmt-ed. We run this tool with <i>-s</i> option to check for code simplification.</>),
@@ -38,22 +108,8 @@ class Home extends React.Component<IProps> {
         desc: (<>Goimports does everything that gofmt does. Additionally it checks unused imports.</>),
         icon: <Octicon name="file" />,
       },
-      {
-        name: "golint",
-        desc: (<>Golint differs from gofmt. Gofmt reformats Go source code, whereas golint prints out style mistakes.</>),
-        icon: <Octicon name="checklist" />,
-      },
-      {
-        name: "go vet",
-        desc: (<>Vet examines Go source code and reports suspicious constructs, such as Printf calls whose arguments do not align with the format string.</>),
-        icon: <Octicon name="bug" />,
-      },
-      {
-        name: "errcheck",
-        desc: (<>Errcheck is a program for checking for unchecked errors in go programs. These unchecked errors can be critical bugs in some cases.</>),
-        icon: <Octicon name="alert" />,
-      },
     ];
+
     return (
       <section className="home-section home-section-linters hr-bordered-top home-section-padded">
         <div className="home-section-content">
@@ -61,12 +117,16 @@ class Home extends React.Component<IProps> {
             <p className="home-section-header">Linters</p>
           </Row>
           <Row type="flex" justify="center">
-            <p className="home-section-linters-description">We run these linters on analyzed code:</p>
+            <div>
+              <p className="home-section-linters-description">
+                By default next linters are used:
+              </p>
+            </div>
           </Row>
           <Row type="flex" justify="center">
             <List
               itemLayout="horizontal"
-              dataSource={linters}
+              dataSource={enabledLinters}
               renderItem={(linter: any) => (
                 <List.Item>
                   <List.Item.Meta
@@ -77,6 +137,17 @@ class Home extends React.Component<IProps> {
                 </List.Item>
               )}
             />
+          </Row>
+
+          <Row>
+            <p className="home-section-linters-how-are-run">
+              We use all aforementioned linters by running <a target="_blank" href="https://github.com/golangci/golangci-lint">golangci-lint</a> on analyzed code in this way:
+              <div className="well">
+                GOLANGCI_COM_RUN=1 golangci-lint run
+              </div>
+              You can create <a target="_blank" href="https://github.com/golangci/golangci-lint#configuration-file"><b>.golangci.yml</b></a> to
+              enable additional linters, disable some of default linters and customize their settings.
+            </p>
           </Row>
         </div>
       </section>
