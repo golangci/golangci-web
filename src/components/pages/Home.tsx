@@ -143,7 +143,7 @@ class Home extends React.Component<IProps> {
             <p className="home-section-linters-how-are-run">
               We use all aforementioned linters by running <a target="_blank" href="https://github.com/golangci/golangci-lint">golangci-lint</a> on analyzed code in this way:
               <div className="well">
-                GOLANGCI_COM_RUN=1 golangci-lint run
+                GOLANGCI_COM_RUN=1 golangci-lint run --new-from-patch=/path/to/patch/for/pull/request
               </div>
               You can create <a target="_blank" href="https://github.com/golangci/golangci-lint#configuration-file"><b>.golangci.yml</b></a> to
               enable additional linters, disable some of default linters and customize their settings.
