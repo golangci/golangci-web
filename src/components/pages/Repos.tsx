@@ -8,6 +8,7 @@ import { IAppStore } from "reducers";
 import { fetchRepos, activateRepo, updateSearchQuery, IRepo } from "modules/repos";
 import { trackEvent } from "modules/utils/analytics";
 import { toggle } from "modules/toggle";
+import { postEvent } from "modules/events";
 
 interface IStateProps {
   publicRepos: IRepo[];
@@ -24,6 +25,7 @@ interface IDispatchProps {
   activateRepo(activate: boolean, name: string): void;
   updateSearchQuery(q: string): void;
   toggle(name: string, value?: boolean): void;
+  postEvent(name: string, payload?: object): void;
 }
 
 interface IProps extends IStateProps, IDispatchProps, RouteComponentProps<IParams> {}
@@ -49,6 +51,7 @@ class Repos extends React.Component<IProps> {
     if (isPrivate) {
       this.props.toggle(modalWithPriceToggleName, true);
       trackEvent("click to activate private repo", analyticsPayload);
+      this.props.postEvent("click to activate private repo", analyticsPayload);
       return;
     }
 
@@ -76,11 +79,13 @@ class Repos extends React.Component<IProps> {
 
   private closeModalWithPrice() {
     trackEvent("disagreed with price while connecting private repo");
+    this.props.postEvent("disagreed with price while connecting private repo");
     this.props.toggle(modalWithPriceToggleName, false);
   }
 
   private continueModalWithPrice() {
     trackEvent("agreed with price while connecting private repo");
+    this.props.postEvent("agreed with price while connecting private repo");
     this.props.toggle(modalWithPriceToggleName, false);
     this.props.toggle(modalNotImplementedToggleName, true);
   }
@@ -248,6 +253,7 @@ const mapDispatchToProps = {
   activateRepo,
   updateSearchQuery,
   toggle,
+  postEvent,
 };
 
 export default connect<IStateProps, IDispatchProps, RouteComponentProps<IParams>>(mapStateToProps, mapDispatchToProps)(Repos);
