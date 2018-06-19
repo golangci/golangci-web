@@ -1,2 +1,3 @@
 User-agent: *
 Host: golangci.com
+Disallow: /r/

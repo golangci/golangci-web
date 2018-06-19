@@ -1,8 +1,7 @@
-import { combineReducers } from "redux";
-import { put, call, select, takeEvery, fork } from "redux-saga/effects";
+import { call, select, takeEvery, fork } from "redux-saga/effects";
 import { IAppStore } from "reducers";
 import {
-  makeApiPostRequest, getApiHttpCode, processError,
+  makeApiPostRequest, processError,
 } from "modules/api";
 
 export enum EventAction {
