@@ -88,15 +88,15 @@ function* doAuthCheckRequest() {
   }
 }
 
-const takeLeading = (patternOrChannel: any, saga: any, ...args: any[]) => fork(function*() {
+const takeLeading = (patternOrChannel: any, saga: any) => fork(function*() {
   while (true) {
     const action = yield take(patternOrChannel);
-    yield call(saga, ...args.concat(action));
+    yield call(saga, action);
   }
 });
 
 function* checkAuthWatcher() {
-yield takeLeading(AuthAction.Check, doAuthCheckRequest);
+  yield takeLeading(AuthAction.Check, doAuthCheckRequest);
 }
 
 export function getWatchers() {
