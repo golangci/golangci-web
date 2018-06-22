@@ -16,7 +16,7 @@ const App: React.StatelessComponent<any> = (props) => (
   <>
     <Helmet
       meta={[
-        {property: "og:locale", content: "ru_RU"},
+        {property: "og:locale", content: "en_US"},
         {property: "og:site_name", content: "golangci.com"},
         {
           property: "og:url",
