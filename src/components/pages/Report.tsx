@@ -1,9 +1,14 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router";
-import { List, Row, Col, Card, Table, Tag } from "antd";
+import { List, Row, Col, Table, Tag, Alert } from "antd";
 import { IAppStore } from "reducers";
-import { IAnalysisState, IIssue, fetchAnalysis } from "modules/analyzes";
+import { IAnalysisState, IIssue, IWarning, fetchAnalysis } from "modules/analyzes";
+import { capitalizeFirstLetter } from "modules/utils/strings";
+import moment from "moment";
+import Helmet from "react-helmet";
+
+moment.locale("en");
 
 interface IStateProps {
   curAnalysis?: IAnalysisState;
@@ -26,33 +31,27 @@ class Report extends React.Component<IProps> {
   private renderIssuesFromLinterBlock(linterName: string, issues: IIssue[], sourceLinkBase: string) {
     return (
       <div className="report-linter-block">
-        <Card
-          title={linterName}
+        <List
+          loading={issues === null}
           bordered
-          hoverable
-          >
-
-          <List
-            loading={issues === null}
-            bordered
-            itemLayout="horizontal"
-            dataSource={issues || []}
-            renderItem={(i: IIssue) => (
-              <List.Item>
-                <List.Item.Meta
-                  title={i.Text}
-                />
-                <a target="_blank" href={`${sourceLinkBase}/${i.Pos.Filename}#L${i.Pos.Line}`}>{`${i.Pos.Filename}:${i.Pos.Line}`}</a>
-              </List.Item>
-            )}
-            locale={{emptyText: "No issues!"}}
-          />
-        </Card>
+          itemLayout="horizontal"
+          dataSource={issues || []}
+          header={<b>{linterName}</b>}
+          renderItem={(i: IIssue) => (
+            <List.Item>
+              <List.Item.Meta
+                description={i.Text}
+              />
+              <a target="_blank" href={`${sourceLinkBase}/${i.Pos.Filename}#L${i.Pos.Line}`}>{`${i.Pos.Filename}:${i.Pos.Line}`}</a>
+            </List.Item>
+          )}
+          locale={{emptyText: "No issues!"}}
+        />
       </div>
     );
   }
 
-  private renderTable(ca: IAnalysisState) {
+  private renderLeftTable(ca: IAnalysisState) {
     const columns = [
       {
         key: "columnA",
@@ -70,20 +69,46 @@ class Report extends React.Component<IProps> {
     const rj = ca.ResultJSON;
     const issuesCount = (rj && rj.GolangciLintRes && rj.GolangciLintRes.Issues) ?
       ca.ResultJSON.GolangciLintRes.Issues.length : 0;
-    const status = issuesCount === 0 ? (
-      <Tag color="green">Success</Tag>
-    ) : (<Tag color="red">Failure: found {issuesCount} issues</Tag>);
+    let status: JSX.Element;
+    switch (ca.Status) {
+    case "sent_to_queue":
+      status = <Tag color="yellow">Sent to queue</Tag>;
+      break;
+    case "processing":
+      status = <Tag color="yellow">Processing...</Tag>;
+      break;
+    case "processed/failure":
+      status = <Tag color="red">Failure: found {issuesCount} issues</Tag>;
+      break;
+    case "processed/error":
+      status = <Tag color="red">Internal Error</Tag>;
+      break;
+    case "processed/success":
+      status = <Tag color="green">Success</Tag>;
+      break;
+    case "forced_stale":
+      status = <Tag color="red">Processing Timeout</Tag>;
+      break;
+    default:
+      status = <Tag color="yellow">Unknown</Tag>;
+      break;
+    }
 
     const table = [
       {
         key: "row1",
         a: "Pull Request",
-        b: (<a target="_blank" href={pullLink}>{`${ca.GithubRepoName}/${ca.GithubPullRequestNumber}`}</a>),
+        b: (<a target="_blank" href={pullLink}>{`${ca.GithubRepoName}#${ca.GithubPullRequestNumber}`}</a>),
       },
       {
         key: "row2",
         a: "Commit",
         b: (<a target="_blank" href={`${pullLink}/commits/${ca.CommitSHA}`}>{ca.CommitSHA}</a>),
+      },
+      {
+        key: "row4",
+        a: "Created",
+        b: moment(ca.CreatedAt).fromNow(),
       },
       {
         key: "row3",
@@ -94,11 +119,85 @@ class Report extends React.Component<IProps> {
 
     return (
       <Table
-        className="report-table"
         showHeader={false}
         columns={columns}
         pagination={false}
         dataSource={table} />
+    );
+  }
+
+  private renderRightTable(ca: IAnalysisState) {
+    const columns = [
+      {
+        key: "columnA",
+        dataIndex: "a",
+        title: "a",
+      },
+      {
+        key: "columnB",
+        dataIndex: "b",
+        title: "a",
+      },
+    ];
+
+    const rj = ca.ResultJSON;
+    const timings = (rj && rj.WorkerRes && rj.WorkerRes.Timings) ? rj.WorkerRes.Timings : [];
+    const rows = [];
+    for (const t of timings) {
+      rows.push({
+        key: t.Name,
+        a: t.Name,
+        b: (<span>{moment.duration(t.DurationMs).asSeconds().toFixed(1)}s</span>),
+      });
+    }
+
+    return (
+      <Table
+        showHeader={false}
+        columns={columns}
+        pagination={false}
+        dataSource={rows} />
+    );
+  }
+
+  private renderWarningsErrors(ca: IAnalysisState) {
+    let warnings: IWarning[] = [];
+    const rj = ca.ResultJSON;
+    if (rj && rj.WorkerRes && rj.WorkerRes.Warnings) {
+      warnings = warnings.concat(rj.WorkerRes.Warnings);
+    }
+    if (rj && rj.GolangciLintRes && rj.GolangciLintRes.Report && rj.GolangciLintRes.Report.Warnings) {
+      warnings = warnings.concat(rj.GolangciLintRes.Report.Warnings.map((w) => ({
+        Tag: `golangci-lint/${w.Tag}`,
+        Text: w.Text,
+      })));
+    }
+
+    const err = (rj && rj.WorkerRes && rj.WorkerRes.Error) ? rj.WorkerRes.Error : null;
+
+    if (!err && !warnings.length) {
+      return null;
+    }
+
+    return (
+      <div className="report-messages">
+        {err && (
+          <Alert
+            message="Error"
+            description={capitalizeFirstLetter(err)}
+            type="error"
+            showIcon
+          />
+        )}
+        {warnings.map((w) => (
+          <Alert
+            message={`Warning in ${w.Tag}`}
+            description={capitalizeFirstLetter(w.Text)}
+            type="warning"
+            showIcon
+          />
+        ))}
+      </div>
     );
   }
 
@@ -130,9 +229,26 @@ class Report extends React.Component<IProps> {
 
     return (
       <Row>
+        <Helmet title={`Report for Pull Request ${ca.GithubRepoName}#${ca.GithubPullRequestNumber}`} />
         <Col offset={4} span={16}>
           <h2>Analysis of {ca.GithubRepoName}</h2>
-          {this.renderTable(ca)}
+          <div className="report-tables-container">
+            <Row>
+              <Col span={12}>
+                <div className="status-table">
+                  <h3>Status</h3>
+                  {this.renderLeftTable(ca)}
+                </div>
+              </Col>
+              <Col span={12}>
+                <div className="timings-table">
+                  <h3>Timings</h3>
+                  {this.renderRightTable(ca)}
+                </div>
+              </Col>
+            </Row>
+          </div>
+          {this.renderWarningsErrors(ca)}
           {blocks.map((e, i) => <div key={`linter_block_${i}`}>{e}</div>)}
         </Col>
       </Row>

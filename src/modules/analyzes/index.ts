@@ -23,18 +23,47 @@ const onAnalysisFetched = (analysisState: IAnalysisState) => ({
 });
 
 export interface IAnalysisState {
+  CreatedAt: string;
   CommitSHA: string;
   GithubPullRequestNumber: number;
   GithubRepoName: string;
   ResultJSON: IAnalysisResultJSON;
+  Status: string;
 }
 
 interface IAnalysisResultJSON {
   GolangciLintRes: IGolangciLintRes;
+  WorkerRes: IWorkerRes;
+}
+
+interface IWorkerRes {
+  Timings: ITiming[];
+  Warnings: IWarning[];
+  Error: string;
+}
+
+interface ITiming {
+  Name: string;
+  DurationMs: number;
+}
+
+export interface IWarning {
+  Tag: string;
+  Text: string;
 }
 
 interface IGolangciLintRes {
   Issues: IIssue[];
+  Report: {
+    Warnings: IWarning[];
+    Linters: ILinter[];
+  };
+}
+
+interface ILinter {
+  Name: string;
+  Enabled: boolean;
+  EnabledByDefault: boolean;
 }
 
 export interface IIssue {
