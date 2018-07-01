@@ -198,7 +198,7 @@ function run() {
                  loader: "file-loader",
                   options: {
                     outputPath: "images/",
-                    publicPath: isProd ? "/js/dist/" : undefined,
+                    publicPath: isProd ? "/js/dist/images/" : undefined,
                   },
                }
              ]
