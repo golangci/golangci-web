@@ -11,9 +11,6 @@
   font-size: 1.3em;
 }
 
-$home-section-gradient-top: #8176b5;
-$home-section-gradient-bottom: $blue;
-
 .home-section-gradient {
   color: $home-gradient-text-color;
   background: linear-gradient(to bottom left, $home-section-gradient-top, $home-section-gradient-bottom);
@@ -29,8 +26,16 @@ $home-section-gradient-bottom: $blue;
   font-size: 3em;
 }
 
-.home-section-gradient-header {
+%shadowed-header {
   border-bottom: 1px solid rgba($white, 0.2);
+}
+
+.section-shadowed-header {
+  @extend %shadowed-header;
+}
+
+.home-section-gradient-header {
+  @extend %shadowed-header;
   text-shadow: $base-text-shadow;
 }
 

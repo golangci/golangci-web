@@ -33,6 +33,20 @@ server {
       ssl                  on;
       ssl_session_timeout  5m;
 
+      location /sockjs-node {
+        proxy_set_header X-Real-IP  $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header Host $host;
+
+        proxy_pass http://127.0.0.1:8080;
+
+        proxy_redirect off;
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+      }
+
       location / {
          proxy_pass http://127.0.0.1:8080;
       }

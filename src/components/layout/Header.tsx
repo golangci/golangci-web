@@ -42,6 +42,8 @@ class MyHeader extends React.Component<IProps> {
     if (!this.props.currentUser) {
       menuItems.push(<Menu.Item key="1"><a href="/#integrated-with-github">Product</a></Menu.Item>);
       menuItems.push(<Menu.Item key="2"><a href="/#pricing">Pricing</a></Menu.Item>);
+      menuItems.push(<Menu.Item key="3"><a target="_blank" href="https://medium.com/golangci">Blog</a></Menu.Item>);
+      menuItems.push(<Menu.Item key="4"><a href={`${API_HOST}/v1/auth/github`}>Login</a></Menu.Item>);
     } else if (mode === "inline") {
       menuItems.push(<Menu.Item key="3"><Link to="/repos/github">Repos</Link></Menu.Item>);
       menuItems.push(<Menu.Item key="4">

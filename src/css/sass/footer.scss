@@ -1,0 +1,36 @@
+.footer-section-call-to-action {
+    color: $home-gradient-text-color;
+    background: $footer-cta-section-color;
+    padding: $large-spacing 10% $large-spacing;
+}
+
+.footer-col {
+    margin-left: 1vw;
+    margin-right: 1vw;
+}
+
+.footer-col h5 {
+    font-size: 1em;
+    font-weight: bold;
+}
+
+.footer-col ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.footer-col li {
+    margin-top: 0.4em;
+}
+
+.footer-col a {
+    color: rgba(0, 0, 0, 0.65);
+}
+
+.footer-logo {
+    margin-bottom: 2vh;
+}
+
+.footer-row {
+    padding-top: 5vh;
+}

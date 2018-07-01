@@ -140,7 +140,7 @@ class Home extends React.Component<IProps> {
           </Row>
 
           <Row>
-            <p className="home-section-linters-how-are-run">
+            <div className="home-section-linters-how-are-run">
               We use all aforementioned linters by running <a target="_blank" href="https://github.com/golangci/golangci-lint">golangci-lint</a> on analyzed code in this way:
               <div className="well">
                 GOLANGCI_COM_RUN=1 golangci-lint run --new-from-patch=/path/to/patch/for/pull/request
@@ -150,7 +150,7 @@ class Home extends React.Component<IProps> {
               </div>
               You can create <a target="_blank" href="https://github.com/golangci/golangci-lint#config-file"><b>.golangci.yml</b></a> to
               enable additional linters, disable some of default linters and customize their settings.
-            </p>
+            </div>
           </Row>
         </div>
       </section>
@@ -330,7 +330,7 @@ class Home extends React.Component<IProps> {
       <section className="home-section home-section-padded">
         <div className="home-section-content">
           <Row type="flex" justify="center">
-            <p className="home-section-header">Why us?</p>
+            <p id="why-us" className="home-section-header">Why us?</p>
           </Row>
           <Row>
             <Col xs={0} sm={6}>
