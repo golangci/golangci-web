@@ -143,7 +143,7 @@ class Home extends React.Component<IProps> {
             <div className="home-section-linters-how-are-run">
               We use all aforementioned linters by running <a target="_blank" href="https://github.com/golangci/golangci-lint">golangci-lint</a> on analyzed code in this way:
               <div className="well">
-                GOLANGCI_COM_RUN=1 golangci-lint run --new-from-patch=/path/to/patch/for/pull/request
+                golangci-lint run --new-from-patch=/path/to/patch/for/pull/request
               </div>
               <div>
                 Some additional linters are disabled by default: dupl, gocyclo, typecheck, maligned, misspell, lll, unparam, nakedret, prealloc.
