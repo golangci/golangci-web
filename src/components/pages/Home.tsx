@@ -10,6 +10,8 @@ import { connect } from "react-redux";
 import { IAppStore } from "reducers";
 import { checkAuth, IUser } from "modules/auth";
 import { Link } from "react-router-dom";
+import PricingTable, { Plan } from "components/blocks/PricingTable";
+import { push, LocationAction } from "react-router-redux";
 
 interface IStateProps {
   currentUser?: IUser;
@@ -17,6 +19,7 @@ interface IStateProps {
 
 interface IDispatchProps {
   checkAuth(): void;
+  push: LocationAction;
 }
 
 interface IProps extends IStateProps, IDispatchProps {}
@@ -278,6 +281,20 @@ class Home extends React.Component<IProps> {
     );
   }
 
+  private onPricingPlanChoose(chosenPlan: Plan) {
+    if (chosenPlan === Plan.Enterprise) {
+      window.location.replace(`mailto:denis@golangci.com`);
+      return;
+    }
+
+    if (!this.props.currentUser) {
+      window.location.replace(`${API_HOST}/v1/auth/github`);
+      return;
+    }
+
+    this.props.push("/repos/github");
+  }
+
   private renderPricingSection() {
     return (
       <section className="home-section-gradient home-section">
@@ -285,36 +302,11 @@ class Home extends React.Component<IProps> {
           <Row type="flex" justify="center">
             <p id="pricing" className="home-section-header home-section-gradient-header">Pricing</p>
           </Row>
-          <Row type="flex" justify="center">
-            <div className="home-pricing-card">
-              <Card title={<span className="home-pricing-card-title">Public Repos</span>}>
-                <p className="home-pricing-card-description">Free for Open Source. Forever</p>
-                <ul>
-                  <li>Unlimited open source repositories</li>
-                  <li>GitHub integration</li>
-                  <li>Automatic comments on pull request</li>
-                </ul>
-                <Row type="flex" justify="center">
-                  {this.renderPrimaryButton()}
-                </Row>
-              </Card>
-            </div>
-            <div className="home-pricing-card">
-              <Card title={<span className="home-pricing-card-title">Private Repos</span>}>
-                <p className="home-pricing-card-description">
-                  $20 user/month
-                </p>
-                <ul>
-                  <li>Unlimited private repositories</li>
-                  <li>Higher priority</li>
-                  <li>Priority support</li>
-                </ul>
-                <Row type="flex" justify="center">
-                  {this.renderPrimaryButton()}
-                </Row>
-              </Card>
-            </div>
-          </Row>
+
+          <PricingTable
+            authorized={this.props.currentUser ? true : false}
+            onButtonClick={this.onPricingPlanChoose.bind(this)}
+          />
 
         </div>
       </section>
@@ -372,6 +364,7 @@ const mapStateToProps = (state: IAppStore): any => ({
 
 const mapDispatchToProps = {
   checkAuth,
+  push,
 };
 
 export default connect<IStateProps, IDispatchProps, void>(mapStateToProps, mapDispatchToProps)(Home);

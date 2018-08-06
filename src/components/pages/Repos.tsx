@@ -9,6 +9,7 @@ import { fetchRepos, activateRepo, updateSearchQuery, IRepo } from "modules/repo
 import { trackEvent } from "modules/utils/analytics";
 import { toggle } from "modules/toggle";
 import { postEvent } from "modules/events";
+import { buildPricingPlan, Plan } from "components/blocks/PricingTable";
 
 interface IStateProps {
   publicRepos: IRepo[];
@@ -110,7 +111,10 @@ class Repos extends React.Component<IProps> {
           onOk={this.continueModalWithPrice.bind(this)}
           okText="Continue"
         >
-          <p className="repos-modal-pricing-text">Private repos support costs <b>$20</b> for 1 user per month. Repos count is unlimited.</p>
+          <div className="generic_price_table">
+            {buildPricingPlan(Plan.Standard, "Start FREE trial",
+                              this.continueModalWithPrice.bind(this))}
+          </div>
         </Modal>
       </>
     );
