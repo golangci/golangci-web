@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Layout, Row, Button, Icon, Col } from "antd";
+import { Row, Col } from "antd";
 import PricingPlan from "components/blocks/PricingPlan";
 
 export enum Plan {

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Button, Icon, Row, Col, List, Card } from "antd";
+import { Button, Icon, Row, Col, List } from "antd";
 import { Helmet } from "react-helmet";
 import Octicon from "react-component-octicons";
 import Go from "assets/images/logo/go.svg";
