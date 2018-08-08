@@ -15,6 +15,12 @@ $logo-color: $blue;
   fill: $logo-color;
 }
 
+.logo-svg-responsive {
+  width: 100%;
+
+  fill: $logo-color;
+}
+
 .logo-svg:hover #logo__text {
   fill: shade($logo-color, 30%);
   transition: fill 0.3s ease-in;

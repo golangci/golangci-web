@@ -22,6 +22,10 @@ class Footer extends React.Component<IProps> {
     this.props.checkAuth();
   }
 
+  private wrapFooterCol(col: JSX.Element): JSX.Element {
+    return (<Col lg={4} md={12} sm={12} xs={12}><div className="footer-col">{col}</div></Col>);
+  }
+
   public render() {
     return (
       <>
@@ -44,43 +48,48 @@ class Footer extends React.Component<IProps> {
         )}
         <Layout.Footer>
           <Row type="flex" justify="center" className="footer-row">
-              <Col span={5} className="footer-col">
-                <Row type="flex" justify="center">
-                  <div className="logo footer-logo" >
-                    <Link to="/">
-                      <svg className="logo-svg" height="100%" viewBox="0 0 620 100">
-                        <Go x={0} height="100%" viewBox="0 0 100 100" />
-                        <Golangci x={120} height="100%" viewBox="0 0 500 100" />
-                      </svg>
-                    </Link>
-                  </div>
-                </Row>
-                <Row type="flex" justify="center">
-                  <p>
-                    GolangCI is Copyright © {(new Date()).getFullYear()} GolangCI LLC.
-                    The names and logos for GolangCI are trademarks of GolangCI LLC.
-                  </p>
-                </Row>
+              <Col lg={6} md={24} sm={24} xs={24}>
+                <div className="footer-col">
+                  <Row type="flex" justify="center">
+                    <div className="logo footer-logo" >
+                      <Link to="/">
+                        <svg className="logo-svg-responsive" viewBox="0 0 620 100">
+                          <Go x={0} height="100%" viewBox="0 0 100 100" />
+                          <Golangci x={120} height="100%" viewBox="0 0 500 100" />
+                        </svg>
+                      </Link>
+                    </div>
+                  </Row>
+                  <Row type="flex" justify="center">
+                    <p>
+                      GolangCI is Copyright © {(new Date()).getFullYear()} GolangCI LLC.
+                      The names and logos for GolangCI are trademarks of GolangCI LLC.
+                    </p>
+                  </Row>
+                </div>
               </Col>
 
-              <Col span={4} className="footer-col">
+              {this.wrapFooterCol(
+              <>
                 <h5>Product</h5>
                 <ul>
                   <li><a href="/#integrated-with-github">Product</a></li>
                   <li><a href="/#why-us">Why GolangCI</a></li>
                   <li><a href="/#pricing">Pricing</a></li>
                 </ul>
-              </Col>
+              </>)}
 
-              <Col span={4} className="footer-col">
+              {this.wrapFooterCol(
+              <>
                 <h5>Company</h5>
                 <ul>
                   <li><a target="_blank" href="https://medium.com/golangci">Blog</a></li>
                   <li><a target="_blank" href="https://github.com/golangci/golangci">GitHub</a></li>
                 </ul>
-              </Col>
+               </>)}
 
-              <Col span={4} className="footer-col">
+              {this.wrapFooterCol(
+              <>
                 <h5>Support</h5>
                 <ul>
                   <li><a href="https://github.com/golangci/golangci/wiki" target="_blank">Documentation</a></li>
@@ -88,9 +97,10 @@ class Footer extends React.Component<IProps> {
                   <li><Link to="/terms">Terms of Use</Link></li>
                   <li><Link to="/privacy">Privacy Policy</Link></li>
                 </ul>
-              </Col>
+              </>)}
 
-              <Col span={4} className="footer-col">
+              {this.wrapFooterCol(
+              <>
                 <h5>Get In Touch</h5>
                 <ul>
                   <li><a href="mailto:denis@golangci.com">Contact Us</a></li>
@@ -98,7 +108,7 @@ class Footer extends React.Component<IProps> {
                   <li><a target="_blank" href="https://www.facebook.com/golangci/">Facebook</a></li>
                   <li><a target="_blank" href="https://github.com/golangci/golangci">GitHub</a></li>
                 </ul>
-              </Col>
+              </>)}
           </Row>
         </Layout.Footer>
       </>

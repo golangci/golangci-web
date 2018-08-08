@@ -68,19 +68,19 @@ export default class PricingTable extends React.Component<ITableProps> {
             <div className="generic_price_table">
                 <section>
                     <Row type="flex" justify="center" gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                        <Col md={7} sm={12} className="pricing-plan-col">
+                        <Col lg={7} md={8} sm={12} className="pricing-plan-col">
                             {buildPricingPlan(Plan.OpenSource,
                                 this.props.authorized ? "My Repos" : "Signup via GitHub",
                                 () => this.props.onButtonClick(Plan.OpenSource))}
                         </Col>
 
-                        <Col md={7} sm={12} className="pricing-plan-col">
+                        <Col lg={7} md={8} sm={12} className="pricing-plan-col">
                             {buildPricingPlan(Plan.Standard,
                                 this.props.authorized ? "My Repos" : "Signup for FREE trial",
                                 () => this.props.onButtonClick(Plan.Standard))}
                         </Col>
 
-                        <Col md={7} sm={12} className="pricing-plan-col">
+                        <Col lg={7} md={8} sm={12} className="pricing-plan-col">
                             {buildPricingPlan(Plan.Enterprise,
                                 "Request a Demo",
                                 () => this.props.onButtonClick(Plan.Enterprise))}
