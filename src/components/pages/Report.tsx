@@ -84,8 +84,12 @@ class Report extends React.Component<IProps> {
       status = <Tag color="red">Internal Error</Tag>;
       break;
     case "processed/success":
+      status = <Tag color="green">Success, no issues!</Tag>;
+      break;
     case "processed":
-      status = <Tag color="green">Success</Tag>;
+      status = (issuesCount === 0) ?
+        <Tag color="green">Success, no issues!</Tag> :
+        <Tag color="red">Failure: found {issuesCount} issues</Tag>;
       break;
     case "forced_stale":
       status = <Tag color="red">Processing Timeout</Tag>;
