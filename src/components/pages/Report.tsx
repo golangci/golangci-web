@@ -15,7 +15,7 @@ interface IStateProps {
 }
 
 interface IDispatchProps {
-  fetchAnalysis(owner: string, name: string, prNumber: number): void;
+  fetchAnalysis(owner: string, name: string, prNumber?: number): void;
 }
 
 interface IProps extends IStateProps, IDispatchProps, RouteComponentProps<IParams> {}
@@ -65,7 +65,6 @@ class Report extends React.Component<IProps> {
       },
     ];
 
-    const pullLink = `https://github.com/${ca.GithubRepoName}/pull/${ca.GithubPullRequestNumber}`;
     const rj = ca.ResultJSON;
     const issuesCount = (rj && rj.GolangciLintRes && rj.GolangciLintRes.Issues) ?
       ca.ResultJSON.GolangciLintRes.Issues.length : 0;
@@ -81,9 +80,11 @@ class Report extends React.Component<IProps> {
       status = <Tag color="red">Failure: found {issuesCount} issues</Tag>;
       break;
     case "processed/error":
+    case "error":
       status = <Tag color="red">Internal Error</Tag>;
       break;
     case "processed/success":
+    case "processed":
       status = <Tag color="green">Success</Tag>;
       break;
     case "forced_stale":
@@ -94,16 +95,26 @@ class Report extends React.Component<IProps> {
       break;
     }
 
+    const isPr = ca.GithubPullRequestNumber;
+    const repoLink = `https://github.com/${ca.GithubRepoName}`;
+    const codeLink = isPr ?
+      `${repoLink}/pull/${ca.GithubPullRequestNumber}` :
+      repoLink;
+    const commitLink = isPr ?
+      `${codeLink}/commits/${ca.CommitSHA}` :
+      `${codeLink}/commit/${ca.CommitSHA}`;
+    const codeName = isPr ? `${ca.GithubRepoName}#${ca.GithubPullRequestNumber}` : ca.GithubRepoName;
+    const codeId = isPr ? "Pull Request" : "Repository";
     const table = [
       {
         key: "row1",
-        a: "Pull Request",
-        b: (<a target="_blank" href={pullLink}>{`${ca.GithubRepoName}#${ca.GithubPullRequestNumber}`}</a>),
+        a: codeId,
+        b: (<a target="_blank" href={codeLink}>{codeName}</a>),
       },
       {
         key: "row2",
         a: "Commit",
-        b: (<a target="_blank" href={`${pullLink}/commits/${ca.CommitSHA}`}>{ca.CommitSHA}</a>),
+        b: (<a target="_blank" href={commitLink}>{ca.CommitSHA}</a>),
       },
       {
         key: "row4",

@@ -13,6 +13,8 @@ export default () => (
       <Route exact path="/" component={Home} />
       <Route exact path="/repos/github" component={Repos} />
       <Route exact path="/r/:owner/:name/pulls/:prNumber" component={Report} />
+      <Route exact path="/r/github.com/:owner/:name/pulls/:prNumber" component={Report} />
+      <Route exact path="/r/github.com/:owner/:name" component={Report} />
       <Route exact path="/terms" component={Terms} />
       <Route exact path="/privacy" component={Privacy} />
     </Switch>

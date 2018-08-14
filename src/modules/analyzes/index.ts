@@ -10,7 +10,7 @@ enum AnalyzesAction {
   FetchedPull = "@@GOLANGCI/ANALYZES/PULL/FETCHED",
 }
 
-export const fetchAnalysis = (owner: string, name: string, prNumber: number) => ({
+export const fetchAnalysis = (owner: string, name: string, prNumber?: number) => ({
   type: AnalyzesAction.FetchPull,
   owner,
   name,
@@ -25,7 +25,7 @@ const onAnalysisFetched = (analysisState: IAnalysisState) => ({
 export interface IAnalysisState {
   CreatedAt: string;
   CommitSHA: string;
-  GithubPullRequestNumber: number;
+  GithubPullRequestNumber?: number;
   GithubRepoName: string;
   ResultJSON: IAnalysisResultJSON;
   Status: string;
@@ -98,7 +98,9 @@ export const reducer = combineReducers<IAnalyzesStore>({
 
 function* doFetchPullAnalysis({prNumber, owner, name}: any) {
   const state: IAppStore = yield select();
-  const apiUrl = `/v1/repos/${owner}/${name}/pulls/${prNumber}`;
+  const apiUrl = prNumber ?
+    `/v1/repos/${owner}/${name}/pulls/${prNumber}` :
+    `/v1/repos/${owner}/${name}/repoanalyzes`;
   const resp = yield call(makeApiGetRequest, apiUrl, state.auth.cookie);
   if (!resp || resp.error) {
     yield* processError(apiUrl, resp, "Can't fetch analysis state");
