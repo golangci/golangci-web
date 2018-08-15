@@ -28,6 +28,22 @@ class Report extends React.Component<IProps> {
     }
   }
 
+  private prettifyIssueText(text: string): JSX.Element {
+    let desc = <>{text}</>;
+    const splitDesc = text.split("`");
+    if (splitDesc.length === 3) {
+      desc = (
+        <>
+          {splitDesc[0]}
+          <span className="var-name">{splitDesc[1]}</span>
+          {splitDesc[2]}
+        </>
+      );
+    }
+
+    return desc;
+  }
+
   private renderIssuesFromLinterBlock(linterName: string, issues: IIssue[], sourceLinkBase: string) {
     return (
       <div className="report-linter-block">
@@ -40,7 +56,7 @@ class Report extends React.Component<IProps> {
           renderItem={(i: IIssue) => (
             <List.Item>
               <List.Item.Meta
-                description={i.Text}
+                description={this.prettifyIssueText(i.Text)}
               />
               <a target="_blank" href={`${sourceLinkBase}/${i.Pos.Filename}#L${i.Pos.Line}`}>{`${i.Pos.Filename}:${i.Pos.Line}`}</a>
             </List.Item>
