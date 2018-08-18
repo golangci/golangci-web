@@ -172,7 +172,7 @@ class Report extends React.Component<IProps> {
       {
         key: "row2",
         a: "Commit",
-        b: (<a target="_blank" href={commitLink}>{ca.CommitSHA}</a>),
+        b: (<a target="_blank" href={commitLink}>{ca.CommitSHA.substring(0, 7)}</a>),
       },
       {
         key: "row4",
