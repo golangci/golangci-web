@@ -14,6 +14,10 @@
     margin-right: 2vw;
 }
 
+.report-table-col {
+    margin-top: 1vh;
+}
+
 .report-messages {
     margin-bottom: 2vh;
 }
@@ -30,10 +34,24 @@
     font-size: 0.8em;
 }
 
+.report-issue-desc-block {
+    overflow: auto;
+    width: 100%;
+}
+
+.ant-list-item {
+    overflow: auto;
+    width: 100%;
+}
+
 .report-show-code {
-    margin-right: 0.5vw;
+    margin-right: 15px;
 }
 
 .report-toolbar {
     margin-bottom: 1.5vh;
+}
+
+.report-table .ant-table {
+    font-size: 0.9em;
 }

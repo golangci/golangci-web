@@ -10,6 +10,7 @@ import Helmet from "react-helmet";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { github as codeStyle } from "react-syntax-highlighter/styles/hljs";
 import { toggle } from "modules/toggle";
+import { isXsScreenWidth } from "modules/utils/device";
 
 moment.locale("en");
 
@@ -75,19 +76,19 @@ class Report extends React.Component<IProps> {
           renderItem={(i: IIssue) => (
             <List.Item>
               <List.Item.Meta
-                description={<>
+                description={<div className="report-issue-desc-block">
                   <div className="report-issue-text">{this.prettifyIssueText(i.Text)}</div>
-                  {i.SourceLines && i.SourceLines.length !== 0 && !this.props.hideCode && (
+                  {i.SourceLines && i.SourceLines.length !== 0 && !this.props.hideCode && !isXsScreenWidth() && (
                   <div className="report-source-code">
-                      <SyntaxHighlighter
-                        language="go"
-                        style={codeStyle}
-                      >
-                        {this.prettifySourceLine(i.SourceLines[0])}
-                      </SyntaxHighlighter>
+                    <SyntaxHighlighter
+                      language="go"
+                      style={codeStyle}
+                    >
+                      {this.prettifySourceLine(i.SourceLines[0])}
+                    </SyntaxHighlighter>
                   </div>
                   )}
-                </>}
+                </div>}
               />
               <a target="_blank" href={`${sourceLinkBase}/${i.Pos.Filename}#L${i.Pos.Line}`}>
                 <Tooltip title={`${i.Pos.Filename}:${i.Pos.Line}`}>
@@ -108,11 +109,13 @@ class Report extends React.Component<IProps> {
         key: "columnA",
         dataIndex: "a",
         title: "a",
+        width: "30%",
       },
       {
         key: "columnB",
         dataIndex: "b",
         title: "a",
+        width: "70%",
       },
     ];
 
@@ -159,7 +162,7 @@ class Report extends React.Component<IProps> {
       `${codeLink}/commits/${ca.CommitSHA}` :
       `${codeLink}/commit/${ca.CommitSHA}`;
     const codeName = isPr ? `${ca.GithubRepoName}#${ca.GithubPullRequestNumber}` : ca.GithubRepoName;
-    const codeId = isPr ? "Pull Request" : "Repository";
+    const codeId = isPr ? "Pull Request" : "Repo";
     const table = [
       {
         key: "row1",
@@ -185,10 +188,12 @@ class Report extends React.Component<IProps> {
 
     return (
       <Table
+        className="report-table"
         showHeader={false}
         columns={columns}
         pagination={false}
-        dataSource={table} />
+        dataSource={table}
+      />
     );
   }
 
@@ -219,6 +224,7 @@ class Report extends React.Component<IProps> {
 
     return (
       <Table
+        className="report-table"
         showHeader={false}
         columns={columns}
         pagination={false}
@@ -296,17 +302,17 @@ class Report extends React.Component<IProps> {
     return (
       <Row>
         <Helmet title={`Report for Pull Request ${ca.GithubRepoName}#${ca.GithubPullRequestNumber}`} />
-        <Col offset={4} span={16}>
+        <Col xs={{span: 24}} lg={{offset: 4, span: 16}}>
           <h2>Analysis of {ca.GithubRepoName}</h2>
           <div className="report-tables-container">
             <Row>
-              <Col span={12}>
+              <Col xs={24} lg={12} className="report-table-col">
                 <div className="status-table">
                   <h3>Status</h3>
                   {this.renderLeftTable(ca)}
                 </div>
               </Col>
-              <Col span={12}>
+              <Col xs={24} lg={12} className="report-table-col">
                 <div className="timings-table">
                   <h3>Timings</h3>
                   {this.renderRightTable(ca)}
@@ -314,12 +320,14 @@ class Report extends React.Component<IProps> {
               </Col>
             </Row>
           </div>
-          <Row type="flex" justify="end">
-            <div className="report-toolbar">
-              <span className="report-show-code">Show Code</span>
-              <Switch checked={!this.props.hideCode} onChange={this.onSwitchShowCode.bind(this)} />
-            </div>
-          </Row>
+          {!isXsScreenWidth() && (
+            <Row type="flex" justify="end">
+              <div className="report-toolbar">
+                <span className="report-show-code">Show Code</span>
+                <Switch checked={!this.props.hideCode} onChange={this.onSwitchShowCode.bind(this)} />
+              </div>
+            </Row>
+          )}
           {this.renderWarningsErrors(ca)}
           {blocks.map((e, i) => <div key={`linter_block_${i}`}>{e}</div>)}
         </Col>
