@@ -273,6 +273,16 @@ class Report extends React.Component<IProps> {
     );
   }
 
+  private haveAtLeastOneSourceLine(issues: IIssue[]): boolean {
+    for (const i of issues) {
+      if (i.SourceLines && i.SourceLines.length !== 0) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   public render() {
     if (this.props.curAnalysis === null) {
       return this.renderIssuesFromLinterBlock("loading...", null, "");
@@ -320,7 +330,7 @@ class Report extends React.Component<IProps> {
               </Col>
             </Row>
           </div>
-          {!isXsScreenWidth() && (
+          {!isXsScreenWidth() && this.haveAtLeastOneSourceLine(issues) && (
             <Row type="flex" justify="end">
               <div className="report-toolbar">
                 <span className="report-show-code">Show Code</span>
