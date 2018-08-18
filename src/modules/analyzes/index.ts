@@ -29,6 +29,7 @@ export interface IAnalysisState {
   GithubRepoName: string;
   ResultJSON: IAnalysisResultJSON;
   Status: string;
+  NextAnalysisStatus?: string;
 }
 
 interface IAnalysisResultJSON {

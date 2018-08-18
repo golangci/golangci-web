@@ -232,7 +232,7 @@ class Report extends React.Component<IProps> {
     );
   }
 
-  private renderWarningsErrors(ca: IAnalysisState) {
+  private renderMessages(ca: IAnalysisState) {
     let warnings: IWarning[] = [];
     const rj = ca.ResultJSON;
     if (rj && rj.WorkerRes && rj.WorkerRes.Warnings) {
@@ -247,12 +247,31 @@ class Report extends React.Component<IProps> {
 
     const err = (rj && rj.WorkerRes && rj.WorkerRes.Error) ? rj.WorkerRes.Error : null;
 
-    if (!err && !warnings.length) {
+    if (!err && !warnings.length && !ca.NextAnalysisStatus) {
       return null;
+    }
+
+    const statusToText: any = {
+      sent_to_queue: "was sent to queue",
+      processing: "is processing",
+      planned: "is planned",
+    };
+
+    let nextAnalysisDesc: string;
+    if (ca.NextAnalysisStatus) {
+      nextAnalysisDesc = statusToText[ca.NextAnalysisStatus] ? statusToText[ca.NextAnalysisStatus] : "is running";
     }
 
     return (
       <div className="report-messages">
+        {ca.NextAnalysisStatus && (
+          <Alert
+            message={`Refreshing analysis...`}
+            description={`Next analysis ${nextAnalysisDesc}`}
+            type="info"
+            showIcon
+          />
+        )}
         {err && (
           <Alert
             message="Error"
@@ -338,7 +357,7 @@ class Report extends React.Component<IProps> {
               </div>
             </Row>
           )}
-          {this.renderWarningsErrors(ca)}
+          {this.renderMessages(ca)}
           {blocks.map((e, i) => <div key={`linter_block_${i}`}>{e}</div>)}
         </Col>
       </Row>
