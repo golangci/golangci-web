@@ -71,6 +71,7 @@ export interface IIssue {
   HunkPos: number;
   FromLinter: string;
   Pos: IPos;
+  SourceLines?: string[];
 }
 
 interface IPos {

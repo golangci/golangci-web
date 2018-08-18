@@ -1,26 +1,37 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router";
-import { List, Row, Col, Table, Tag, Alert } from "antd";
+import { List, Row, Col, Table, Tag, Alert, Tooltip, Switch } from "antd";
 import { IAppStore } from "reducers";
 import { IAnalysisState, IIssue, IWarning, fetchAnalysis } from "modules/analyzes";
 import { capitalizeFirstLetter } from "modules/utils/strings";
 import moment from "moment";
 import Helmet from "react-helmet";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { github as codeStyle } from "react-syntax-highlighter/styles/hljs";
+import { toggle } from "modules/toggle";
 
 moment.locale("en");
 
+const hideCodeToggleKey = "hideCode";
+
 interface IStateProps {
   curAnalysis?: IAnalysisState;
+  hideCode?: boolean;
 }
 
 interface IDispatchProps {
   fetchAnalysis(owner: string, name: string, prNumber?: number): void;
+  toggle(name: string, value?: boolean): void;
 }
 
 interface IProps extends IStateProps, IDispatchProps, RouteComponentProps<IParams> {}
 
 class Report extends React.Component<IProps> {
+  private onSwitchShowCode(): any {
+    this.props.toggle(hideCodeToggleKey);
+  }
+
   public componentWillMount() {
     if (this.props.curAnalysis === null) { // false if SSR-ed
       const p = this.props.match.params;
@@ -44,6 +55,14 @@ class Report extends React.Component<IProps> {
     return desc;
   }
 
+  private prettifyFilename(filename: string): string {
+    return filename.split("/").pop();
+  }
+
+  private prettifySourceLine(line: string): string {
+    return line.trim();
+  }
+
   private renderIssuesFromLinterBlock(linterName: string, issues: IIssue[], sourceLinkBase: string) {
     return (
       <div className="report-linter-block">
@@ -56,9 +75,25 @@ class Report extends React.Component<IProps> {
           renderItem={(i: IIssue) => (
             <List.Item>
               <List.Item.Meta
-                description={this.prettifyIssueText(i.Text)}
+                description={<>
+                  <div className="report-issue-text">{this.prettifyIssueText(i.Text)}</div>
+                  {i.SourceLines && i.SourceLines.length !== 0 && !this.props.hideCode && (
+                  <div className="report-source-code">
+                      <SyntaxHighlighter
+                        language="go"
+                        style={codeStyle}
+                      >
+                        {this.prettifySourceLine(i.SourceLines[0])}
+                      </SyntaxHighlighter>
+                  </div>
+                  )}
+                </>}
               />
-              <a target="_blank" href={`${sourceLinkBase}/${i.Pos.Filename}#L${i.Pos.Line}`}>{`${i.Pos.Filename}:${i.Pos.Line}`}</a>
+              <a target="_blank" href={`${sourceLinkBase}/${i.Pos.Filename}#L${i.Pos.Line}`}>
+                <Tooltip title={`${i.Pos.Filename}:${i.Pos.Line}`}>
+                  {this.prettifyFilename(i.Pos.Filename)}
+                </Tooltip>
+              </a>
             </List.Item>
           )}
           locale={{emptyText: "No issues!"}}
@@ -279,6 +314,12 @@ class Report extends React.Component<IProps> {
               </Col>
             </Row>
           </div>
+          <Row type="flex" justify="end">
+            <div className="report-toolbar">
+              <span className="report-show-code">Show Code</span>
+              <Switch checked={!this.props.hideCode} onChange={this.onSwitchShowCode.bind(this)} />
+            </div>
+          </Row>
           {this.renderWarningsErrors(ca)}
           {blocks.map((e, i) => <div key={`linter_block_${i}`}>{e}</div>)}
         </Col>
@@ -296,11 +337,13 @@ interface IParams {
 const mapStateToProps = (state: IAppStore, routeProps: RouteComponentProps<IParams>): any => {
   return {
     curAnalysis: (state.analyzes && state.analyzes.current) ? state.analyzes.current : null,
+    hideCode: state.toggle.store[hideCodeToggleKey],
   };
 };
 
 const mapDispatchToProps = {
   fetchAnalysis,
+  toggle,
 };
 
 export default connect<IStateProps, IDispatchProps, RouteComponentProps<IParams>>(mapStateToProps, mapDispatchToProps)(Report);
