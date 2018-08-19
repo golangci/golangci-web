@@ -30,6 +30,7 @@ export interface IAnalysisState {
   ResultJSON: IAnalysisResultJSON;
   Status: string;
   NextAnalysisStatus?: string;
+  IsPreparing?: boolean;
 }
 
 interface IAnalysisResultJSON {

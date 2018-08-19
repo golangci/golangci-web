@@ -247,7 +247,7 @@ class Report extends React.Component<IProps> {
 
     const err = (rj && rj.WorkerRes && rj.WorkerRes.Error) ? rj.WorkerRes.Error : null;
 
-    if (!err && !warnings.length && !ca.NextAnalysisStatus) {
+    if (!err && !warnings.length && !ca.NextAnalysisStatus && !ca.IsPreparing) {
       return null;
     }
 
@@ -264,6 +264,14 @@ class Report extends React.Component<IProps> {
 
     return (
       <div className="report-messages">
+        {ca.IsPreparing && (
+          <Alert
+            message={`Preparing analysis...`}
+            description={`Analysis of repository is being prepared`}
+            type="info"
+            showIcon
+          />
+        )}
         {ca.NextAnalysisStatus && (
           <Alert
             message={`Refreshing analysis...`}
@@ -333,22 +341,24 @@ class Report extends React.Component<IProps> {
         <Helmet title={`Report for Pull Request ${ca.GithubRepoName}#${ca.GithubPullRequestNumber}`} />
         <Col xs={{span: 24}} lg={{offset: 4, span: 16}}>
           <h2>Analysis of {ca.GithubRepoName}</h2>
-          <div className="report-tables-container">
-            <Row>
-              <Col xs={24} lg={12} className="report-table-col">
-                <div className="status-table">
-                  <h3>Status</h3>
-                  {this.renderLeftTable(ca)}
-                </div>
-              </Col>
-              <Col xs={24} lg={12} className="report-table-col">
-                <div className="timings-table">
-                  <h3>Timings</h3>
-                  {this.renderRightTable(ca)}
-                </div>
-              </Col>
-            </Row>
-          </div>
+          {!ca.IsPreparing && (
+            <div className="report-tables-container">
+              <Row>
+                <Col xs={24} lg={12} className="report-table-col">
+                  <div className="status-table">
+                    <h3>Status</h3>
+                    {this.renderLeftTable(ca)}
+                  </div>
+                </Col>
+                <Col xs={24} lg={12} className="report-table-col">
+                  <div className="timings-table">
+                    <h3>Timings</h3>
+                    {this.renderRightTable(ca)}
+                  </div>
+                </Col>
+              </Row>
+            </div>
+          )}
           {!isXsScreenWidth() && this.haveAtLeastOneSourceLine(issues) && (
             <Row type="flex" justify="end">
               <div className="report-toolbar">
