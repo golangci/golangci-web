@@ -103,7 +103,7 @@ function* doFetchPullAnalysis({prNumber, owner, name}: any) {
   const state: IAppStore = yield select();
   const apiUrl = prNumber ?
     `/v1/repos/${owner}/${name}/pulls/${prNumber}` :
-    `/v1/repos/${owner}/${name}/repoanalyzes`;
+    `/v1/repos/github.com/${owner}/${name}/repoanalyzes`;
   const resp = yield call(makeApiGetRequest, apiUrl, state.auth.cookie);
   if (!resp || resp.error) {
     yield* processError(apiUrl, resp, "Can't fetch analysis state");
