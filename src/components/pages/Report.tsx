@@ -1,7 +1,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router";
-import { List, Row, Col, Table, Tag, Alert, Tooltip, Switch } from "antd";
+import { List, Row, Col, Table, Tag, Alert, Tooltip, Switch, Button } from "antd";
 import { IAppStore } from "reducers";
 import { IAnalysisState, IIssue, IWarning, fetchAnalysis } from "modules/analyzes";
 import { capitalizeFirstLetter } from "modules/utils/strings";
@@ -9,7 +9,7 @@ import moment from "moment";
 import Helmet from "react-helmet";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { github as codeStyle } from "react-syntax-highlighter/styles/hljs";
-import { toggle } from "modules/toggle";
+import { toggle, IStore as IToggleStore } from "modules/toggle";
 import { isXsScreenWidth } from "modules/utils/device";
 
 moment.locale("en");
@@ -19,6 +19,7 @@ const hideCodeToggleKey = "hideCode";
 interface IStateProps {
   curAnalysis?: IAnalysisState;
   hideCode?: boolean;
+  toggleMap: IToggleStore;
 }
 
 interface IDispatchProps {
@@ -64,14 +65,29 @@ class Report extends React.Component<IProps> {
     return line.trim();
   }
 
+  private collapseLinterIssuesKey(linterName: string): string {
+    return `linter_collapse_${linterName}`;
+  }
+
+  private onCollapseLinterIssues(linterName: string) {
+    this.props.toggle(this.collapseLinterIssuesKey(linterName));
+  }
+
   private renderIssuesFromLinterBlock(linterName: string, issues: IIssue[], sourceLinkBase: string) {
+    issues = issues || [];
+
+    const maxShownIssues = 3;
+    const showCollapsing = issues.length > maxShownIssues;
+    const needCollapse = !this.props.toggleMap[this.collapseLinterIssuesKey(linterName)];
+    const issuesHiddenCount = showCollapsing ? issues.length - maxShownIssues : 0;
+
     return (
       <div className="report-linter-block">
         <List
           loading={issues === null}
           bordered
           itemLayout="horizontal"
-          dataSource={issues || []}
+          dataSource={needCollapse ? issues.slice(0, maxShownIssues) : issues}
           header={<b>{linterName}</b>}
           renderItem={(i: IIssue) => (
             <List.Item>
@@ -99,6 +115,13 @@ class Report extends React.Component<IProps> {
           )}
           locale={{emptyText: "No issues!"}}
         />
+        {showCollapsing && (
+          <Button
+            onClick={() => this.onCollapseLinterIssues(linterName)}
+            icon={`${needCollapse ? "down" : "up"}-circle-o`}>
+            {needCollapse ? `Show ${issuesHiddenCount} more issues` : `Show less issues`}
+          </Button>
+        )}
       </div>
     );
   }
@@ -270,6 +293,7 @@ class Report extends React.Component<IProps> {
             description={`Analysis of repository is being prepared`}
             type="info"
             showIcon
+            key="alert-being-prepared"
           />
         )}
         {ca.NextAnalysisStatus && (
@@ -278,6 +302,7 @@ class Report extends React.Component<IProps> {
             description={`Next analysis ${nextAnalysisDesc}`}
             type="info"
             showIcon
+            key="alert-refreshing"
           />
         )}
         {err && (
@@ -286,6 +311,7 @@ class Report extends React.Component<IProps> {
             description={capitalizeFirstLetter(err)}
             type="error"
             showIcon
+            key="alert-error"
           />
         )}
         {warnings.map((w) => (
@@ -294,6 +320,7 @@ class Report extends React.Component<IProps> {
             description={capitalizeFirstLetter(w.Text)}
             type="warning"
             showIcon
+            key={`alert-warning-${w.Tag}`}
           />
         ))}
       </div>
@@ -385,6 +412,7 @@ const mapStateToProps = (state: IAppStore, routeProps: RouteComponentProps<IPara
   return {
     curAnalysis: (state.analyzes && state.analyzes.current) ? state.analyzes.current : null,
     hideCode: state.toggle.store[hideCodeToggleKey],
+    toggleMap: state.toggle.store,
   };
 };
 

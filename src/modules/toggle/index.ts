@@ -10,7 +10,7 @@ export const toggle = (name: string, value?: boolean) => ({
   value,
 });
 
-interface IStore {
+export interface IStore {
   [name: string]: boolean;
 }
 
