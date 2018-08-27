@@ -10,6 +10,8 @@ import { trackEvent } from "modules/utils/analytics";
 import { toggle } from "modules/toggle";
 import { postEvent } from "modules/events";
 import { buildPricingPlan, Plan } from "components/blocks/PricingTable";
+import { Link } from "react-router-dom";
+import { isXsScreenWidth } from "modules/utils/device";
 
 interface IStateProps {
   publicRepos: IRepo[];
@@ -127,12 +129,23 @@ class Repos extends React.Component<IProps> {
 
     if (r.isActivated) {
       return (
-        <Button
-          onClick={() => this.onClick(false, r.isPrivate, r.name)}
-          icon="close" type="danger"
-          loading={r.isActivatingNow}>
-          Disconnect
-        </Button>
+        <>
+          {!r.isActivatingNow && !isXsScreenWidth() && (
+            <Link to={`/r/github.com/${r.name}`}>
+              <Button
+                className="repos-report-btn"
+                icon="file-text">
+                Report
+              </Button>
+            </Link>
+          )}
+          <Button
+            onClick={() => this.onClick(false, r.isPrivate, r.name)}
+            icon="close" type="danger"
+            loading={r.isActivatingNow}>
+            Disconnect
+          </Button>
+        </>
       );
     }
 
