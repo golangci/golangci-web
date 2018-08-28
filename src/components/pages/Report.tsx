@@ -11,6 +11,7 @@ import SyntaxHighlighter from "react-syntax-highlighter";
 import { github as codeStyle } from "react-syntax-highlighter/styles/hljs";
 import { toggle, IStore as IToggleStore } from "modules/toggle";
 import { isXsScreenWidth } from "modules/utils/device";
+import { Link } from "react-router-dom";
 
 moment.locale("en");
 
@@ -34,10 +35,20 @@ class Report extends React.Component<IProps> {
     this.props.toggle(hideCodeToggleKey);
   }
 
+  private fetchAnalysis() {
+    const p = this.props.match.params;
+    this.props.fetchAnalysis(p.owner, p.name, p.prNumber);
+  }
+
   public componentWillMount() {
     if (this.props.curAnalysis === null) { // false if SSR-ed
-      const p = this.props.match.params;
-      this.props.fetchAnalysis(p.owner, p.name, p.prNumber);
+      this.fetchAnalysis();
+    }
+  }
+
+  public componentDidUpdate(prevProps: IProps) {
+    if (prevProps.match.params !== this.props.match.params) {
+      this.fetchAnalysis();
     }
   }
 
@@ -199,7 +210,7 @@ class Report extends React.Component<IProps> {
       },
       {
         key: "row4",
-        a: "Created",
+        a: "Analyzed",
         b: moment(ca.CreatedAt).fromNow(),
       },
       {
@@ -355,6 +366,7 @@ class Report extends React.Component<IProps> {
     }
 
     const ca = this.props.curAnalysis;
+    console.info("rendering ca", ca);
     const sourceLinkBase = `https://github.com/${ca.GithubRepoName}/blob/${ca.CommitSHA}`;
 
     const blocks: JSX.Element[] = [];
@@ -396,6 +408,14 @@ class Report extends React.Component<IProps> {
           )}
           {this.renderMessages(ca)}
           {blocks.map((e, i) => <div key={`linter_block_${i}`}>{e}</div>)}
+          {ca.GithubPullRequestNumber && (
+            <Link to={`/r/github.com/${ca.GithubRepoName}`}>
+              <Button
+                icon="file-text">
+                See repository report
+              </Button>
+            </Link>
+          )}
         </Col>
       </Row>
     );
