@@ -6,19 +6,19 @@ import {
 } from "modules/api";
 
 enum AnalyzesAction {
-  FetchPull = "@@GOLANGCI/ANALYZES/PULL/FETCH",
-  FetchedPull = "@@GOLANGCI/ANALYZES/PULL/FETCHED",
+  Fetch = "@@GOLANGCI/ANALYZES/FETCH",
+  Fetched = "@@GOLANGCI/ANALYZES/FETCHED",
 }
 
 export const fetchAnalysis = (owner: string, name: string, prNumber?: number) => ({
-  type: AnalyzesAction.FetchPull,
+  type: AnalyzesAction.Fetch,
   owner,
   name,
   prNumber,
 });
 
 const onAnalysisFetched = (analysisState: IAnalysisState) => ({
-  type: AnalyzesAction.FetchedPull,
+  type: AnalyzesAction.Fetched,
   analysisState,
 });
 
@@ -88,8 +88,10 @@ export interface IAnalyzesStore {
 
 const current = (state: IAnalysisState = null, action: any): IAnalysisState => {
   switch (action.type) {
-    case AnalyzesAction.FetchedPull:
+    case AnalyzesAction.Fetched:
       return action.analysisState;
+    case AnalyzesAction.Fetch:
+      return null; // remove previous analysis to trigger loading bar
     default:
       return state;
   }
@@ -99,7 +101,7 @@ export const reducer = combineReducers<IAnalyzesStore>({
   current,
 });
 
-function* doFetchPullAnalysis({prNumber, owner, name}: any) {
+function* doFetchAnalysis({prNumber, owner, name}: any) {
   const state: IAppStore = yield select();
   const apiUrl = prNumber ?
     `/v1/repos/${owner}/${name}/pulls/${prNumber}` :
@@ -113,7 +115,7 @@ function* doFetchPullAnalysis({prNumber, owner, name}: any) {
 }
 
 function* fetchAnalyzesWatcher() {
-  yield takeEvery(AnalyzesAction.FetchPull, doFetchPullAnalysis);
+  yield takeEvery(AnalyzesAction.Fetch, doFetchAnalysis);
 }
 
 export function getWatchers() {
