@@ -1,7 +1,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router";
-import { List, Row, Col, Button, Input, Modal } from "antd";
+import { List, Row, Col, Button, Input, Modal, Tooltip } from "antd";
 import { createSelector } from "reselect";
 import Highlighter from "react-highlight-words";
 import { IAppStore } from "reducers";
@@ -122,10 +122,20 @@ class Repos extends React.Component<IProps> {
     );
   }
 
-  private renderActionForRepo(r: IRepo) {
-    if (!r.isAdmin) {
-      return <span>Only repo admins can connect repo</span>;
+  private wrapConnectButtonWithDisablingHelp(btn: JSX.Element, isDisabled: boolean): JSX.Element {
+    if (!isDisabled) {
+      return btn;
     }
+
+    return (
+      <Tooltip placement="topLeft" title="Only repo admins can manage the repo">
+        {btn}
+      </Tooltip>
+    );
+  }
+
+  private renderActionForRepo(r: IRepo) {
+    const btnDisabled = !r.isAdmin;
 
     if (r.isActivated) {
       return (
@@ -139,23 +149,29 @@ class Repos extends React.Component<IProps> {
               </Button>
             </Link>
           )}
-          <Button
-            onClick={() => this.onClick(false, r.isPrivate, r.name)}
-            icon="close" type="danger"
-            loading={r.isActivatingNow}>
-            Disconnect
-          </Button>
+          {this.wrapConnectButtonWithDisablingHelp(
+            <Button
+              onClick={() => this.onClick(false, r.isPrivate, r.name)}
+              icon="close" type="danger"
+              loading={r.isActivatingNow}
+              disabled={btnDisabled}
+            >
+              Disconnect
+            </Button>,
+            btnDisabled)}
         </>
       );
     }
 
-    return (
+    return this.wrapConnectButtonWithDisablingHelp(
       <Button
         onClick={() => this.onClick(true, r.isPrivate, r.name)}
-        loading={r.isActivatingNow}>
+        loading={r.isActivatingNow}
+        disabled={btnDisabled}
+      >
         Connect
-      </Button>
-    );
+      </Button>,
+      btnDisabled);
   }
 
   private renderList(repos: IRepo[]) {
