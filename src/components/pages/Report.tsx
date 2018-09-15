@@ -281,7 +281,7 @@ class Report extends React.Component<IProps> {
 
     const err = (rj && rj.WorkerRes && rj.WorkerRes.Error) ? rj.WorkerRes.Error : null;
 
-    if (!err && !warnings.length && !ca.NextAnalysisStatus && !ca.IsPreparing) {
+    if (!err && !warnings.length && !ca.NextAnalysisStatus && !ca.IsPreparing && !ca.RepoIsNotConnected) {
       return null;
     }
 
@@ -305,6 +305,15 @@ class Report extends React.Component<IProps> {
             type="info"
             showIcon
             key="alert-being-prepared"
+          />
+        )}
+        {ca.RepoIsNotConnected && (
+          <Alert
+            message={`Repo isn't connected`}
+            description={`We show reports only for connected to GolangCI repos`}
+            type="info"
+            showIcon
+            key="alert-repo-isnt-connected"
           />
         )}
         {ca.NextAnalysisStatus && (
@@ -380,7 +389,7 @@ class Report extends React.Component<IProps> {
         <Helmet title={`Report for Pull Request ${ca.GithubRepoName}#${ca.GithubPullRequestNumber}`} />
         <Col xs={{span: 24}} lg={{offset: 4, span: 16}}>
           <h2>Analysis of {ca.GithubRepoName}</h2>
-          {!ca.IsPreparing && (
+          {!ca.IsPreparing && !ca.RepoIsNotConnected && (
             <div className="report-tables-container">
               <Row>
                 <Col xs={24} lg={12} className="report-table-col">

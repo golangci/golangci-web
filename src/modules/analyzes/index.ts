@@ -31,6 +31,7 @@ export interface IAnalysisState {
   Status: string;
   NextAnalysisStatus?: string;
   IsPreparing?: boolean;
+  RepoIsNotConnected?: boolean;
 }
 
 interface IAnalysisResultJSON {
