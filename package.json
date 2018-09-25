@@ -5,7 +5,7 @@
   "repository": "git@github.com:golangci/golangci-web.git",
   "license": "MIT",
   "scripts": {
-    "dev": "mkdir -p dist/dev && NODE_ENV=development webpack-dev-server --hot --inline --public dev.golangci.com",
+    "dev": "mkdir -p dist/dev && NODE_ENV=development webpack-dev-server --port 5000 --hot --inline --public dev.golangci.com",
     "start": "node src/express.js",
     "build_client": "webpack --progress --display-error-details",
     "build_server": "IS_SERVER=1 webpack --progress",

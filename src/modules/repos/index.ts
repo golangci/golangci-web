@@ -122,7 +122,7 @@ export const reducer = combineReducers<IRepoStore>({
 
 function* doReposFetching({refresh}: any) {
   const state: IAppStore = yield select();
-  const apiUrl = `/v1/repos?refresh=${refresh ? 1 : 0}`;
+  const apiUrl = `/v1/repos/todo?refresh=${refresh ? 1 : 0}`;
   const resp = yield call(makeApiGetRequest, apiUrl, state.auth.cookie);
   if (!resp || resp.error) {
     yield* processError(apiUrl, resp, "Can't fetch repo list");
