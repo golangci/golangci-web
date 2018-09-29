@@ -41,7 +41,9 @@ class Report extends React.Component<IProps> {
   }
 
   public componentWillMount() {
-    if (this.props.curAnalysis === null) { // false if SSR-ed
+    if (this.props.curAnalysis === null ||
+        this.props.curAnalysis.GithubRepoName.toLowerCase() !==
+        `${this.props.match.params.owner}/${this.props.match.params.name}`.toLowerCase()) {
       this.fetchAnalysis();
     }
   }
