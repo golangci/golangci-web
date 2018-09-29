@@ -5,7 +5,7 @@ import { List, Row, Col, Button, Input, Modal, Tooltip } from "antd";
 import { createSelector } from "reselect";
 import Highlighter from "react-highlight-words";
 import { IAppStore } from "reducers";
-import { fetchRepos, activateRepo, updateSearchQuery, IRepo } from "modules/repos";
+import { fetchRepos, activateRepo, deactivateRepo, updateSearchQuery, IRepo } from "modules/repos";
 import { trackEvent } from "modules/utils/analytics";
 import { toggle } from "modules/toggle";
 import { postEvent } from "modules/events";
@@ -25,7 +25,8 @@ interface IStateProps {
 
 interface IDispatchProps {
   fetchRepos(refresh?: boolean): void;
-  activateRepo(activate: boolean, name: string): void;
+  activateRepo(name: string): void;
+  deactivateRepo(name: string, id: number): void;
   updateSearchQuery(q: string): void;
   toggle(name: string, value?: boolean): void;
   postEvent(name: string, payload?: object): void;
@@ -49,7 +50,7 @@ class Repos extends React.Component<IProps> {
     trackEvent("view repos list");
   }
 
-  private onClick(activate: boolean, isPrivate: boolean, name: string) {
+  private onClick(activate: boolean, isPrivate: boolean, name: string, id: number) {
     const analyticsPayload = {repoName: name};
     if (isPrivate) {
       this.props.toggle(modalWithPriceToggleName, true);
@@ -58,7 +59,11 @@ class Repos extends React.Component<IProps> {
       return;
     }
 
-    this.props.activateRepo(activate, name);
+    if (activate) {
+      this.props.activateRepo(name);
+    } else {
+      this.props.deactivateRepo(name, id);
+    }
     trackEvent(`${activate ? "connect" : "disconnect"} repo`, analyticsPayload);
   }
 
@@ -151,7 +156,7 @@ class Repos extends React.Component<IProps> {
           )}
           {this.wrapConnectButtonWithDisablingHelp(
             <Button
-              onClick={() => this.onClick(false, r.isPrivate, r.name)}
+              onClick={() => this.onClick(false, r.isPrivate, r.name, r.id)}
               icon="close" type="danger"
               loading={r.isActivatingNow}
               disabled={btnDisabled}
@@ -165,7 +170,7 @@ class Repos extends React.Component<IProps> {
 
     return this.wrapConnectButtonWithDisablingHelp(
       <Button
-        onClick={() => this.onClick(true, r.isPrivate, r.name)}
+        onClick={() => this.onClick(true, r.isPrivate, r.name, null)}
         loading={r.isActivatingNow}
         disabled={btnDisabled}
       >
@@ -284,6 +289,7 @@ const mapStateToProps = (state: IAppStore, routeProps: RouteComponentProps<IPara
 const mapDispatchToProps = {
   fetchRepos,
   activateRepo,
+  deactivateRepo,
   updateSearchQuery,
   toggle,
   postEvent,
