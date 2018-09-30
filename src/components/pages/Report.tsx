@@ -184,6 +184,9 @@ class Report extends React.Component<IProps> {
     case "forced_stale":
       status = <Tag color="red">Processing Timeout</Tag>;
       break;
+    case "not_found":
+      status = <Tag color="red">Repo or branch not found</Tag>;
+      break;
     default:
       status = <Tag color="yellow">Unknown</Tag>;
       break;
