@@ -39,7 +39,7 @@ class Footer extends React.Component<IProps> {
               <a href={`${API_HOST}/v1/auth/github`}>
                 <Button type="default" size="large">
                   <Icon type="github" />
-                  Signup via Github
+                  Signup via GitHub
                 </Button>
               </a>
             </Row>

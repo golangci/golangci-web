@@ -178,7 +178,7 @@ class Home extends React.Component<IProps> {
       <a href={`${API_HOST}/v1/auth/github`}>
         <Button onClick={this.onGithubAuthClick} type="primary" size="large">
           <Icon type="github" />
-          Signup via Github
+          Signup via GitHub
         </Button>
       </a>
     );
@@ -191,7 +191,7 @@ class Home extends React.Component<IProps> {
           <h1 className="home-jumbotron-header">Continuous Code Quality for Go</h1>
         </Row>
         <Row type="flex" justify="center">
-          <p className="home-jumbotron-subheader">GolangCI detects and comments issues in Github pull requests: bugs, style violations, anti-pattern instances</p>
+          <p className="home-jumbotron-subheader">GolangCI detects and comments issues in GitHub pull requests: bugs, style violations, anti-pattern instances</p>
         </Row>
         <Row type="flex" justify="center">
           {this.renderPrimaryButton()}
@@ -215,7 +215,7 @@ class Home extends React.Component<IProps> {
             </Col>
             <Col md={10} sm={9} xs={18}>
               <p className="home-matter-column-header">Reduce time spent on reviews</p>
-              <p className="home-matter-column-text">GolangCI automatically detects issues and writes comments in Github pull request.
+              <p className="home-matter-column-text">GolangCI automatically detects issues and writes comments in GitHub pull request.
               It dramatically saves reviewer’s time.</p>
             </Col>
 
