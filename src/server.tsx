@@ -54,7 +54,7 @@ const render = (req: express.Request, res: express.Response) => {
     const preloadedAt = Date.now();
     const html = renderToString(rootComp);
     const state: IAppStore = store.getState();
-    if (state.result.apiResultHttpCode !== 200) {
+    if (state.result.apiResultHttpCode !== 200 && state.result.apiResultHttpCode !== 403) {
       console.warn("request %s was processed for %sms: return %d",
         req.url, Date.now() - startedAt, state.result.apiResultHttpCode);
       res.sendStatus(state.result.apiResultHttpCode);

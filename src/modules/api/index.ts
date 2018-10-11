@@ -55,10 +55,11 @@ export const getApiHttpCode = (resp: IApiResponse): number => {
 };
 
 export function* processError(apiUrl: string, resp: IApiResponse, message: string, dontShowToast?: boolean) {
-  yield put(onGotApiResult(getApiHttpCode(resp)));
+  const code = getApiHttpCode(resp);
+  yield put(onGotApiResult(code));
   reportError("api error", {error: !resp ? "no response" : resp.error, apiUrl});
   console.error("api error:", message, resp);
-  if (!dontShowToast) {
+  if (!dontShowToast && code !== 403) {
     toastr.error("Error", message);
   }
 }
