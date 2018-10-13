@@ -105,7 +105,7 @@ export const reducer = combineReducers<IAnalyzesStore>({
 function* doFetchAnalysis({prNumber, owner, name}: any) {
   const state: IAppStore = yield select();
   const apiUrl = prNumber ?
-    `/v1/repos/${owner}/${name}/pulls/${prNumber}` :
+    `/v1/repos/github.com/${owner}/${name}/pulls/${prNumber}` :
     `/v1/repos/github.com/${owner}/${name}/repoanalyzes`;
   const resp = yield call(makeApiGetRequest, apiUrl, state.auth.cookie);
   if (!resp || resp.error) {
