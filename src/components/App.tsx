@@ -33,7 +33,7 @@ class App extends React.Component<IProps> {
         <div>
           Your repos access token was revoked. Re-login to update it.
           <Row type="flex" justify="center">
-            <a href={`${API_HOST}/v1/auth/github?relogin=1`}>
+            <a href={`${API_HOST}/v1/auth/user/relogin`}>
               <Button type="default" size="large">
                 <Icon type="github" />
                 Re-Login
