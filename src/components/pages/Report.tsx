@@ -4,7 +4,7 @@ import { RouteComponentProps } from "react-router";
 import { List, Row, Col, Table, Tag, Alert, Tooltip, Switch, Button } from "antd";
 import { IAppStore } from "reducers";
 import { IAnalysisState, IIssue, IWarning, fetchAnalysis } from "modules/analyzes";
-import { capitalizeFirstLetter } from "modules/utils/strings";
+import { processWarning } from "modules/utils/strings";
 import moment from "moment";
 import Helmet from "react-helmet";
 import SyntaxHighlighter from "react-syntax-highlighter";
@@ -333,7 +333,7 @@ class Report extends React.Component<IProps> {
         {err && (
           <Alert
             message="Error"
-            description={capitalizeFirstLetter(err)}
+            description={processWarning(err)}
             type="error"
             showIcon
             key="alert-error"
@@ -342,7 +342,7 @@ class Report extends React.Component<IProps> {
         {warnings.map((w) => (
           <Alert
             message={`Warning in ${w.Tag}`}
-            description={capitalizeFirstLetter(w.Text)}
+            description={processWarning(w.Text)}
             type="warning"
             showIcon
             key={`alert-warning-${w.Tag}`}

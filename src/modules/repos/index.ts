@@ -2,7 +2,7 @@ import { combineReducers } from "redux";
 import { put, takeEvery, call, select, fork } from "redux-saga/effects";
 import { IAppStore } from "reducers";
 import {
-  makeApiGetRequest, makeApiPutRequest, makeApiDeleteRequest, processError, makeApiPostRequest,
+  makeApiGetRequest, makeApiDeleteRequest, processError, makeApiPostRequest,
 } from "modules/api";
 import reachGoal from "modules/utils/analytics";
 import { sleep } from "modules/utils/time";
