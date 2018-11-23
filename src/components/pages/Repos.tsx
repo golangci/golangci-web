@@ -265,6 +265,10 @@ const getAllPublicRepos = (state: IAppStore) => state.repos.list ? state.repos.l
 const getAllPrivateRepos = (state: IAppStore) => state.repos.list ? state.repos.list.private : null;
 const getSearchQuery = (state: IAppStore) => state.repos.searchQuery || "";
 const filterReposBySearchQuery = (repos: IRepo[], q: string) => {
+  if (repos === null) {
+    return null;
+  }
+
   if (q === "") {
     return repos;
   }
