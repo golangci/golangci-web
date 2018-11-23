@@ -149,10 +149,12 @@ class Home extends React.Component<IProps> {
                 golangci-lint run --new-from-patch=/path/to/patch/for/pull/request
               </div>
               <div>
-                Some additional linters are disabled by default: dupl, gocyclo, typecheck, maligned, misspell, lll, unparam, nakedret, prealloc.
+                Some additional linters are disabled by default: dupl, gocyclo, typecheck, maligned, misspell, lll,
+                unparam, nakedret, prealloc, depguard, gocritic, scopelint, gochecknoinits, gochecknoglobals.
               </div>
-              You can create <a target="_blank" href="https://github.com/golangci/golangci-lint#config-file"><b>.golangci.yml</b></a> to
+              You can create <a target="_blank" href="https://github.com/golangci/golangci/wiki/Configuration"><b>.golangci.yml</b></a> to
               enable additional linters, disable some of default linters and customize their settings.
+              Also you can customize how we run analysis in the cloud for the repo: how to fetch dependencies, how to use generated code, etc.
             </div>
           </Row>
         </div>
