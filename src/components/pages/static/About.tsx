@@ -8,7 +8,7 @@ const Page: React.StatelessComponent<any> = (props) => (
             <div className="increased-font">
                 <p>Used by over 1000 projects, and analyzing over 1 billion lines of code monthly, GolangCI delivers the best quality analysis of Go code.</p>
             </div>
-            <p>Founded in 2018 by Denis Isaev. Sepapaja 6, Tallinn 15551, Estonia.</p>
+            <p>Founded in 2018 by Denis Isaev. Golangci OÜ, Sepapaja 6, Tallinn 15551, Estonia.</p>
             <p>Get in touch: <a href="mailto:denis@golangci.com">denis@golangci.com</a></p>
         </div>
     </Row>
