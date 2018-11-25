@@ -18,13 +18,13 @@ const Page: React.StatelessComponent<any> = (props) => (
                 to the physical safety of any person, violations of Terms of Service, or as otherwise
                 required by law.</li>
             <li>We transfer information about you if GolangCI is acquired by or merged with another company.
-                In this event, GolangCI LLC will notify you before information about you is transferred
+                In this event, Golangci OÜ will notify you before information about you is transferred
                 and becomes subject to a different privacy policy.</li>
         </ul>
 
         <h2>Information Gathering and Usage</h2>
         <p>
-        GolangCI LLC uses collected information for the following general
+        Golangci OÜ uses collected information for the following general
         purposes: products and services provision, billing, identification and
         authentication, services improvement, contact, and research.
         </p>
@@ -40,14 +40,14 @@ const Page: React.StatelessComponent<any> = (props) => (
         </ul>
 
         <h2>Data Storage</h2>
-        <p>GolangCI LLC uses third party vendors and hosting partners to provide the necessary hardware,
-            software, networking, storage, and related technology required to run GolangCI. Although GolangCI LLC
+        <p>Golangci OÜ uses third party vendors and hosting partners to provide the necessary hardware,
+            software, networking, storage, and related technology required to run GolangCI. Although Golangci OÜ
             owns the code, databases, and all rights to the GolangCI application, you retain all rights to your data.</p>
 
         <h2>Source Code</h2>
         <ul>
-            <li>GolangCI LLC employees do not access GolangCI users’ private source code unless GolangCI
-                users give GolangCI LLC employees explicit written permission to access their source
+            <li>Golangci OÜ employees do not access GolangCI users’ private source code unless GolangCI
+                users give Golangci OÜ employees explicit written permission to access their source
                 code in order to provide support.
             </li>
             <li>GolangCI’s source code is openly available. Browse the code and email us with questions.
@@ -55,11 +55,11 @@ const Page: React.StatelessComponent<any> = (props) => (
         </ul>
 
         <h2>Disclosure</h2>
-        <p>GolangCI LLC may disclose personally identifiable information under special circumstances,
+        <p>Golangci OÜ may disclose personally identifiable information under special circumstances,
             such as to comply with subpoenas or when your actions violate the Terms of Service.</p>
 
         <h2>Changes</h2>
-        <p>GolangCI LLC may periodically update this policy. We will notify you about significant changes
+        <p>Golangci OÜ may periodically update this policy. We will notify you about significant changes
             in the way we treat personal information by sending a notice to the primary email address
             specified in your GolangCI account or by placing a prominent notice on our site.</p>
     </div>

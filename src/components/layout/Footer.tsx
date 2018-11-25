@@ -62,8 +62,8 @@ class Footer extends React.Component<IProps> {
                   </Row>
                   <Row type="flex" justify="center">
                     <p>
-                      GolangCI is Copyright © {(new Date()).getFullYear()} GolangCI LLC.
-                      The names and logos for GolangCI are trademarks of GolangCI LLC.
+                      GolangCI is Copyright © {(new Date()).getFullYear()} Golangci OÜ.
+                      The names and logos for GolangCI are trademarks of Golangci OÜ.
                     </p>
                   </Row>
                 </div>
@@ -83,6 +83,7 @@ class Footer extends React.Component<IProps> {
               <>
                 <h5>Company</h5>
                 <ul>
+                  <li><Link to="/about">About</Link></li>
                   <li><a target="_blank" href="https://medium.com/golangci">Blog</a></li>
                   <li><a target="_blank" href="https://github.com/golangci/golangci">GitHub</a></li>
                 </ul>

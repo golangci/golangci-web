@@ -6,6 +6,7 @@ import Repos from "components/pages/Repos";
 import Report from "components/pages/Report";
 import Terms from "components/pages/static/Terms";
 import Privacy from "components/pages/static/Privacy";
+import About from "components/pages/static/About";
 
 export default () => (
   <App>
@@ -17,6 +18,7 @@ export default () => (
       <Route exact path="/r/github.com/:owner/:name" component={Report} />
       <Route exact path="/terms" component={Terms} />
       <Route exact path="/privacy" component={Privacy} />
+      <Route exact path="/about" component={About} />
     </Switch>
   </App>
 );

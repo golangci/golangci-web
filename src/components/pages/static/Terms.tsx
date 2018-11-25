@@ -16,7 +16,7 @@ const Page: React.StatelessComponent<any> = (props) => (
         <p>
             Violation of any of the terms below will result in the termination of your Account.
             While GolangCI prohibits such conduct and Content on the Service, you understand and agree
-            that GolangCI LLC cannot be responsible for the Content posted on the Service and you nonetheless
+            that Golangci OÜ cannot be responsible for the Content posted on the Service and you nonetheless
             may be exposed to such materials. You agree to use the Service at your own risk.
         </p>
 
@@ -25,7 +25,7 @@ const Page: React.StatelessComponent<any> = (props) => (
             <li>You must be 13 years or older to use this Service.</li>
             <li>You must be a human. Accounts registered by “bots” or other automated methods are not permitted.</li>
             <li>You are responsible for maintaining the security of your account.
-                GolangCI LLC cannot and will not be liable for any loss or damage from your failure to comply with this security obligation.</li>
+                Golangci OÜ cannot and will not be liable for any loss or damage from your failure to comply with this security obligation.</li>
             <li>You may not use the Service for any illegal or unauthorized purpose.
                 You must not, in the use of the Service, violate any laws in your jurisdiction (including but not limited to copyright laws).</li>
         </ul>
@@ -53,7 +53,7 @@ const Page: React.StatelessComponent<any> = (props) => (
             </li>
             <li>GolangCI, in its sole discretion, has the right to suspend or terminate your account
                 and refuse any and all current or future use of the Service, or any other
-                GolangCI LLC service, for any reason at any time.
+                Golangci OÜ service, for any reason at any time.
                 Such termination of the Service will result in the deactivation or
                 deletion of your Account or your access to your Account.
                 GolangCI reserves the right to refuse service to anyone for any reason at any time.
@@ -79,8 +79,8 @@ const Page: React.StatelessComponent<any> = (props) => (
             We claim no intellectual property rights over the material you provide to the Service.
         </p>
         <p>
-            The look and feel of the Service is © {(new Date()).getFullYear()} GolangCI LLC.
-            All rights reserved. The name and logos for GolangCI are property of GolangCI LLC.
+            The look and feel of the Service is © {(new Date()).getFullYear()} Golangci OÜ.
+            All rights reserved. The name and logos for GolangCI are property of Golangci OÜ.
             All rights reserved. You may not duplicate, copy, or reuse any portion of the HTML/CSS, Javascript,
             or visual design elements or concepts without express written permission from GolangCI.
             You may not use the GolangCI name with express written permission.
@@ -92,7 +92,7 @@ const Page: React.StatelessComponent<any> = (props) => (
             <li>You understand that GolangCI uses third party vendors and hosting partners to provide the
                 necessary hardware, software, networking, storage, and related technology required to run the Service.</li>
             <li>You must not modify, adapt or hack the Service or modify another website so as to falsely imply
-                that it is associated with the Service, GolangCI, or any other GolangCI LLC service.</li>
+                that it is associated with the Service, GolangCI, or any other Golangci OÜ service.</li>
             <li>Verbal, physical, written or other abuse (including threats of abuse or retribution) of any GolangCI customer,
                 employee, member, or officer will result in immediate account termination.</li>
             <li>GolangCI does not warrant that (i) the service will meet your specific requirements,
@@ -102,10 +102,10 @@ const Page: React.StatelessComponent<any> = (props) => (
                 obtained by you through the service will meet your expectations, and
                 (v) any errors in the Service will be corrected.
             </li>
-            <li>You expressly understand and agree that GolangCI LLC shall not be liable for any direct,
+            <li>You expressly understand and agree that Golangci OÜ shall not be liable for any direct,
                 indirect, incidental, special, consequential or exemplary damages, including but not limited
                 to, damages for loss of profits, goodwill, use, data or other intangible losses
-                (even if GolangCI LLC has been advised of the possibility of such damages), resulting from:
+                (even if Golangci OÜ has been advised of the possibility of such damages), resulting from:
                 (i) the use or the inability to use the service;
                 (ii) the cost of procurement of substitute goods and services resulting from any goods,
                 data, information or services purchased or obtained or messages received or
@@ -114,10 +114,10 @@ const Page: React.StatelessComponent<any> = (props) => (
                 (iv) statements or conduct of any third party on the service;
                 (v) or any other matter relating to the service.
             </li>
-            <li>The failure of GolangCI LLC to exercise or enforce any right or provision
+            <li>The failure of Golangci OÜ to exercise or enforce any right or provision
                 of the Terms of Service shall not constitute a waiver of such right or provision.
-                The Terms of Service constitutes the entire agreement between you and GolangCI LLC and govern
-                your use of the Service, superceding any prior agreements between you and GolangCI LLC (including,
+                The Terms of Service constitutes the entire agreement between you and Golangci OÜ and govern
+                your use of the Service, superceding any prior agreements between you and Golangci OÜ (including,
                 but not limited to, any prior versions of the Terms of Service).
             </li>
         </ul>
