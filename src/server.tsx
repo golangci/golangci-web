@@ -215,18 +215,23 @@ const cookieConsentScript = `
 <script src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.js"></script>
 <script>
 window.addEventListener("load", function(){
-window.cookieconsent.initialise({
-  "palette": {
-    "popup": {
-      "background": "#237afc"
+  if (!window.cookieconsent) {
+    return;
+  }
+
+  window.cookieconsent.initialise({
+    "palette": {
+      "popup": {
+        "background": "#237afc"
+      },
+      "button": {
+        "background": "#fff",
+        "text": "#237afc"
+      }
     },
-    "button": {
-      "background": "#fff",
-      "text": "#237afc"
-    }
-  },
-  "showLink": false
-})});
+    "showLink": false
+  });
+});
 </script>`;
 
 const renderHtml = (content: string, state: IAppStore) => {
