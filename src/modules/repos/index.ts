@@ -70,10 +70,12 @@ export interface IRepoStore {
 export interface IRepo {
   id: number;
   name: string;
+  organization?: string;
   isAdmin: boolean;
   isPrivate: boolean;
   isActivated: boolean;
   isActivatingNow?: boolean;
+  language?: string;
 }
 
 const transformRepos = (repos: IRepo[], f: (r: IRepo) => IRepo): IRepo[] => {

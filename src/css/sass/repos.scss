@@ -15,8 +15,8 @@ h1 {
   text-align: center;
 }
 
-h1.hr-title:before,
-h1.hr-title:after {
+.hr-title:before,
+.hr-title:after {
   background-color: $hr-color;
   content: "";
   display: inline-block;
@@ -26,12 +26,12 @@ h1.hr-title:after {
   width: 50%;
 }
 
-h1.hr-title:before {
+.hr-title:before {
   right: 0.5em;
   margin-left: -50%;
 }
 
-h1.hr-title:after {
+.hr-title:after {
   left: 0.5em;
   margin-right: -50%;
 }
@@ -46,4 +46,8 @@ h1.hr-title:after {
 
 .repos-report-btn {
   margin-right: 10px;
+}
+
+.org-card {
+  margin-bottom: 3vh;
 }

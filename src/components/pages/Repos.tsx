@@ -1,7 +1,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router";
-import { List, Row, Col, Button, Input, Modal, Tooltip } from "antd";
+import { List, Row, Col, Button, Input, Modal, Tooltip, Card, Switch } from "antd";
 import { createSelector } from "reselect";
 import Highlighter from "react-highlight-words";
 import { IAppStore } from "reducers";
@@ -13,14 +13,19 @@ import { buildPricingPlan, Plan } from "components/blocks/PricingTable";
 import { Link } from "react-router-dom";
 import { isXsScreenWidth } from "modules/utils/device";
 
+interface IRepoGroup {
+  name: string;
+  repos: IRepo[];
+}
+
 interface IStateProps {
-  publicRepos: IRepo[];
-  privateRepos: IRepo[];
+  repoGroups: IRepoGroup[];
   privateReposWereFetched: boolean;
   isAfterLogin: boolean;
   searchQuery: string;
   isModalWithPriceVisible: boolean;
   isModalNotImplementedVisible: boolean;
+  showOnlyGoRepos: boolean;
 }
 
 interface IDispatchProps {
@@ -37,9 +42,15 @@ interface IProps extends IStateProps, IDispatchProps, RouteComponentProps<IParam
 const modalNotImplementedToggleName = "private repos not implemented";
 const modalWithPriceToggleName = "price for private repos";
 
+const toggleShowOnlyGoRepos = "show only go repos";
+
 class Repos extends React.Component<IProps> {
+  private isLoadingOrNoData() {
+    return this.props.repoGroups === null;
+  }
+
   public componentWillMount() {
-    if (this.props.publicRepos === null) { // false if SSR-ed
+    if (this.isLoadingOrNoData()) { // false if SSR-ed
       this.props.fetchRepos();
     }
 
@@ -179,35 +190,83 @@ class Repos extends React.Component<IProps> {
       btnDisabled);
   }
 
+  private renderRepo(r: IRepo) {
+    const title = this.props.searchQuery ?
+      this.highlightRepoName(r.name) :
+      r.name;
+
+    return (
+      <List.Item actions={[this.renderActionForRepo(r)]}>
+        <List.Item.Meta title={title} />
+      </List.Item>
+    );
+  }
+
   private renderList(repos: IRepo[]) {
     return (
       <List
         loading={repos === null}
         itemLayout="horizontal"
         dataSource={repos || []}
-        renderItem={(r: IRepo) => (
-          <List.Item actions={[this.renderActionForRepo(r)]}>
-            <List.Item.Meta
-              title={this.props.searchQuery ? this.highlightRepoName(r.name) : r.name}
-            />
-          </List.Item>
-        )}
+        renderItem={this.renderRepo.bind(this)}
         locale={{emptyText: "No repos"}}
       />
     );
   }
 
+  private renderRepos() {
+    if (this.isLoadingOrNoData()) {
+      // TODO: use normal loader
+      return <List loading={true} dataSource={[]} renderItem={(i: any) => (i)} />;
+    }
+
+    const ret = new Array<JSX.Element>();
+    for (const group of this.props.repoGroups) {
+      const card = (
+        <div className="org-card" key={`group-${group.name}`}>
+          <Card
+            title={group.name}
+            type="inner"
+            // extra={<a href="#">Settings</a>}
+          >
+            {this.renderList(group.repos)}
+          </Card>
+        </div>
+      );
+      ret.push(card);
+    }
+
+    return ret;
+  }
+
+  private onSwitchShowOnlyGoRepos() {
+    this.props.toggle(toggleShowOnlyGoRepos, !this.props.showOnlyGoRepos);
+  }
+
   private renderToolbox() {
     return (
       <>
-        <Col sm={24} md={8} className="repos-toolbox-row">
+        <Col sm={24} md={16} lg={12} xl={10} className="repos-toolbox-row">
           <Button
             onClick={this.refreshRepos.bind(this)}
-            className="repos-refresh-btn" icon="sync">
+            className="repos-refresh-btn"
+            icon="sync"
+            disabled={this.isLoadingOrNoData()}
+          >
             Refresh list
           </Button>
+          {!this.props.searchQuery && (
+            <>
+              <span className="report-show-code">Only Go Repos</span>
+              <Switch
+                checked={this.props.showOnlyGoRepos}
+                onChange={this.onSwitchShowOnlyGoRepos.bind(this)}
+                disabled={this.isLoadingOrNoData()}
+              />
+            </>
+          )}
         </Col>
-        <Col sm={24} md={16} className="repos-toolbox-row">
+        <Col sm={24} md={8} lg={12} xl={14} className="repos-toolbox-row">
           <Input.Search
             value={this.props.searchQuery}
             placeholder="Search by repo..."
@@ -242,13 +301,15 @@ class Repos extends React.Component<IProps> {
               {this.renderToolbox()}
             </Row>
 
-            <h1 className="hr-title">Public Repos</h1>
-            {this.renderList(this.props.publicRepos)}
-            <h1 className="hr-title">Private Repos</h1>
-            {this.props.privateReposWereFetched === false ?
-              this.renderGrantAccessBtn() :
-              this.renderList(this.props.privateRepos)
-            }
+            {this.props.privateReposWereFetched === false ? (
+              <>
+                <h1 className="hr-title">Public Repos</h1>
+                {this.renderRepos()}
+
+                <h1 className="hr-title">Private Repos</h1>
+                {this.renderGrantAccessBtn()}
+              </>
+            ) : this.renderRepos()}
 
             {this.renderModals()}
           </Col>
@@ -261,9 +322,11 @@ class Repos extends React.Component<IProps> {
 interface IParams {
 }
 
-const getAllPublicRepos = (state: IAppStore) => state.repos.list ? state.repos.list.public : null;
-const getAllPrivateRepos = (state: IAppStore) => state.repos.list ? state.repos.list.private : null;
+const trueIfUndef = (v: boolean): boolean => v === undefined ? true : v;
+
+const getAllRepos = (state: IAppStore) => state.repos.list ? state.repos.list.public.concat(state.repos.list.private) : null;
 const getSearchQuery = (state: IAppStore) => state.repos.searchQuery || "";
+const getLanguageFilter = (state: IAppStore) => trueIfUndef(state.toggle.store[toggleShowOnlyGoRepos]);
 const filterReposBySearchQuery = (repos: IRepo[], q: string) => {
   if (repos === null) {
     return null;
@@ -275,18 +338,52 @@ const filterReposBySearchQuery = (repos: IRepo[], q: string) => {
 
   return repos.filter((r) => r.name.toLowerCase().includes(q));
 };
-const getPublicRepos = createSelector([getAllPublicRepos, getSearchQuery], filterReposBySearchQuery);
-const getPrivateRepos = createSelector([getAllPrivateRepos, getSearchQuery], filterReposBySearchQuery);
+const filterReposByLanguage = (repos: IRepo[], needFilter: boolean, q: string) => {
+  if (repos === null || !needFilter || q !== "") {
+    return repos;
+  }
+
+  return repos.filter((r) => !r.language || r.language.toLowerCase() === "go");
+};
+const getSearchFilteredRepos = createSelector([getAllRepos, getSearchQuery], filterReposBySearchQuery);
+const getAllFilteredRepos = createSelector([getSearchFilteredRepos, getLanguageFilter, getSearchQuery], filterReposByLanguage);
+const splitReposByOrganization = (repos: IRepo[]): IRepoGroup[] => {
+  if (repos === null) {
+    return null;
+  }
+
+  const reposByOrg = new Map<string, IRepo[]>();
+  for (const repo of repos) {
+    const orgRepos = reposByOrg.get(repo.organization) || new Array<IRepo>();
+    orgRepos.push(repo);
+    reposByOrg.set(repo.organization, orgRepos);
+  }
+
+  const groups = new Array<IRepoGroup>();
+  reposByOrg.forEach((orgRepos, org) => {
+    groups.push({
+      name: org,
+      repos: orgRepos,
+    });
+  });
+
+  groups.sort((a, b) => {
+    return a.name.localeCompare(b.name);
+  });
+
+  return groups;
+};
+const getRepoGroups = createSelector(getAllFilteredRepos, splitReposByOrganization);
 
 const mapStateToProps = (state: IAppStore, routeProps: RouteComponentProps<IParams>): any => {
   return {
-    publicRepos: getPublicRepos(state),
-    privateRepos: getPrivateRepos(state),
+    repoGroups: getRepoGroups(state),
     privateReposWereFetched: state.repos.list ? state.repos.list.privateReposWereFetched : null,
     isAfterLogin: routeProps.location.search.includes("after=login"),
     searchQuery: getSearchQuery(state),
     isModalNotImplementedVisible: state.toggle.store[modalNotImplementedToggleName],
     isModalWithPriceVisible: state.toggle.store[modalWithPriceToggleName],
+    showOnlyGoRepos: trueIfUndef(state.toggle.store[toggleShowOnlyGoRepos]),
   };
 };
 
