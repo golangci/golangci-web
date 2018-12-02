@@ -234,6 +234,11 @@ window.addEventListener("load", function(){
 });
 </script>`;
 
+const paddleScript = `<script src="https://cdn.paddle.com/paddle/paddle.js"></script>
+<script type="text/javascript">
+	Paddle.Setup({ vendor: 37456 });
+</script>`;
+
 const renderHtml = (content: string, state: IAppStore) => {
   if (!webpackPartialTmpl) {
     loadWebpackPartialTmpl();
@@ -247,6 +252,7 @@ const renderHtml = (content: string, state: IAppStore) => {
     ${yaMetrikaScript}
     ${hotjarScript}
     ${cookieConsentScript}
+    ${paddleScript}
   `;
 
   return `

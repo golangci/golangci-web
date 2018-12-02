@@ -8,6 +8,8 @@ import { IToggleStore, toggleReducer } from "modules/toggle";
 import { IAuthStore, reducer as authReducer } from "modules/auth";
 import { IRepoStore, reducer as reposReducer } from "modules/repos";
 import { IAnalyzesStore, reducer as analyzesReducer } from "modules/analyzes";
+import { IOrgsStore, reducer as orgsReducer } from "modules/orgs";
+import { ISubsStore, reducer as subsReducer } from "modules/subs";
 
 export interface IAppStore {
   result?: IResultStore;
@@ -15,6 +17,8 @@ export interface IAppStore {
   auth?: IAuthStore;
   repos?: IRepoStore;
   analyzes?: IAnalyzesStore;
+  orgs?: IOrgsStore;
+  subs?: ISubsStore;
 }
 
 export const rootReducer = combineReducers<IAppStore>({
@@ -26,4 +30,6 @@ export const rootReducer = combineReducers<IAppStore>({
   auth: authReducer,
   repos: reposReducer,
   analyzes: analyzesReducer,
+  orgs: orgsReducer,
+  subs: subsReducer,
 });

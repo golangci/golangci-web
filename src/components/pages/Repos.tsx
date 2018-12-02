@@ -1,15 +1,15 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router";
-import { List, Row, Col, Button, Input, Modal, Tooltip, Card, Switch } from "antd";
+import { List, Row, Col, Button, Input, Modal, Tooltip, Card, Switch, Icon } from "antd";
 import { createSelector } from "reselect";
 import Highlighter from "react-highlight-words";
 import { IAppStore } from "reducers";
-import { fetchRepos, activateRepo, deactivateRepo, updateSearchQuery, IRepo } from "modules/repos";
+import { fetchRepos, activateRepo, deactivateRepo, updateSearchQuery, IRepo, toggleShowMockForPrivateRepos, IOrganization } from "modules/repos";
 import { trackEvent } from "modules/utils/analytics";
 import { toggle } from "modules/toggle";
 import { postEvent } from "modules/events";
-import { buildPricingPlan, Plan } from "components/blocks/PricingTable";
+import { buildPricingPlan, Plan, payStandardPlanText } from "components/blocks/PricingTable";
 import { Link } from "react-router-dom";
 import { isXsScreenWidth } from "modules/utils/device";
 
@@ -26,6 +26,7 @@ interface IStateProps {
   isModalWithPriceVisible: boolean;
   isModalNotImplementedVisible: boolean;
   showOnlyGoRepos: boolean;
+  organizations: Map<string, IOrganization>;
 }
 
 interface IDispatchProps {
@@ -39,9 +40,7 @@ interface IDispatchProps {
 
 interface IProps extends IStateProps, IDispatchProps, RouteComponentProps<IParams> {}
 
-const modalNotImplementedToggleName = "private repos not implemented";
-const modalWithPriceToggleName = "price for private repos";
-
+const toggleShowModalNotImplemented = "private repos not implemented";
 const toggleShowOnlyGoRepos = "show only go repos";
 
 class Repos extends React.Component<IProps> {
@@ -64,10 +63,8 @@ class Repos extends React.Component<IProps> {
   private onClick(activate: boolean, isPrivate: boolean, name: string, id: number) {
     const analyticsPayload = {repoName: name};
     if (isPrivate) {
-      this.props.toggle(modalWithPriceToggleName, true);
       trackEvent("click to activate private repo", analyticsPayload);
       this.props.postEvent("click to activate private repo", analyticsPayload);
-      return;
     }
 
     if (activate) {
@@ -93,20 +90,20 @@ class Repos extends React.Component<IProps> {
   }
 
   private closeModalNotImplemented() {
-    this.props.toggle(modalNotImplementedToggleName, false);
+    this.props.toggle(toggleShowModalNotImplemented, false);
   }
 
   private closeModalWithPrice() {
     trackEvent("disagreed with price while connecting private repo");
     this.props.postEvent("disagreed with price while connecting private repo");
-    this.props.toggle(modalWithPriceToggleName, false);
+    this.props.toggle(toggleShowMockForPrivateRepos, false);
   }
 
   private continueModalWithPrice() {
     trackEvent("agreed with price while connecting private repo");
     this.props.postEvent("agreed with price while connecting private repo");
-    this.props.toggle(modalWithPriceToggleName, false);
-    this.props.toggle(modalNotImplementedToggleName, true);
+    this.props.toggle(toggleShowMockForPrivateRepos, false);
+    this.props.toggle(toggleShowModalNotImplemented, true);
   }
 
   private renderModals() {
@@ -130,7 +127,7 @@ class Repos extends React.Component<IProps> {
           okText="Continue"
         >
           <div className="generic_price_table">
-            {buildPricingPlan(Plan.Standard, "Start FREE trial",
+            {buildPricingPlan(Plan.Standard, payStandardPlanText,
                               this.continueModalWithPrice.bind(this))}
           </div>
         </Modal>
@@ -138,13 +135,13 @@ class Repos extends React.Component<IProps> {
     );
   }
 
-  private wrapConnectButtonWithDisablingHelp(btn: JSX.Element, isDisabled: boolean): JSX.Element {
+  private wrapButtonWithDisablingHelp(btn: JSX.Element, isDisabled: boolean, helpText: string): JSX.Element {
     if (!isDisabled) {
       return btn;
     }
 
     return (
-      <Tooltip placement="topLeft" title="Only repo admins can manage the repo">
+      <Tooltip placement="topLeft" title={helpText}>
         {btn}
       </Tooltip>
     );
@@ -152,6 +149,7 @@ class Repos extends React.Component<IProps> {
 
   private renderActionForRepo(r: IRepo) {
     const btnDisabled = !r.isAdmin;
+    const helpText = "Only repo admins can manage the repo";
 
     if (r.isActivated) {
       return (
@@ -165,7 +163,7 @@ class Repos extends React.Component<IProps> {
               </Button>
             </Link>
           )}
-          {this.wrapConnectButtonWithDisablingHelp(
+          {this.wrapButtonWithDisablingHelp(
             <Button
               onClick={() => this.onClick(false, r.isPrivate, r.name, r.id)}
               icon="close" type="danger"
@@ -174,12 +172,12 @@ class Repos extends React.Component<IProps> {
             >
               Disconnect
             </Button>,
-            btnDisabled)}
+            btnDisabled, helpText)}
         </>
       );
     }
 
-    return this.wrapConnectButtonWithDisablingHelp(
+    return this.wrapButtonWithDisablingHelp(
       <Button
         onClick={() => this.onClick(true, r.isPrivate, r.name, null)}
         loading={r.isActivatingNow}
@@ -187,7 +185,7 @@ class Repos extends React.Component<IProps> {
       >
         Connect
       </Button>,
-      btnDisabled);
+      btnDisabled, helpText);
   }
 
   private renderRepo(r: IRepo) {
@@ -222,12 +220,19 @@ class Repos extends React.Component<IProps> {
 
     const ret = new Array<JSX.Element>();
     for (const group of this.props.repoGroups) {
+      const org = this.props.organizations ? this.props.organizations.get(group.name) : null;
       const card = (
         <div className="org-card" key={`group-${group.name}`}>
           <Card
             title={group.name}
             type="inner"
-            // extra={<a href="#">Settings</a>}
+            extra={org && org.hasActiveSubscription && this.wrapButtonWithDisablingHelp(
+              <Link to={`/orgs/${org.provider}/${org.name}`}>
+                <Button disabled={!org.isAdmin}><Icon type="setting" />Active Subscription</Button>
+              </Link>,
+              !org.isAdmin,
+              "Only organization admins can manage it's subscription",
+            )}
           >
             {this.renderList(group.repos)}
           </Card>
@@ -381,9 +386,10 @@ const mapStateToProps = (state: IAppStore, routeProps: RouteComponentProps<IPara
     privateReposWereFetched: state.repos.list ? state.repos.list.privateReposWereFetched : null,
     isAfterLogin: routeProps.location.search.includes("after=login"),
     searchQuery: getSearchQuery(state),
-    isModalNotImplementedVisible: state.toggle.store[modalNotImplementedToggleName],
-    isModalWithPriceVisible: state.toggle.store[modalWithPriceToggleName],
+    isModalNotImplementedVisible: state.toggle.store[toggleShowModalNotImplemented],
+    isModalWithPriceVisible: state.toggle.store[toggleShowMockForPrivateRepos],
     showOnlyGoRepos: trueIfUndef(state.toggle.store[toggleShowOnlyGoRepos]),
+    organizations: state.repos.organizations,
   };
 };
 
