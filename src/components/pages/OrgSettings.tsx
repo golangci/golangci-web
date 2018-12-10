@@ -47,9 +47,8 @@ class OrgSettings extends React.Component<IProps> {
   }
 
   public componentDidMount() {
-    const p = this.props.match.params;
-    const org = this.props.org;
     if (this.isLoadingOrNoData(this.props)) { // false if SSR-ed
+      const p = this.props.match.params;
       this.props.fetchOrg(p.provider, p.orgName);
       this.props.fetchSub(p.provider, p.orgName);
     }

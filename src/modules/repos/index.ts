@@ -7,7 +7,6 @@ import {
 import reachGoal from "modules/utils/analytics";
 import { sleep } from "modules/utils/time";
 import { toggle } from "modules/toggle";
-import { toastr } from "react-redux-toastr";
 import { push } from "react-router-redux";
 
 enum ReposAction {
@@ -55,7 +54,7 @@ export const fetchRepos = (refresh?: boolean) => ({
 });
 
 const onReposFetched = (publicRepos: IRepo[], privateRepos: IRepo[],
-                        privateReposWereFetched: boolean, organizations: Map<string, IOrganization>) => ({
+                        privateReposWereFetched: boolean, organizations: IOrganizations) => ({
   type: ReposAction.FetchedList,
   publicRepos,
   privateRepos,
@@ -72,7 +71,7 @@ interface IRepoList {
 export interface IRepoStore {
   list?: IRepoList;
   searchQuery?: string;
-  organizations?: Map<string, IOrganization>;
+  organizations?: IOrganizations;
 }
 
 export interface IRepo {
@@ -91,6 +90,10 @@ export interface IOrganization {
   name: string;
   hasActiveSubscription: boolean;
   isAdmin: boolean;
+}
+
+export interface IOrganizations {
+  [orgName: string]: IOrganization;
 }
 
 const transformRepos = (repos: IRepo[], f: (r: IRepo) => IRepo): IRepo[] => {
@@ -156,14 +159,10 @@ const searchQuery = (state: string = null, action: any): string => {
   }
 };
 
-const organizationsReducer = (state: Map<string, IOrganization> = new Map<string, IOrganization>(), action: any): Map<string, IOrganization> => {
+const organizationsReducer = (state: IOrganizations = {}, action: any): IOrganizations => {
   switch (action.type) {
     case ReposAction.FetchedList:
-      const orgs = new Map<string, IOrganization>();
-      Object.keys(action.organizations).forEach((orgName) => {
-        orgs.set(orgName, action.organizations[orgName]);
-      });
-      return orgs;
+      return action.organizations;
     case ReposAction.FetchList:
       return null;
     default:

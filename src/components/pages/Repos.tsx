@@ -5,7 +5,7 @@ import { List, Row, Col, Button, Input, Modal, Tooltip, Card, Switch, Icon } fro
 import { createSelector } from "reselect";
 import Highlighter from "react-highlight-words";
 import { IAppStore } from "reducers";
-import { fetchRepos, activateRepo, deactivateRepo, updateSearchQuery, IRepo, toggleShowMockForPrivateRepos, IOrganization } from "modules/repos";
+import { fetchRepos, activateRepo, deactivateRepo, updateSearchQuery, IRepo, toggleShowMockForPrivateRepos, IOrganizations } from "modules/repos";
 import { trackEvent } from "modules/utils/analytics";
 import { toggle } from "modules/toggle";
 import { postEvent } from "modules/events";
@@ -26,7 +26,7 @@ interface IStateProps {
   isModalWithPriceVisible: boolean;
   isModalNotImplementedVisible: boolean;
   showOnlyGoRepos: boolean;
-  organizations: Map<string, IOrganization>;
+  organizations: IOrganizations;
 }
 
 interface IDispatchProps {
@@ -220,7 +220,7 @@ class Repos extends React.Component<IProps> {
 
     const ret = new Array<JSX.Element>();
     for (const group of this.props.repoGroups) {
-      const org = this.props.organizations ? this.props.organizations.get(group.name) : null;
+      const org = this.props.organizations ? this.props.organizations[group.name] : null;
       const card = (
         <div className="org-card" key={`group-${group.name}`}>
           <Card
