@@ -35,8 +35,8 @@ const makeApiRequest = (path: string, method: string, cookie?: string, data?: an
     headers,
     withCredentials: true,
   }).then<IApiResponse>((resp) => {
-    console.info("API: %s: %s: got response for %sms with cookie %s", method, path, Date.now() - startTime, cookie);
-    return {data: resp.data};
+    console.info("API: %s: %s: got response %d for %sms with cookie %s", method, path, resp.status, Date.now() - startTime, cookie);
+    return {data: resp.data, status: resp.status};
   })
   .catch<IApiResponse>((error) => {
     console.warn("API: %s: %s: got error with cookie %s: %s for %sms", method, path, cookie, error, Date.now() - startTime);
@@ -54,12 +54,18 @@ export const getApiHttpCode = (resp: IApiResponse): number => {
   return code;
 };
 
-export function* processError(apiUrl: string, resp: IApiResponse, message: string, dontShowToast?: boolean) {
+export function* processError(apiUrl: string, resp: IApiResponse, debugMessage: string, dontShowToast?: boolean) {
   const code = getApiHttpCode(resp);
   yield put(onGotApiResult(code));
   reportError("api error", {error: !resp ? "no response" : resp.error, apiUrl});
-  console.error("api error:", message, resp);
+  console.error("api error:", debugMessage, resp);
   if (!dontShowToast && code !== 403) {
-    toastr.error("Error", message);
+    const errResp = (resp && resp.error && resp.error.response && resp.error.response.data) ? resp.error.response.data : null;
+    const errMessage = (errResp && errResp.error && errResp.error.message) ? errResp.error.message : null;
+    if (errMessage) {
+      toastr.error("Error", errMessage);
+    } else {
+      toastr.error("Error", debugMessage);
+    }
   }
 }

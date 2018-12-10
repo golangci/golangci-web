@@ -2,10 +2,13 @@ import { combineReducers } from "redux";
 import { put, takeEvery, call, select, fork } from "redux-saga/effects";
 import { IAppStore } from "reducers";
 import {
-  makeApiGetRequest, makeApiDeleteRequest, processError, makeApiPostRequest,
+  makeApiGetRequest, makeApiDeleteRequest, processError, getApiHttpCode, makeApiPostRequest,
 } from "modules/api";
 import reachGoal from "modules/utils/analytics";
 import { sleep } from "modules/utils/time";
+import { toggle } from "modules/toggle";
+import { toastr } from "react-redux-toastr";
+import { push } from "react-router-redux";
 
 enum ReposAction {
   FetchList = "@@GOLANGCI/REPOS/LIST/FETCH",
@@ -16,6 +19,8 @@ enum ReposAction {
   Deactivated = "@@GOLANGCI/REPOS/DEACTIVATED",
   UpdateSearchQuery = "@@GOLANGCI/REPOS/SEARCH/UPDATE",
 }
+
+export const toggleShowMockForPrivateRepos = "show mock for private repos";
 
 export const activateRepo = (name: string) => ({
   type: ReposAction.Activate,
@@ -49,11 +54,13 @@ export const fetchRepos = (refresh?: boolean) => ({
   refresh,
 });
 
-const onReposFetched = (publicRepos: IRepo[], privateRepos: IRepo[], privateReposWereFetched: boolean) => ({
+const onReposFetched = (publicRepos: IRepo[], privateRepos: IRepo[],
+                        privateReposWereFetched: boolean, organizations: Map<string, IOrganization>) => ({
   type: ReposAction.FetchedList,
   publicRepos,
   privateRepos,
   privateReposWereFetched,
+  organizations,
 });
 
 interface IRepoList {
@@ -65,6 +72,7 @@ interface IRepoList {
 export interface IRepoStore {
   list?: IRepoList;
   searchQuery?: string;
+  organizations?: Map<string, IOrganization>;
 }
 
 export interface IRepo {
@@ -76,6 +84,13 @@ export interface IRepo {
   isActivated: boolean;
   isActivatingNow?: boolean;
   language?: string;
+}
+
+export interface IOrganization {
+  provider: string;
+  name: string;
+  hasActiveSubscription: boolean;
+  isAdmin: boolean;
 }
 
 const transformRepos = (repos: IRepo[], f: (r: IRepo) => IRepo): IRepo[] => {
@@ -141,9 +156,25 @@ const searchQuery = (state: string = null, action: any): string => {
   }
 };
 
+const organizationsReducer = (state: Map<string, IOrganization> = new Map<string, IOrganization>(), action: any): Map<string, IOrganization> => {
+  switch (action.type) {
+    case ReposAction.FetchedList:
+      const orgs = new Map<string, IOrganization>();
+      Object.keys(action.organizations).forEach((orgName) => {
+        orgs.set(orgName, action.organizations[orgName]);
+      });
+      return orgs;
+    case ReposAction.FetchList:
+      return null;
+    default:
+      return state;
+  }
+};
+
 export const reducer = combineReducers<IRepoStore>({
   list,
   searchQuery,
+  organizations: organizationsReducer,
 });
 
 function* doReposFetching({refresh}: any) {
@@ -154,7 +185,8 @@ function* doReposFetching({refresh}: any) {
     yield* processError(apiUrl, resp, "Can't fetch repo list");
   } else {
     yield put(onReposFetched(resp.data.repos,
-      resp.data.privateRepos, resp.data.privateReposWereFetched));
+      resp.data.privateRepos, resp.data.privateReposWereFetched,
+      resp.data.organizations));
   }
 }
 
@@ -169,9 +201,30 @@ function* doActivateRepoRequest({name}: any) {
   const postBody = {provider: "github.com", owner: nameParts[0], name: nameParts[1]};
   const postResp = yield call(makeApiPostRequest, postUrl, postBody, state.auth.cookie);
   if (!postResp || postResp.error) {
-    yield* processError(postUrl, postResp, `Can't post activate repo request`);
     yield put(onDeactivatedRepo(name));
+
+    if (getApiHttpCode(postResp) === 406) {
+      const resp = postResp.error.response;
+      if (resp && resp.data && resp.data.error) {
+        const err = resp.data.error;
+        if (err.code === "NEED_PAID_MOCK") {
+          yield put(toggle(toggleShowMockForPrivateRepos, true));
+          return;
+        }
+      }
+    }
+
+    yield* processError(postUrl, postResp, `Can't post activate repo request`);
     return;
+  }
+
+  if (postResp.status === 202) {
+    if (postResp.data && postResp.data.continueUrl) {
+      console.info("Redirecting to ", postResp.data.continueUrl);
+      yield put(onDeactivatedRepo(name));
+      yield put(push(postResp.data.continueUrl));
+      return;
+    }
   }
 
   const repoId = (postResp.data && postResp.data.repo) ? postResp.data.repo.id : null;

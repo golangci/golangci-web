@@ -4,6 +4,8 @@ import App from "components/App";
 import Home from "components/pages/Home";
 import Repos from "components/pages/Repos";
 import Report from "components/pages/Report";
+import OrgSettings from "components/pages/OrgSettings";
+import Subscription from "components/pages/Subscription";
 import Terms from "components/pages/static/Terms";
 import Privacy from "components/pages/static/Privacy";
 import About from "components/pages/static/About";
@@ -13,6 +15,8 @@ export default () => (
     <Switch>
       <Route exact path="/" component={Home} />
       <Route exact path="/repos/github" component={Repos} />
+      <Route exact path="/orgs/:provider/:orgName" component={OrgSettings} />
+      <Route exact path="/orgs/:provider/:orgName/subscription" component={Subscription} />
       <Route exact path="/r/:owner/:name/pulls/:prNumber" component={Report} />
       <Route exact path="/r/github.com/:owner/:name/pulls/:prNumber" component={Report} />
       <Route exact path="/r/github.com/:owner/:name" component={Report} />

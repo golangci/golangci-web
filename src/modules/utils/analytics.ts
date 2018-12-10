@@ -102,5 +102,5 @@ export function reportError(e: any, data?: any): void {
   }
 
   rb.error(e, data);
-  console.debug("sent error to rollbar", e);
+  console.info("sent error to rollbar", e);
 }

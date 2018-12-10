@@ -3,6 +3,7 @@ import classNames from "classnames";
 
 interface IPlanProps {
     name: string;
+    seatsCount?: number;
 
     price?: number;
     insteadOfPriceText?: string;
@@ -32,9 +33,22 @@ export default class PricingPlan extends React.Component<IPlanProps> {
                                 <span className="month">{this.props.insteadOfPriceText}</span>
                             ) : (
                                 <>
-                                    <span className="sign">$</span>
-                                    <span className="currency">{this.props.price}</span>
-                                    <span className="month">user/mo</span>
+                                    {this.props.seatsCount ? (
+                                        <>
+                                            <span className="sign">$</span>
+                                            <span className="currency">{this.props.price}</span>
+                                            <span className="currency">x {this.props.seatsCount} = </span>
+                                            <span className="sign">$</span>
+                                            <span className="currency">{this.props.seatsCount * this.props.price}</span>
+                                            <span className="month">per month</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="sign">$</span>
+                                            <span className="currency">{this.props.price}</span>
+                                            <span className="month">user/mo</span>
+                                        </>
+                                    )}
                                 </>
                             )}
                         </span>
@@ -42,7 +56,7 @@ export default class PricingPlan extends React.Component<IPlanProps> {
                 </div>
                 <div className="generic_feature_list">
                     <ul>
-                        {this.props.features.map((f) => <li>{f}</li>)}
+                        {this.props.features.map((f, i) => <li key={`plan-${this.props.name}-feature-${i}`}>{f}</li>)}
                     </ul>
                 </div>
                 <div className="generic_price_btn pricing-plan-button clearfix">

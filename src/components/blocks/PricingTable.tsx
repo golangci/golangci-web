@@ -2,13 +2,16 @@ import * as React from "react";
 import { Row, Col } from "antd";
 import PricingPlan from "components/blocks/PricingPlan";
 
+const useTrials = false;
+export const payStandardPlanText = useTrials ? "Signup for FREE trial" : "Subscribe now";
+
 export enum Plan {
     OpenSource = "OpenSource",
     Standard = "Standard",
     Enterprise = "Enterprise",
 }
 
-export function buildPricingPlan(plan: Plan, buttonText: string, onButtonClick: () => void): JSX.Element {
+export function buildPricingPlan(plan: Plan, buttonText: string, onButtonClick: () => void, seatsCount?: number): JSX.Element {
     if (plan === Plan.OpenSource) {
         return (<PricingPlan
             name="Open Source"
@@ -36,6 +39,7 @@ export function buildPricingPlan(plan: Plan, buttonText: string, onButtonClick: 
                     ]}
                     buttonText={buttonText}
                     onButtonClick={onButtonClick}
+                    seatsCount={seatsCount}
                 />
         );
     }
@@ -76,7 +80,7 @@ export default class PricingTable extends React.Component<ITableProps> {
 
                         <Col lg={7} md={8} sm={12} className="pricing-plan-col">
                             {buildPricingPlan(Plan.Standard,
-                                this.props.authorized ? "My Repos" : "Signup for FREE trial",
+                                this.props.authorized ? "My Repos" : payStandardPlanText,
                                 () => this.props.onButtonClick(Plan.Standard))}
                         </Col>
 

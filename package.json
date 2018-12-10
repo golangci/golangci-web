@@ -74,6 +74,7 @@
     "classnames": "^2.2.5",
     "cli-real-favicon": "^0.0.6",
     "console-stamp": "^0.2.6",
+    "decimal.js": "^10.0.1",
     "express": "^4.16.2",
     "font-awesome": "^4.7.0",
     "history": "^4.7.2",
