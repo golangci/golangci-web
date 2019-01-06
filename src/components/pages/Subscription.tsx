@@ -80,7 +80,7 @@ class SubUpdater extends React.Component<IProps> {
     const {org, sub} = this.props;
     const seatsCount = org.settings.seats.length;
     const checkoutConfig: any = {
-      product: sub.trialAllowanceInDays ? 546200 : 547218,
+      product: __DEV__ ? 547218 : 546200,
       quantity: seatsCount,
       email: this.props.currentUser.email,
       passthrough: JSON.stringify({
