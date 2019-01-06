@@ -9,6 +9,7 @@ import Go from "assets/images/logo/go.svg";
 
 interface IStateProps {
   currentUser?: IUser;
+  lastApiHttpCode?: number;
 }
 
 interface IDispatchProps {
@@ -27,9 +28,10 @@ class Footer extends React.Component<IProps> {
   }
 
   public render() {
+    const wasOk = this.props.lastApiHttpCode === 200 || !this.props.lastApiHttpCode;
     return (
       <>
-        {!this.props.currentUser && (
+        {!this.props.currentUser && wasOk && (
         <section className="footer-section-call-to-action">
           <div>
             <Row type="flex" justify="center">
@@ -119,6 +121,7 @@ class Footer extends React.Component<IProps> {
 
 const mapStateToProps = (state: IAppStore): any => ({
   currentUser: state.auth.currentUser,
+  lastApiHttpCode: state.result ? state.result.lastApiResultHttpCode : null,
 });
 
 const mapDispatchToProps = {

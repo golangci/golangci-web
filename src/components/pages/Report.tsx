@@ -1,7 +1,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router";
-import { List, Row, Col, Table, Tag, Alert, Tooltip, Switch, Button } from "antd";
+import { List, Row, Col, Table, Tag, Alert, Tooltip, Switch, Button, Icon } from "antd";
 import { IAppStore } from "reducers";
 import { IAnalysisState, IIssue, IWarning, fetchAnalysis } from "modules/analyzes";
 import { processWarning } from "modules/utils/strings";
@@ -12,6 +12,7 @@ import { github as codeStyle } from "react-syntax-highlighter/styles/hljs";
 import { toggle, IStore as IToggleStore } from "modules/toggle";
 import { isXsScreenWidth } from "modules/utils/device";
 import { Link } from "react-router-dom";
+import { getLoader } from "components/lib/loader";
 
 moment.locale("en");
 
@@ -21,6 +22,7 @@ interface IStateProps {
   curAnalysis?: IAnalysisState;
   hideCode?: boolean;
   toggleMap: IToggleStore;
+  lastApiErrorCode: string;
 }
 
 interface IDispatchProps {
@@ -97,7 +99,6 @@ class Report extends React.Component<IProps> {
     return (
       <div className="report-linter-block">
         <List
-          loading={issues === null}
           bordered
           itemLayout="horizontal"
           dataSource={needCollapse ? issues.slice(0, maxShownIssues) : issues}
@@ -362,9 +363,78 @@ class Report extends React.Component<IProps> {
     return false;
   }
 
+  private renderNeedAuthError(): JSX.Element {
+    const body = (
+      <div>
+        Must be authorized to access a report for a private repo
+        <Row type="flex" justify="center">
+          <a href={`${API_HOST}/v1/auth/github`}>
+            <Button type="default" size="large">
+              <Icon type="github" />
+              Login
+            </Button>
+          </a>
+        </Row>
+      </div>
+    );
+    return (
+      <Alert
+        message={`Authorization required`}
+        description={body}
+        type="error"
+        showIcon
+      />
+    );
+  }
+
+  private renderNeedPrivateAccessTokenError(): JSX.Element {
+    const body = (
+      <div>
+        We need an access to private repos to be able to show report for the private repo
+        <Row type="flex" justify="center">
+          <a href={`${API_HOST}/v1/auth/github/private`}>
+            <Button
+              type="primary"
+              className="repos-grant-access-btn" icon="login">
+              Grant Access
+            </Button>
+          </a>
+        </Row>
+      </div>
+    );
+    return (
+      <Alert
+        message={`Private Repos Access Required`}
+        description={body}
+        type="error"
+        showIcon
+      />
+    );
+  }
+
+  private renderNoAccessOrDoesntExistError(): JSX.Element {
+    return (
+      <Alert
+        message={`Access Denied`}
+        description="No access for the private repo or it doesn't exist"
+        type="error"
+        showIcon
+      />
+    );
+  }
+
   public render() {
+    switch (this.props.lastApiErrorCode) {
+    case "NEED_AUTH_TO_ACCESS_PRIVATE_REPO":
+      return this.renderNeedAuthError();
+    case "NEED_PRIVATE_ACCESS_TOKEN_TO_ACCESS_PRIVATE_REPO":
+      return this.renderNeedPrivateAccessTokenError();
+    case "NO_ACCESS_TO_PRIVATE_REPO_OR_DOESNT_EXIST":
+      this.renderNoAccessOrDoesntExistError();
+    }
+
     if (this.props.curAnalysis === null) {
-      return this.renderIssuesFromLinterBlock("loading...", null, "");
+      return getLoader();
     }
 
     const rj = this.props.curAnalysis.ResultJSON;
@@ -447,6 +517,7 @@ const mapStateToProps = (state: IAppStore, routeProps: RouteComponentProps<IPara
     curAnalysis: (state.analyzes && state.analyzes.current) ? state.analyzes.current : null,
     hideCode: state.toggle.store[hideCodeToggleKey],
     toggleMap: state.toggle.store,
+    lastApiErrorCode: state.result ? state.result.lastApiResultErrorCode : null,
   };
 };
 

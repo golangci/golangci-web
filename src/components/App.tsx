@@ -16,7 +16,9 @@ import { connect } from "react-redux";
 import { IUser } from "modules/auth";
 
 interface IStateProps {
-  lastApiCode: number;
+  lastApiHttpCode: number;
+  lastApiErrorCode: string;
+  lastApiErrorMessage: string;
   currentUser?: IUser;
 }
 
@@ -26,31 +28,86 @@ interface IOwnProps {}
 interface IProps extends IStateProps, IDispatchProps, IOwnProps, RouteComponentProps<any> {}
 
 class App extends React.Component<IProps> {
-  public render() {
-    let content = this.props.children;
-    if (this.props.currentUser && this.props.lastApiCode === 403) {
-      const body = (
-        <div>
-          Your repos access token was revoked. Re-login to update it.
-          <Row type="flex" justify="center">
-            <a href={`${API_HOST}/v1/auth/user/relogin`}>
-              <Button type="default" size="large">
-                <Icon type="github" />
-                Re-Login
-              </Button>
-            </a>
-          </Row>
-        </div>
-      );
-      content = (
-        <Alert
-          message={`Repos access token is inactive`}
-          description={body}
-          type="warning"
-          showIcon
-        />
-      );
+  private renderContent() {
+    if (this.props.lastApiErrorMessage) {
+      return this.renderCustomAlert("Error", this.props.lastApiErrorMessage);
     }
+
+    switch (this.props.lastApiHttpCode) {
+    case 403:
+      const isNotAuthorizedCode = this.props.lastApiErrorCode === "NOT_AUTHORIZED";
+      if (this.props.currentUser && isNotAuthorizedCode) {
+        return this.renderRevokedAccessTokenError();
+      }
+
+      if (isNotAuthorizedCode) {
+        return this.renderNotAuthorizedError();
+      }
+    }
+
+    return this.props.children;
+  }
+
+  private renderCustomAlert(header: string, description: string): JSX.Element {
+    return (
+      <Alert
+        message={header}
+        description={description}
+        type="error"
+        showIcon
+      />
+    );
+  }
+
+  private renderNotAuthorizedError(): JSX.Element {
+    const body = (
+      <div>
+        You aren't authorized.
+        <Row type="flex" justify="center">
+          <a href={`${API_HOST}/v1/auth/github`}>
+            <Button type="default" size="large">
+              <Icon type="github" />
+              Login
+            </Button>
+          </a>
+        </Row>
+      </div>
+    );
+    return (
+      <Alert
+        message={`Authorization required`}
+        description={body}
+        type="error"
+        showIcon
+      />
+    );
+  }
+
+  private renderRevokedAccessTokenError(): JSX.Element {
+    const body = (
+      <div>
+        Your repos access token was revoked. Re-login to update it.
+        <Row type="flex" justify="center">
+          <a href={`${API_HOST}/v1/auth/user/relogin`}>
+            <Button type="default" size="large">
+              <Icon type="github" />
+              Re-Login
+            </Button>
+          </a>
+        </Row>
+      </div>
+    );
+    return (
+      <Alert
+        message={`Repos access token is inactive`}
+        description={body}
+        type="warning"
+        showIcon
+      />
+    );
+  }
+
+  public render() {
     return (
     <>
       <Helmet
@@ -70,7 +127,7 @@ class App extends React.Component<IProps> {
       <Layout className="layout">
         <Header />
         <Layout.Content className="content">
-          {content}
+          {this.renderContent()}
         </Layout.Content>
         <Footer />
       </Layout>
@@ -89,7 +146,9 @@ class App extends React.Component<IProps> {
 }
 
 const mapStateToProps = (state: IAppStore): any => ({
-  lastApiCode: state.result ? state.result.apiResultHttpCode : null,
+  lastApiHttpCode: state.result ? state.result.lastApiResultHttpCode : null,
+  lastApiErrorCode: state.result ? state.result.lastApiResultErrorCode : null,
+  lastApiErrorMessage: state.result ? state.result.lastApiResultMessage : null,
   currentUser: state.auth.currentUser,
 });
 

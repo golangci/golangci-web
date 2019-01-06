@@ -34,19 +34,20 @@ const makeApiRequest = (path: string, method: string, cookie?: string, data?: an
     method,
     headers,
     withCredentials: true,
-  }).then<IApiResponse>((resp) => {
+  }).then<IApiResponse>((resp: any) => {
     console.info("API: %s: %s: got response %d for %sms with cookie %s", method, path, resp.status, Date.now() - startTime, cookie);
-    return {data: resp.data, status: resp.status};
+    return {data: resp.data, status: resp.status, requestMethod: method};
   })
-  .catch<IApiResponse>((error) => {
+  .catch<IApiResponse>((error: any) => {
     console.warn("API: %s: %s: got error with cookie %s: %s for %sms", method, path, cookie, error, Date.now() - startTime);
-    return {error};
+    return {error, requestMethod: method};
   });
 };
 
 export interface IApiResponse {
   error?: any;
   data?: any;
+  requestMethod: string;
 }
 
 export const getApiHttpCode = (resp: IApiResponse): number => {
@@ -54,14 +55,38 @@ export const getApiHttpCode = (resp: IApiResponse): number => {
   return code;
 };
 
+export const getApiErrorCode = (resp: IApiResponse): string => {
+  const errResponse = (resp && resp.error && resp.error.response) ? resp.error.response : null;
+  if (errResponse && errResponse.data && errResponse.data.error) {
+    const err = errResponse.data.error;
+    return err.code;
+  }
+
+  return null;
+};
+
+export const getApiErrorMessage = (resp: IApiResponse): string => {
+  const errResponse = (resp && resp.error && resp.error.response) ? resp.error.response : null;
+  if (errResponse && errResponse.data && errResponse.data.error) {
+    const err = errResponse.data.error;
+    return err.message;
+  }
+
+  return null;
+};
+
 export function* processError(apiUrl: string, resp: IApiResponse, debugMessage: string, dontShowToast?: boolean) {
-  const code = getApiHttpCode(resp);
-  yield put(onGotApiResult(code));
+  const httpCode = getApiHttpCode(resp);
+  const errCode = getApiErrorCode(resp);
+  const errMessage = getApiErrorMessage(resp);
+
+  const showErrMessageAsToast = resp && resp.requestMethod !== "GET";
+
+  yield put(onGotApiResult(httpCode, errCode, showErrMessageAsToast ? null : errMessage));
+
   reportError("api error", {error: !resp ? "no response" : resp.error, apiUrl});
   console.error("api error:", debugMessage, resp);
-  if (!dontShowToast && code !== 403) {
-    const errResp = (resp && resp.error && resp.error.response && resp.error.response.data) ? resp.error.response.data : null;
-    const errMessage = (errResp && errResp.error && errResp.error.message) ? errResp.error.message : null;
+  if (!dontShowToast && httpCode !== 403 && showErrMessageAsToast) {
     if (errMessage) {
       toastr.error("Error", errMessage);
     } else {
