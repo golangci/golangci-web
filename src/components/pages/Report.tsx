@@ -39,7 +39,7 @@ class Report extends React.Component<IProps> {
 
   private fetchAnalysis() {
     const p = this.props.match.params;
-    this.props.fetchAnalysis(p.owner, p.name, p.prNumber);
+    this.props.fetchAnalysis(p.owner, p.name, Number(p.prNumber));
   }
 
   public componentWillMount() {
@@ -232,6 +232,7 @@ class Report extends React.Component<IProps> {
         showHeader={false}
         columns={columns}
         pagination={false}
+        sortDirections={[]}
         dataSource={table}
       />
     );
@@ -268,6 +269,7 @@ class Report extends React.Component<IProps> {
         showHeader={false}
         columns={columns}
         pagination={false}
+        sortDirections={[]}
         dataSource={rows} />
     );
   }
@@ -459,9 +461,13 @@ class Report extends React.Component<IProps> {
       blocks.push(block);
     }
 
+    const title = ca.GithubPullRequestNumber ?
+      `Report for Pull Request ${ca.GithubRepoName}#${ca.GithubPullRequestNumber}` :
+      `Report for Repo ${ca.GithubRepoName}`;
+
     return (
       <Row>
-        <Helmet title={`Report for Pull Request ${ca.GithubRepoName}#${ca.GithubPullRequestNumber}`} />
+        <Helmet title={title} />
         <Col xs={{span: 24}} lg={{offset: 4, span: 16}}>
           <h2>Analysis of {ca.GithubRepoName}</h2>
           {!ca.IsPreparing && !ca.RepoIsNotConnected && (
@@ -509,7 +515,7 @@ class Report extends React.Component<IProps> {
 interface IParams {
   owner: string;
   name: string;
-  prNumber: number;
+  prNumber: string;
 }
 
 const mapStateToProps = (state: IAppStore, routeProps: RouteComponentProps<IParams>): any => {

@@ -15,7 +15,8 @@ import { setMobileDetect, mobileParser } from "react-responsive-redux";
 let webpackPartialTmpl: string;
 
 const render = (req: express.Request, res: express.Response) => {
-  if (!req.host.endsWith("golangci.com")) {
+  if (req.hostname !== "golangci.com" && req.hostname !== "dev.golangci.com") {
+    console.info("got request to hostname %s, redirecting to https://golangci.com", req.hostname);
     res.redirect(307, "https://golangci.com/");
     return;
   }
@@ -118,7 +119,7 @@ const amplitudeScript = `
 <script type="text/javascript">
   (function(e,t){var n=e.amplitude||{_q:[],_iq:{}};var r=t.createElement("script")
   ;r.type="text/javascript";r.async=true
-  ;r.src="https://cdn.amplitude.com/libs/amplitude-4.1.0-min.gz.js"
+  ;r.src="https://cdn.amplitude.com/libs/amplitude-4.5.2-min.gz.js"
   ;r.onload=function(){if(e.amplitude.runQueuedFunctions){
   e.amplitude.runQueuedFunctions()}else{
   console.log("[Amplitude] Error: could not load SDK")}}

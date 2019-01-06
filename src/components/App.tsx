@@ -110,19 +110,17 @@ class App extends React.Component<IProps> {
   public render() {
     return (
     <>
-      <Helmet
-        meta={[
-          {property: "og:locale", content: "en_US"},
-          {property: "og:site_name", content: "golangci.com"},
-          {
-            property: "og:url",
-            content: `${HOST}${this.props.location.pathname}${this.props.location.search}`,
-          },
-          {charset: "utf-8"},
-          {"http-equiv": "X-UA-Compatible", "content": "IE=edge"},
-          {name: "viewport", content: "width=device-width, initial-scale=1.0"},
-        ]}
-      />
+      <Helmet>
+        <meta property="og:locale" content="en_US" />
+        <meta property="og:site_name" content="golangci.com" />
+        <meta
+          property="og:url"
+          content={`${HOST}${this.props.location.pathname}${this.props.location.search}`}
+        />
+        <meta charSet="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      </Helmet>
 
       <Layout className="layout">
         <Header />

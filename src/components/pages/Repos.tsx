@@ -12,6 +12,7 @@ import { postEvent } from "modules/events";
 import { buildPricingPlan, Plan, payStandardPlanText } from "components/blocks/PricingTable";
 import { Link } from "react-router-dom";
 import { isXsScreenWidth } from "modules/utils/device";
+import Helmet from "react-helmet";
 
 interface IRepoGroup {
   name: string;
@@ -300,6 +301,7 @@ class Repos extends React.Component<IProps> {
   public render() {
     return (
       <>
+        <Helmet title="GolangCI Repos" />
         <Row>
           <Col offset={4} span={16}>
             <Row>

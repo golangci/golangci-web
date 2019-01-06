@@ -9,6 +9,7 @@ import FormItem from "antd/lib/form/FormItem";
 import { push } from "react-router-redux";
 import { getLoader } from "components/lib/loader";
 import { ISub, fetchSub } from "modules/subs";
+import Helmet from "react-helmet";
 
 interface IStateProps {
   org: IOrg;
@@ -118,6 +119,7 @@ class OrgSettings extends React.Component<IProps> {
 
     return (
       <>
+        <Helmet title={`Organization ${org.provider}/${org.name} Settings`} />
         <Row>
           <Col offset={6} span={12}>
             <h1>Configure Users for Organization ‘{org.provider}/{org.name}’</h1>

@@ -48,15 +48,20 @@ server {
       }
 
       location / {
+         proxy_set_header X-Real-IP  $remote_addr;
+         proxy_set_header X-Forwarded-For $remote_addr;
+         proxy_set_header Host $host;
          proxy_pass http://127.0.0.1:8080;
       }
     }
 ```
 
 ### How to lint code
+
 ```bash
 npm run lint_fix
 ```
+
 It will run `tslint` in auto-fix mode.
 
 ### How to make test build

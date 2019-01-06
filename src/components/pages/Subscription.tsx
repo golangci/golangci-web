@@ -12,6 +12,7 @@ import { checkAuth, IUser } from "modules/auth";
 import { buildPricingPlan, Plan } from "components/blocks/PricingTable";
 import { toastr } from "react-redux-toastr";
 import { Decimal } from "decimal.js";
+import Helmet from "react-helmet";
 
 interface IStateProps {
   org: IOrg;
@@ -161,6 +162,7 @@ class SubUpdater extends React.Component<IProps> {
     const orgSeatsCount = org.settings.seats.length;
     if (orgSeatsCount === 0) {
       return <>
+          <Helmet title={`Subscription for ${org.provider}/${org.name}`} />
           <p>You haven't set any user emails for the organization. Need to set at least one email to subscribe.</p>
           {this.renderGoBackButton()}
         </>;
@@ -170,6 +172,7 @@ class SubUpdater extends React.Component<IProps> {
     const buyText = sub.trialAllowanceInDays ? `Start ${sub.trialAllowanceInDays}-day free trial` : `Subscribe now`;
 
     return <>
+        <Helmet title={`Subscription for ${org.provider}/${org.name}`} />
         <h1>Configure Users for Organization ‘{org.provider}/{org.name}’</h1>
         <p>
           Pull Requests only from configured user emails will be analyzed.
@@ -191,6 +194,7 @@ class SubUpdater extends React.Component<IProps> {
     if (orgSeatsCount === sub.seatsCount) {
       // if user returned back or get to url manually
       return <>
+          <Helmet title={`Active Subscription for ${org.provider}/${org.name}`} />
           {this.renderActiveSubStatus()}
           <Button onClick={() => this.props.push(`/orgs/${org.provider}/${org.name}`)}>
             Back
@@ -201,6 +205,7 @@ class SubUpdater extends React.Component<IProps> {
     const priceTotal = new Decimal(sub.pricePerSeat).mul(orgSeatsCount);
     const seatsDiff = orgSeatsCount - sub.seatsCount;
     return <>
+        <Helmet title={`Update Subscription for ${org.provider}/${org.name}`} />
         {this.renderActiveSubStatus()}
         <p className="lead-font">You've configured {orgSeatsCount} ({seatsDiff > 0 ? "+" : ""}{seatsDiff}) users, the new price will be ${priceTotal.toString()}/month</p>
         <Button className="subscription-update-btn" type="primary" loading={this.props.isSubUpdating} onClick={() => this.props.updateSub(orgSeatsCount)}>

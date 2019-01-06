@@ -1,18 +1,7 @@
 const path = require('path');
 const webpack = require("webpack");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-
-function isExternal(module) {
-  var context = module.context;
-
-  if (typeof context !== 'string') {
-    return false;
-  }
-
-  return context.indexOf('node_modules') !== -1;
-}
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 function run() {
   const isProd = process.env.NODE_ENV === 'production';
@@ -43,11 +32,12 @@ function run() {
 
   var api_host = process.env.API_HOST || (isProd ? `https://api.golangci.com` : 'https://api.dev.golangci.com');
 
-  var host = process.env.HOST || (isProd ? 'https://golangci.com' : 'https://dev.golangci.com');
-  var runSuffixCommon = `${runMode}.${isServer ? "server" : "client"}.[name]`;
-  var runSuffixForChunk = `${runSuffixCommon}${(isProd && !isServer) ? ".[chunkhash:6]" : ""}`;
-  var runSuffixForCss = `${runSuffixCommon}${(isProd && !isServer) ? ".[contenthash:6]" : ""}`;
-  var runSuffix = `${runSuffixCommon}${(isProd && !isServer) ? ".[hash:6]" : ""}`;
+  const host = process.env.HOST || (isProd ? 'https://golangci.com' : 'https://dev.golangci.com');
+  const runSuffixCommon = `${runMode}.${isServer ? "server" : "client"}.[name]`;
+  const runSuffixForChunk = `${runSuffixCommon}${(isProd && !isServer) ? ".[chunkhash:6]" : ""}`;
+  const runSuffixForCss = `${runSuffixCommon}${(isProd && !isServer) ? ".[md5:contenthash:hex:20]" : ""}`;
+  const runSuffixForServerJs = runSuffixCommon;
+  const runSuffixForFiles = runSuffixForChunk;
 
   var plugins = [
     new webpack.LoaderOptionsPlugin({
@@ -76,13 +66,7 @@ function run() {
   ];
 
   if ((isProd || needAnalyze) && !isServer) {
-    plugins = plugins.concat([
-      new webpack.optimize.OccurrenceOrderPlugin(true),
-      new webpack.optimize.CommonsChunkPlugin({
-        name: 'vendor',
-        minChunks: isExternal,
-      }),
-    ]);
+    plugins.push(new webpack.optimize.OccurrenceOrderPlugin(true));
   }
 
   if (isProd || needOptimize) {
@@ -233,7 +217,7 @@ function run() {
              use: [{
                loader: 'file-loader',
                options: {
-                 name: `${runSuffix}.[ext]`,
+                 name: `${runSuffixForFiles}.[ext]`,
                  outputPath: 'fonts/',    // where the fonts will go
                  publicPath: './'       // override the default path
                }
@@ -253,7 +237,7 @@ function run() {
       target: 'node',
       output: {
         path: outPath,
-        filename: `${runSuffix}.js`,
+        filename: `${runSuffixForServerJs}.js`,
         libraryTarget: 'commonjs2',
       },
     });
@@ -269,6 +253,24 @@ function run() {
           publicPath: '/',
       },
     });
+
+    if (isProd || needOptimize) {
+      config.optimization = {
+        splitChunks: {
+          cacheGroups: {
+              default: false,
+              vendors: false,
+              // vendor chunk
+              vendor: {
+                  // sync + async chunks
+                  chunks: 'all',
+                  // import file path containing node_modules
+                  test: /node_modules/,
+              }
+          }
+        }
+      };
+    }
   }
 
   console.info(config);
