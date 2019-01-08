@@ -237,7 +237,10 @@ window.addEventListener("load", function(){
 
 const paddleScript = `<script src="https://cdn.paddle.com/paddle/paddle.js"></script>
 <script type="text/javascript">
-	Paddle.Setup({ vendor: 37456 });
+  var p = window.Paddle;
+	if (p !== undefined) {
+    Paddle.Setup({ vendor: 37456 });
+  }
 </script>`;
 
 const renderHtml = (content: string, state: IAppStore) => {
