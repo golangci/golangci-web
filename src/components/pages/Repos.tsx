@@ -152,6 +152,13 @@ class Repos extends React.Component<IProps> {
     const btnDisabled = !r.isAdmin;
     const helpText = "Only repo admins can manage the repo";
 
+    if (r.isCreating || r.isDeleting) {
+      // TODO: poll it's status
+      return (
+        <Button loading={true}>{r.isCreating ? "Connecting" : "Disconnecting"}...</Button>
+      );
+    }
+
     if (r.isActivated) {
       return (
         <>

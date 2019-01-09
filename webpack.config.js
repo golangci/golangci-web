@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require("webpack");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 function run() {
   const isProd = process.env.NODE_ENV === 'production';
@@ -10,8 +11,6 @@ function run() {
   const isServer = process.env.IS_SERVER === '1';
   const needOptimize = process.env.OPTIMIZE === '1';
   console.log('is production: %s, NODE_ENV: "%s", isServer: %s', isProd, process.env.NODE_ENV, isServer);
-
-  const tsxLoaders = ['babel-loader', 'awesome-typescript-loader'];
 
   const lessLoaderImpl = `less-loader?{"sourceMap":true}`;
   const cssLoaders = ['css-loader', 'sass-loader', lessLoaderImpl];
@@ -40,6 +39,7 @@ function run() {
   const runSuffixForFiles = runSuffixForChunk;
 
   var plugins = [
+    new ForkTsCheckerWebpackPlugin(),
     new webpack.LoaderOptionsPlugin({
       minimize: isProd,
       options: {
@@ -76,7 +76,8 @@ function run() {
         safari10: true,
         ecma: 5,
         warnings: true,
-      }
+      },
+      sourceMap: true,
     }));
   }
 
@@ -99,17 +100,6 @@ function run() {
         cache: true,
       })
     );
-
-    const RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin')
-    const sourceVersion = process.env.SOURCE_VERSION || "dev";
-    console.log("source version is '%s'", sourceVersion);
-    plugins.push(
-      new RollbarSourceMapPlugin({
-        accessToken: '8d9dee66de9a4cc2acbec93d4ee98fa8',
-        version: sourceVersion,
-        publicPath: "https://golangci.com/",
-      })
-    );
   }
 
   if (needAnalyze) {
@@ -119,6 +109,116 @@ function run() {
 
   const outPath = path.join(__dirname, process.env.DIST_DIR || ('dist/' + runMode));
 
+  let loadRules = [];
+  if (isProd) {
+    loadRules.push({
+      test: /\.tsx?$/,
+      enforce: "pre",
+      loader: 'tslint-loader',
+      exclude: [/node_modules/],
+    });
+  }
+  loadRules = loadRules.concat([
+    {
+      test: /\.tsx?$/,
+      exclude: [/node_modules/],
+      use: {
+        loader: "babel-loader",
+        options: {
+          cacheDirectory: true,
+          babelrc: false,
+          presets: [
+            [
+              "@babel/preset-env",
+              { targets: { browsers: "> 1%" } }
+            ],
+            "@babel/preset-typescript",
+            "@babel/preset-react"
+          ],
+          plugins: [
+            "@babel/plugin-transform-regenerator",
+            ["import", {"libraryName": "antd"}],
+            "react-hot-loader/babel"
+          ]
+        }
+      }
+    },
+
+    {
+      test: /\.css$/,
+      loader: cssLoader,
+    },
+
+    {
+      test: /\.scss$/,
+      loader: sassLoader,
+    },
+
+    {
+      test: /\.less$/,
+      loader: lessLoader,
+    },
+
+    {
+     test: /\.(png|jpg|jpeg|gif)$/,
+     use: [
+       {
+         loader: "file-loader",
+          options: {
+            outputPath: "images/",
+            publicPath: isProd ? "/js/dist/images/" : undefined,
+          },
+       }
+     ]
+   },
+
+    {
+      test: /\.svg$/,
+      use: [
+        {
+          loader: "babel-loader"
+        },
+        {
+          loader: "react-svg-loader",
+          options: {
+            es5: true,
+            svgo: {
+              plugins: [
+                {removeAttrs: {attrs: 'xmlns.*'},},
+                {removeTitle: false},
+                {cleanupIDs: false},
+              ]
+            }
+          }
+        }
+      ],
+    },
+    {
+      enforce: "pre",
+      test: /\.(j|t)sx?$/,
+      exclude: [
+        /node_modules\/mutationobserver-shim/g,
+        /node_modules\/react-component-octicons/g,
+      ],
+      loader: "source-map-loader"
+    },
+
+    {
+     test: /.(ttf|otf|eot|woff(2)?)(\?[a-z0-9]+)?$/,
+     use: [{
+       loader: 'file-loader',
+       options: {
+         name: `${runSuffixForFiles}.[ext]`,
+         outputPath: 'fonts/',    // where the fonts will go
+         publicPath: './'       // override the default path
+       }
+     }]
+   },
+  ]);
+
+  // controls source map generation mode
+  const devtool = isServer ? undefined : (isProd ? "source-map" : "eval-source-map");
+
   var commonConfig = {
     devServer: {
       open: true, // to open the local server in browser
@@ -126,9 +226,7 @@ function run() {
       historyApiFallback: true,
     },
     plugins: plugins,
-
-    // Enable sourcemaps for debugging webpack's output.
-    //devtool: "source-map",
+    devtool: devtool,
 
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.
@@ -146,84 +244,7 @@ function run() {
     },
 
     module: {
-        rules: [
-            // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
-            {
-              test: /\.tsx?$/,
-              enforce: "pre",
-              loader: 'tslint-loader',
-              exclude: [/node_modules/],
-            },
-            {
-              test: /\.tsx?$/,
-              loaders: tsxLoaders,
-              exclude: [/node_modules/],
-            },
-
-            {
-              test: /\.css$/,
-              loader: cssLoader,
-            },
-
-            {
-              test: /\.scss$/,
-              loader: sassLoader,
-            },
-
-            {
-              test: /\.less$/,
-              loader: lessLoader,
-            },
-
-            {
-             test: /\.(png|jpg|gif)$/,
-             use: [
-               {
-                 loader: "file-loader",
-                  options: {
-                    outputPath: "images/",
-                    publicPath: isProd ? "/js/dist/images/" : undefined,
-                  },
-               }
-             ]
-           },
-
-            {
-              test: /\.svg$/,
-              use: [
-                {
-                  loader: "babel-loader"
-                },
-                {
-                  loader: "react-svg-loader",
-                  options: {
-                    es5: true,
-                    svgo: {
-                      plugins: [
-                        {removeAttrs: {attrs: 'xmlns.*'},},
-                        {removeTitle: false},
-                        {cleanupIDs: false},
-                      ]
-                    }
-                  }
-                }
-              ],
-            },
-            // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
-            //{ enforce: "pre", test: /\.js$/, loader: "source-map-loader" },
-
-            {
-             test: /.(ttf|otf|eot|woff(2)?)(\?[a-z0-9]+)?$/,
-             use: [{
-               loader: 'file-loader',
-               options: {
-                 name: `${runSuffixForFiles}.[ext]`,
-                 outputPath: 'fonts/',    // where the fonts will go
-                 publicPath: './'       // override the default path
-               }
-             }]
-           },
-        ]
+        rules: loadRules,
     },
   }
 
@@ -232,7 +253,7 @@ function run() {
     config = Object.assign({}, commonConfig, {
       name: 'server-side rendering',
       entry: {
-        app: ['babel-polyfill', './src/server'],
+        app: ['@babel/polyfill', './src/server'],
       },
       target: 'node',
       output: {
@@ -244,7 +265,7 @@ function run() {
   } else {
     config = Object.assign({}, commonConfig, {
       entry: {
-        app: ['babel-polyfill', './src/client'],
+        app: ['@babel/polyfill', './src/client'],
       },
       name: 'browser',
       output: {

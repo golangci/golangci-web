@@ -3,6 +3,7 @@ import Header from "components/layout/Header";
 import Footer from "components/layout/Footer";
 import { Helmet } from "react-helmet";
 import { withRouter, RouteComponentProps } from "react-router-dom";
+import { hot } from "react-hot-loader/root";
 
 import { Layout, Alert, Row, Button, Icon } from "antd";
 
@@ -150,4 +151,11 @@ const mapStateToProps = (state: IAppStore): any => ({
   currentUser: state.auth.currentUser,
 });
 
-export default withRouter(connect<IStateProps, IDispatchProps, IOwnProps>(mapStateToProps)(App));
+let app = withRouter(connect<IStateProps, IDispatchProps, IOwnProps>(mapStateToProps)(App));
+
+if (__DEV__) {
+  app = hot(app);
+  console.info("Wrapped app into react-hot-loader");
+}
+
+export default app;

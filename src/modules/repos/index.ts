@@ -81,7 +81,9 @@ export interface IRepo {
   isAdmin: boolean;
   isPrivate: boolean;
   isActivated: boolean;
-  isActivatingNow?: boolean;
+  isActivatingNow?: boolean; // client-side tracking
+  isCreating?: boolean; // server-side tracking
+  isDeleting?: boolean; // server-side tracking
   language?: string;
 }
 
@@ -239,10 +241,10 @@ function* doActivateRepoRequest({name}: any) {
 
   let delay = initialDelayMs;
   for (let i = 0; i < maxAttempts; i++) {
-    const getUrl = `/v1/repos/${repoId}`;
+    const getUrl = `/v1/repos/${repoId}?name=${name}`; // use ?name= just for logging/debugging
     const getResp = yield call(makeApiGetRequest, getUrl, state.auth.cookie);
     if (!getResp || getResp.error) {
-      yield* processError(getUrl, getResp, `Can't get repo activation status`);
+      yield* processError(getUrl, getResp, `Can't get repo activation status`, false, true);
       yield put(onDeactivatedRepo(name));
       return;
     }
@@ -258,7 +260,7 @@ function* doActivateRepoRequest({name}: any) {
     delay *= delayIncreaseCoef;
   }
 
-  yield* processError("", null, `Timeouted to get repo activation status`);
+  yield* processError("", null, `Timeouted to get repo activation status`, false, true);
   yield put(onDeactivatedRepo(name));
 }
 
@@ -278,10 +280,10 @@ function* doDeactivateRepoRequest({name, id}: any) {
 
   let delay = initialDelayMs;
   for (let i = 0; i < maxAttempts; i++) {
-    const getUrl = `/v1/repos/${id}`;
+    const getUrl = `/v1/repos/${id}?name=${name}`; // use ?name= just for logging/debugging
     const getResp = yield call(makeApiGetRequest, getUrl, state.auth.cookie);
     if (!getResp || getResp.error) {
-      yield* processError(getUrl, getResp, `Can't get repo deactivation status`);
+      yield* processError(getUrl, getResp, `Can't get repo deactivation status`, false, true);
       yield put(onActivatedRepo(name, id));
       return;
     }
@@ -297,7 +299,7 @@ function* doDeactivateRepoRequest({name, id}: any) {
     delay *= delayIncreaseCoef;
   }
 
-  yield* processError("", null, `Timeouted to get repo activation status`);
+  yield* processError("", null, `Timeouted to get repo activation status`, false, true);
   yield put(onActivatedRepo(name, id));
 }
 

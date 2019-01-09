@@ -75,12 +75,12 @@ export const getApiErrorMessage = (resp: IApiResponse): string => {
   return null;
 };
 
-export function* processError(apiUrl: string, resp: IApiResponse, debugMessage: string, dontShowToast?: boolean) {
+export function* processError(apiUrl: string, resp: IApiResponse, debugMessage: string, dontShowToast?: boolean, forceToast?: boolean) {
   const httpCode = getApiHttpCode(resp);
   const errCode = getApiErrorCode(resp);
   const errMessage = getApiErrorMessage(resp);
 
-  const showErrMessageAsToast = resp && resp.requestMethod !== "GET";
+  const showErrMessageAsToast = forceToast || (resp && resp.requestMethod !== "GET");
 
   yield put(onGotApiResult(httpCode, errCode, showErrMessageAsToast ? null : errMessage));
 
