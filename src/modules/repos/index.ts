@@ -85,6 +85,7 @@ export interface IRepo {
   isCreating?: boolean; // server-side tracking
   isDeleting?: boolean; // server-side tracking
   language?: string;
+  createFailReason?: string;
 }
 
 export interface IOrganization {
@@ -249,7 +250,14 @@ function* doActivateRepoRequest({name}: any) {
       return;
     }
 
-    if (!getResp.data.repo.isCreating) {
+    const repo = getResp.data.repo;
+    if (repo.createFailReason) {
+      yield* processError(getUrl, getResp, `Failed to connect repo: ${repo.createFailReason}`, false, true);
+      yield put(onDeactivatedRepo(name));
+      return;
+    }
+
+    if (!repo.isCreating) {
       console.info(`got activation status from ${i + 1}-th attempt`);
       yield put(onActivatedRepo(name, repoId));
       yield call(reachGoal, "repos", "connect");
