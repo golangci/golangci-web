@@ -6,6 +6,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "mkdir -p dist/dev && NODE_ENV=development webpack-dev-server --port 5000 --hot --inline --public dev.golangci.com --mode=development",
+    "caddy": "caddy -conf deployments/dev/Caddyfile &",
     "start": "NODE_ENV=production node src/express.js",
     "build_client": "NODE_ENV=production webpack --progress --display-error-details --mode=production",
     "build_server": "NODE_ENV=production IS_SERVER=1 webpack --progress --mode=production",

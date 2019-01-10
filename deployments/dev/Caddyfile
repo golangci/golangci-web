@@ -1,0 +1,12 @@
+dev.golangci.com:443 {
+    tls ssl/golangci.crt ssl/golangci.key
+    proxy / 127.0.0.1:5000
+    proxy /sockjs-node 127.0.0.1:5000 {
+        websocket
+        transparent
+    }
+}
+api.dev.golangci.com:443 {
+    tls ssl/golangci.crt ssl/golangci.key
+    proxy / 127.0.0.1:3000
+}
