@@ -302,7 +302,7 @@ class Report extends React.Component<IProps> {
 
     const err = (rj && rj.WorkerRes && rj.WorkerRes.Error) ? rj.WorkerRes.Error : null;
 
-    if (!err && !warnings.length && !ca.NextAnalysisStatus && !ca.IsPreparing && !ca.RepoIsNotConnected) {
+    if (!err && !warnings.length && !ca.NextAnalysisStatus && !ca.IsPreparing && !ca.RepoIsNotConnected && !ca.IsEmpty) {
       return null;
     }
 
@@ -326,6 +326,15 @@ class Report extends React.Component<IProps> {
             type="info"
             showIcon
             key="alert-being-prepared"
+          />
+        )}
+        {ca.IsEmpty && (
+          <Alert
+            message={`Empty`}
+            description={`Repo is empty`}
+            type="info"
+            showIcon
+            key="alert-is-empty"
           />
         )}
         {ca.RepoIsNotConnected && (
@@ -569,7 +578,7 @@ class Report extends React.Component<IProps> {
         <Helmet title={title} />
         <Col xs={{span: 24}} lg={{offset: 4, span: 16}}>
           <h2>Analysis of {ca.GithubRepoName}</h2>
-          {!ca.IsPreparing && !ca.RepoIsNotConnected && (
+          {!ca.IsPreparing && !ca.RepoIsNotConnected && !ca.IsEmpty && (
             <>
               <div className="report-tables-container">
                 <Row>
