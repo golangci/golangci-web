@@ -55,3 +55,34 @@
 .report-table .ant-table {
     font-size: 0.9em;
 }
+
+.report-toolbar-build-log-btn {
+    margin-right: 1vw;
+}
+
+.report-build-log {
+    margin-bottom: 2vh;
+}
+
+.report-build-log-group-panel {
+    background: #212121;
+}
+
+.report-build-log-group-panel-text {
+    color: #edede3;
+    font-family: 'Roboto Mono', monospace;
+
+    white-space: pre-wrap;       /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+.report-build-log-group-panel i {
+    color: #edede3;
+}
+
+.report-build-log-group-panel-tag {
+    margin-left: 4px;
+}

@@ -8,6 +8,7 @@ import {
 enum AnalyzesAction {
   Fetch = "@@GOLANGCI/ANALYZES/FETCH",
   Fetched = "@@GOLANGCI/ANALYZES/FETCHED",
+  BuildLogTogglePanels = "@@GOLANGCI/BUILDLOG/PANELS/TOGGLE",
 }
 
 export const fetchAnalysis = (owner: string, name: string, prNumber?: number) => ({
@@ -15,6 +16,11 @@ export const fetchAnalysis = (owner: string, name: string, prNumber?: number) =>
   owner,
   name,
   prNumber,
+});
+
+export const buildLogTogglePanels = (keys: string[]) => ({
+  type: AnalyzesAction.BuildLogTogglePanels,
+  keys,
 });
 
 const onAnalysisFetched = (analysisState: IAnalysisState) => ({
@@ -37,6 +43,23 @@ export interface IAnalysisState {
 interface IAnalysisResultJSON {
   GolangciLintRes: IGolangciLintRes;
   WorkerRes: IWorkerRes;
+  BuildLog: IBuildLog;
+}
+
+interface IBuildLog {
+  Groups: IBuildGroup[];
+}
+
+export interface IBuildGroup {
+  Name: string;
+  Duration: number; // nanoseconds from time.Duration
+  Steps: IBuildStep[];
+}
+
+interface IBuildStep {
+  Description: string;
+  Error: string;
+  OutputLines: string[];
 }
 
 interface IWorkerRes {
@@ -85,6 +108,7 @@ interface IPos {
 
 export interface IAnalyzesStore {
   current?: IAnalysisState;
+  buildLogActivePanels?: string[];
 }
 
 const current = (state: IAnalysisState = null, action: any): IAnalysisState => {
@@ -98,8 +122,22 @@ const current = (state: IAnalysisState = null, action: any): IAnalysisState => {
   }
 };
 
+const buildLogActivePanels = (state: string[] = [], action: any): string[] => {
+  switch (action.type) {
+    case AnalyzesAction.Fetch:
+      return [];
+    case AnalyzesAction.Fetched:
+      return [];
+    case AnalyzesAction.BuildLogTogglePanels:
+      return action.keys;
+    default:
+      return state;
+  }
+};
+
 export const reducer = combineReducers<IAnalyzesStore>({
   current,
+  buildLogActivePanels,
 });
 
 function* doFetchAnalysis({prNumber, owner, name}: any) {

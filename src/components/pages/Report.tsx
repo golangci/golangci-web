@@ -1,9 +1,9 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router";
-import { List, Row, Col, Table, Tag, Alert, Tooltip, Switch, Button, Icon } from "antd";
+import { List, Row, Col, Table, Tag, Alert, Tooltip, Switch, Button, Icon, Card, Collapse } from "antd";
 import { IAppStore } from "reducers";
-import { IAnalysisState, IIssue, IWarning, fetchAnalysis } from "modules/analyzes";
+import { IAnalysisState, IIssue, IWarning, fetchAnalysis, buildLogTogglePanels, IBuildGroup } from "modules/analyzes";
 import { processWarning } from "modules/utils/strings";
 import moment from "moment";
 import Helmet from "react-helmet";
@@ -13,21 +13,25 @@ import { toggle, IStore as IToggleStore } from "modules/toggle";
 import { isXsScreenWidth } from "modules/utils/device";
 import { Link } from "react-router-dom";
 import { getLoader } from "components/lib/loader";
+import queryString from "query-string";
 
 moment.locale("en");
 
 const hideCodeToggleKey = "hideCode";
+const showBuildLogToggleKey = "showBuildLog";
 
 interface IStateProps {
   curAnalysis?: IAnalysisState;
   hideCode?: boolean;
   toggleMap: IToggleStore;
   lastApiErrorCode: string;
+  buildLogActivePanels: string[];
 }
 
 interface IDispatchProps {
   fetchAnalysis(owner: string, name: string, prNumber?: number): void;
   toggle(name: string, value?: boolean): void;
+  buildLogTogglePanels(keys: string[]): void;
 }
 
 interface IProps extends IStateProps, IDispatchProps, RouteComponentProps<IParams> {}
@@ -47,6 +51,11 @@ class Report extends React.Component<IProps> {
         this.props.curAnalysis.GithubRepoName.toLowerCase() !==
         `${this.props.match.params.owner}/${this.props.match.params.name}`.toLowerCase()) {
       this.fetchAnalysis();
+    }
+
+    const qs = queryString.parse(this.props.location.search);
+    if (qs.buildlog === "1") {
+      this.props.toggle(showBuildLogToggleKey);
     }
   }
 
@@ -172,7 +181,7 @@ class Report extends React.Component<IProps> {
       break;
     case "processed/error":
     case "error":
-      status = <Tag color="red">Internal Error</Tag>;
+      status = <Tag color="red">Error</Tag>;
       break;
     case "processed/success":
       status = <Tag color="green">Success, no issues!</Tag>;
@@ -238,6 +247,10 @@ class Report extends React.Component<IProps> {
     );
   }
 
+  private formatDuration(durationMs: number): string {
+    return moment.duration(durationMs).asSeconds().toFixed(1) + "s";
+  }
+
   private renderRightTable(ca: IAnalysisState) {
     const columns = [
       {
@@ -259,7 +272,7 @@ class Report extends React.Component<IProps> {
       rows.push({
         key: t.Name,
         a: t.Name,
-        b: (<span>{moment.duration(t.DurationMs).asSeconds().toFixed(1)}s</span>),
+        b: (<span>{this.formatDuration(t.DurationMs)}</span>),
       });
     }
 
@@ -336,7 +349,7 @@ class Report extends React.Component<IProps> {
         {err && (
           <Alert
             message="Error"
-            description={processWarning(err)}
+            description={processWarning(err, ", see build log")}
             type="error"
             showIcon
             key="alert-error"
@@ -414,6 +427,33 @@ class Report extends React.Component<IProps> {
     );
   }
 
+  private getBuildGroupText(sg: IBuildGroup): string {
+    const lines: string[] = [];
+    for (const step of sg.Steps) {
+      lines.push(step.Description);
+      if (step.Error) {
+        lines.push(`Error: ${step.Error}`);
+      }
+      if (step.OutputLines) {
+        for (const line of step.OutputLines) {
+          lines.push("    " + line);
+        }
+      }
+    }
+
+    return lines.join("\n");
+  }
+
+  private doesGroupHaveError(sg: IBuildGroup): boolean {
+    for (const step of sg.Steps) {
+      if (step.Error) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   private renderNoAccessOrDoesntExistError(): JSX.Element {
     return (
       <Alert
@@ -465,36 +505,97 @@ class Report extends React.Component<IProps> {
       `Report for Pull Request ${ca.GithubRepoName}#${ca.GithubPullRequestNumber}` :
       `Report for Repo ${ca.GithubRepoName}`;
 
+    const buildLog = (ca.ResultJSON && ca.ResultJSON.BuildLog) ? ca.ResultJSON.BuildLog : null;
+
+    const needShowBuildLog = this.props.toggleMap[showBuildLogToggleKey];
+    let buildLogArea: JSX.Element = null;
+    if (needShowBuildLog && buildLog) {
+      buildLogArea = (
+        <div className="report-build-log">
+          <Collapse
+            bordered={false}
+            activeKey={this.props.buildLogActivePanels}
+            onChange={(activePanels: string[]) => this.props.buildLogTogglePanels(activePanels)}
+          >
+            {buildLog.Groups.map((group, i) => (
+              <Collapse.Panel
+                header={
+                  <>
+                    <span className="report-build-log-group-panel-text">
+                      {group.Name + (group.Name !== "run goenvbuild" ? ` (${this.formatDuration(group.Duration / 1000000)})` : "")}
+                    </span>
+                    {this.doesGroupHaveError(group) ?
+                      <span className="report-build-log-group-panel-tag"><Tag color="red">error</Tag></span> :
+                      null}
+                  </>
+                }
+                key={i.toString()}
+                className="report-build-log-group-panel"
+              >
+                <pre className="report-build-log-group-panel-text">{this.getBuildGroupText(group)}</pre>
+              </Collapse.Panel>
+            ))}
+          </Collapse>
+        </div>
+      );
+    }
+
+    const toolBar = (
+      <Row type="flex" justify="end">
+        <div className="report-toolbar">
+          {buildLog &&  (
+            <span className="report-toolbar-build-log-btn">
+              <Button
+                onClick={() => this.props.toggle(showBuildLogToggleKey)}
+                type={ca.Status === "error" ? "danger" : "default"}
+              >
+                <Icon type={needShowBuildLog ? "up" : "down"} />
+                {`${needShowBuildLog ? "Hide" : "Show"} Build Log`}
+              </Button>
+            </span>
+          )}
+          {(!isXsScreenWidth() && this.haveAtLeastOneSourceLine(issues)) && (
+            <>
+              <span className="report-show-code">Show Code</span>
+              <Switch checked={!this.props.hideCode} onChange={this.onSwitchShowCode.bind(this)} />
+            </>
+          )}
+        </div>
+      </Row>
+    );
+
     return (
       <Row>
         <Helmet title={title} />
         <Col xs={{span: 24}} lg={{offset: 4, span: 16}}>
           <h2>Analysis of {ca.GithubRepoName}</h2>
           {!ca.IsPreparing && !ca.RepoIsNotConnected && (
-            <div className="report-tables-container">
-              <Row>
-                <Col xs={24} lg={12} className="report-table-col">
-                  <div className="status-table">
-                    <h3>Status</h3>
-                    {this.renderLeftTable(ca)}
-                  </div>
-                </Col>
-                <Col xs={24} lg={12} className="report-table-col">
-                  <div className="timings-table">
-                    <h3>Timings</h3>
-                    {this.renderRightTable(ca)}
-                  </div>
-                </Col>
-              </Row>
-            </div>
-          )}
-          {!isXsScreenWidth() && this.haveAtLeastOneSourceLine(issues) && (
-            <Row type="flex" justify="end">
-              <div className="report-toolbar">
-                <span className="report-show-code">Show Code</span>
-                <Switch checked={!this.props.hideCode} onChange={this.onSwitchShowCode.bind(this)} />
+            <>
+              <div className="report-tables-container">
+                <Row>
+                  <Col xs={24} lg={12} className="report-table-col">
+                    <div className="status-table">
+                      <h3>Status</h3>
+                      {this.renderLeftTable(ca)}
+                    </div>
+                  </Col>
+                  <Col xs={24} lg={12} className="report-table-col">
+                    <div className="timings-table">
+                      <h3>Timings</h3>
+                      {this.renderRightTable(ca)}
+                    </div>
+                  </Col>
+                </Row>
               </div>
-            </Row>
+              {toolBar}
+              {buildLogArea && (
+                <Row>
+                  <Col xs={24}>
+                    {buildLogArea}
+                  </Col>
+                </Row>
+              )}
+            </>
           )}
           {this.renderMessages(ca)}
           {blocks.map((e, i) => <div key={`linter_block_${i}`}>{e}</div>)}
@@ -518,18 +619,20 @@ interface IParams {
   prNumber: string;
 }
 
-const mapStateToProps = (state: IAppStore, routeProps: RouteComponentProps<IParams>): any => {
+const mapStateToProps = (state: IAppStore, routeProps: RouteComponentProps<IParams>): IStateProps => {
   return {
     curAnalysis: (state.analyzes && state.analyzes.current) ? state.analyzes.current : null,
     hideCode: state.toggle.store[hideCodeToggleKey],
     toggleMap: state.toggle.store,
     lastApiErrorCode: state.result ? state.result.lastApiResultErrorCode : null,
+    buildLogActivePanels: state.analyzes ? state.analyzes.buildLogActivePanels : null,
   };
 };
 
-const mapDispatchToProps = {
+const mapDispatchToProps: IDispatchProps = {
   fetchAnalysis,
   toggle,
+  buildLogTogglePanels,
 };
 
 export default connect<IStateProps, IDispatchProps, RouteComponentProps<IParams>>(mapStateToProps, mapDispatchToProps)(Report);
