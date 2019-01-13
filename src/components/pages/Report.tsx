@@ -431,13 +431,13 @@ class Report extends React.Component<IProps> {
     const lines: string[] = [];
     for (const step of sg.Steps) {
       lines.push(step.Description);
-      if (step.Error) {
-        lines.push(`Error: ${step.Error}`);
-      }
       if (step.OutputLines) {
         for (const line of step.OutputLines) {
           lines.push("    " + line);
         }
+      }
+      if (step.Error) {
+        lines.push(`Error: ${step.Error}`);
       }
     }
 
