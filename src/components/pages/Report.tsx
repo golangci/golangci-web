@@ -212,7 +212,7 @@ class Report extends React.Component<IProps> {
       `${codeLink}/commit/${ca.CommitSHA}`;
     const codeName = isPr ? `${ca.GithubRepoName}#${ca.GithubPullRequestNumber}` : ca.GithubRepoName;
     const codeId = isPr ? "Pull Request" : "Repo";
-    const table = [
+    let table = [
       {
         key: "row1",
         a: codeId,
@@ -223,17 +223,28 @@ class Report extends React.Component<IProps> {
         a: "Commit",
         b: (<a target="_blank" href={commitLink}>{ca.CommitSHA.substring(0, 7)}</a>),
       },
+    ];
+
+    if (ca.RepoAnalysisStatus && ca.RepoAnalysisStatus.DefaultBranch) {
+      table.push({
+        key: "row5",
+        a: "Default Branch",
+        b: <>{ca.RepoAnalysisStatus.DefaultBranch}</>,
+      });
+    }
+
+    table = table.concat([
       {
         key: "row4",
         a: "Analyzed",
-        b: moment(ca.CreatedAt).fromNow(),
+        b: <>{moment(ca.CreatedAt).fromNow()}</>,
       },
       {
         key: "row3",
         a: "Status",
-        b: status,
+        b: <>{status}</>,
       },
-    ];
+    ]);
 
     return (
       <Table

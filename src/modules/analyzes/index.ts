@@ -39,6 +39,11 @@ export interface IAnalysisState {
   IsPreparing?: boolean;
   RepoIsNotConnected?: boolean;
   IsEmpty?: boolean;
+  RepoAnalysisStatus?: IRepoAnalysisStatus;
+}
+
+interface IRepoAnalysisStatus {
+  DefaultBranch: string;
 }
 
 interface IAnalysisResultJSON {
