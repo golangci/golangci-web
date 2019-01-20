@@ -92,7 +92,8 @@ export interface IOrganization {
   provider: string;
   name: string;
   hasActiveSubscription: boolean;
-  isAdmin: boolean;
+  canModify: boolean;
+  cantModifyReason: string;
 }
 
 export interface IOrganizations {

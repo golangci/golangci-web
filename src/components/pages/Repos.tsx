@@ -236,10 +236,10 @@ class Repos extends React.Component<IProps> {
             type="inner"
             extra={org && org.hasActiveSubscription && this.wrapButtonWithDisablingHelp(
               <Link to={`/orgs/${org.provider}/${org.name}`}>
-                <Button disabled={!org.isAdmin}><Icon type="setting" />Active Subscription</Button>
+                <Button disabled={!org.canModify}><Icon type="setting" />Active Subscription</Button>
               </Link>,
-              !org.isAdmin,
-              "Only organization admins can manage it's subscription",
+              !org.canModify,
+              org.cantModifyReason,
             )}
           >
             {this.renderList(group.repos)}
