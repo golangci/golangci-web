@@ -29,7 +29,7 @@ interface IStateProps {
 }
 
 interface IDispatchProps {
-  fetchAnalysis(owner: string, name: string, prNumber?: number): void;
+  fetchAnalysis(owner: string, name: string, prNumber?: number, analysisGuid?: string): void;
   toggle(name: string, value?: boolean): void;
   buildLogTogglePanels(keys: string[]): void;
 }
@@ -43,7 +43,8 @@ class Report extends React.Component<IProps> {
 
   private fetchAnalysis() {
     const p = this.props.match.params;
-    this.props.fetchAnalysis(p.owner, p.name, Number(p.prNumber));
+    const qs = queryString.parse(this.props.location.search);
+    this.props.fetchAnalysis(p.owner, p.name, Number(p.prNumber), qs.analysisGuid);
   }
 
   public componentWillMount() {

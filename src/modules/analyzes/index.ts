@@ -11,11 +11,12 @@ enum AnalyzesAction {
   BuildLogTogglePanels = "@@GOLANGCI/BUILDLOG/PANELS/TOGGLE",
 }
 
-export const fetchAnalysis = (owner: string, name: string, prNumber?: number) => ({
+export const fetchAnalysis = (owner: string, name: string, prNumber?: number, analysisGuid?: string) => ({
   type: AnalyzesAction.Fetch,
   owner,
   name,
   prNumber,
+  analysisGuid,
 });
 
 export const buildLogTogglePanels = (keys: string[]) => ({
@@ -146,11 +147,15 @@ export const reducer = combineReducers<IAnalyzesStore>({
   buildLogActivePanels,
 });
 
-function* doFetchAnalysis({prNumber, owner, name}: any) {
+function* doFetchAnalysis({prNumber, owner, name, analysisGuid}: any) {
   const state: IAppStore = yield select();
-  const apiUrl = prNumber ?
+  let apiUrl = prNumber ?
     `/v1/repos/github.com/${owner}/${name}/pulls/${prNumber}` :
     `/v1/repos/github.com/${owner}/${name}/repoanalyzes`;
+  if (analysisGuid) {
+    apiUrl += `?analysisGUID=${analysisGuid}`;
+  }
+
   const resp = yield call(makeApiGetRequest, apiUrl, state.auth.cookie);
   if (!resp || resp.error) {
     yield* processError(apiUrl, resp, "Can't fetch analysis state");
