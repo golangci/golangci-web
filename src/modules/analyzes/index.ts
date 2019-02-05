@@ -153,7 +153,7 @@ function* doFetchAnalysis({prNumber, owner, name, analysisGuid}: any) {
     `/v1/repos/github.com/${owner}/${name}/pulls/${prNumber}` :
     `/v1/repos/github.com/${owner}/${name}/repoanalyzes`;
   if (analysisGuid) {
-    apiUrl += `?analysisGUID=${analysisGuid}`;
+    apiUrl += `?analysisguid=${analysisGuid}`;
   }
 
   const resp = yield call(makeApiGetRequest, apiUrl, state.auth.cookie);
