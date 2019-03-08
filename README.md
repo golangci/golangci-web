@@ -13,11 +13,11 @@ We use React, TypeScript, Redux. Antd is used as a UI framework.
 You need to [generate self-signed SSL certificate](https://stackoverflow.com/a/41366949) for local caddy (default self-signed caddy certificates aren't allowed by modern browsers):
 
 ```bash
-mkdir ssl
+mkdir -p ssl
 openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes -keyout ssl/golangci.key -out ssl/golangci.crt -extensions san -config <(echo "[req]"; echo distinguished_name=req; echo "[san]"; echo subjectAltName=DNS:dev.golangci.com,DNS:api.dev.golangci.com) -subj /CN=dev.golangci.com
 ```
 
-After that add `golangciCA.key` to the list of your OS trusted root CAs.
+After that add `golangci.crt` to the list of your OS trusted root CAs.
 
 ### Run Caddy
 
@@ -30,6 +30,7 @@ sudo sh -c 'echo 127.0.0.1 api.dev.golangci.com >>/etc/hosts'
 
 The following will run Caddy server in background:
 ```
+brew install caddy
 sudo npm run caddy
 ```
 
