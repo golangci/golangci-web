@@ -1,9 +1,9 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router";
-import { List, Row, Col, Table, Tag, Alert, Tooltip, Switch, Button, Icon, Card, Collapse } from "antd";
+import { List, Row, Col, Table, Tag, Alert, Tooltip, Switch, Button, Icon, Collapse } from "antd";
 import { IAppStore } from "reducers";
-import { IAnalysisState, IIssue, IWarning, fetchAnalysis, buildLogTogglePanels, IBuildGroup } from "modules/analyzes";
+import { IAnalysisState, IIssue, IWarning, fetchAnalysis, buildLogTogglePanels, IBuildLog, IBuildGroup } from "modules/analyzes";
 import { processWarning } from "modules/utils/strings";
 import moment from "moment";
 import Helmet from "react-helmet";
@@ -19,6 +19,7 @@ moment.locale("en");
 
 const hideCodeToggleKey = "hideCode";
 const showBuildLogToggleKey = "showBuildLog";
+const showPrevAnalyzesToggleKey = "showPrevAnalyzes";
 
 interface IStateProps {
   curAnalysis?: IAnalysisState;
@@ -29,7 +30,7 @@ interface IStateProps {
 }
 
 interface IDispatchProps {
-  fetchAnalysis(owner: string, name: string, prNumber?: number, analysisGuid?: string): void;
+  fetchAnalysis(owner: string, name: string, prNumber?: number, commitSha?: string, analysisGuid?: string): void;
   toggle(name: string, value?: boolean): void;
   buildLogTogglePanels(keys: string[]): void;
 }
@@ -44,7 +45,7 @@ class Report extends React.Component<IProps> {
   private fetchAnalysis() {
     const p = this.props.match.params;
     const qs = queryString.parse(this.props.location.search);
-    this.props.fetchAnalysis(p.owner, p.name, Number(p.prNumber), qs.analysisGuid);
+    this.props.fetchAnalysis(p.owner, p.name, Number(p.prNumber), qs.commit_sha, qs.analysisGuid);
   }
 
   public componentWillMount() {
@@ -486,85 +487,42 @@ class Report extends React.Component<IProps> {
     );
   }
 
-  public render() {
-    switch (this.props.lastApiErrorCode) {
-    case "NEED_AUTH_TO_ACCESS_PRIVATE_REPO":
-      return this.renderNeedAuthError();
-    case "NEED_PRIVATE_ACCESS_TOKEN_TO_ACCESS_PRIVATE_REPO":
-      return this.renderNeedPrivateAccessTokenError();
-    case "NO_ACCESS_TO_PRIVATE_REPO_OR_DOESNT_EXIST":
-      this.renderNoAccessOrDoesntExistError();
-    }
+  private renderBuildLogArea(buildLog: IBuildLog): JSX.Element {
+    return (
+      <div className="report-build-log">
+        <Collapse
+          bordered={false}
+          activeKey={this.props.buildLogActivePanels}
+          onChange={(activePanels: string[]) => this.props.buildLogTogglePanels(activePanels)}
+        >
+          {buildLog.Groups.map((group, i) => (
+            <Collapse.Panel
+              header={
+                <>
+                  <span className="report-build-log-group-panel-text">
+                    {group.Name + (group.Name !== "run goenvbuild" ? ` (${this.formatDuration(group.Duration / 1000000)})` : "")}
+                  </span>
+                  {this.doesGroupHaveError(group) ?
+                    <span className="report-build-log-group-panel-tag"><Tag color="red">error</Tag></span> :
+                    null}
+                </>
+              }
+              key={i.toString()}
+              className="report-build-log-group-panel"
+            >
+              <pre className="report-build-log-group-panel-text">{this.getBuildGroupText(group)}</pre>
+            </Collapse.Panel>
+          ))}
+        </Collapse>
+      </div>
+    );
+  }
 
-    if (this.props.curAnalysis === null) {
-      return getLoader();
-    }
-
-    const rj = this.props.curAnalysis.ResultJSON;
-    const issues = (rj && rj.GolangciLintRes && rj.GolangciLintRes.Issues) ? rj.GolangciLintRes.Issues : [];
-
-    const linterToIssues: any = {};
-    for (const i of issues) {
-      if (!linterToIssues[i.FromLinter]) {
-        linterToIssues[i.FromLinter] = [];
-      }
-
-      linterToIssues[i.FromLinter].push(i);
-    }
-
-    const ca = this.props.curAnalysis;
-    console.info("rendering ca", ca);
-    const sourceLinkBase = `https://github.com/${ca.GithubRepoName}/blob/${ca.CommitSHA}`;
-
-    const blocks: JSX.Element[] = [];
-    for (const linterName of Object.keys(linterToIssues)) {
-      const block = this.renderIssuesFromLinterBlock(linterName, linterToIssues[linterName], sourceLinkBase);
-      blocks.push(block);
-    }
-
-    const title = ca.GithubPullRequestNumber ?
-      `Report for Pull Request ${ca.GithubRepoName}#${ca.GithubPullRequestNumber}` :
-      `Report for Repo ${ca.GithubRepoName}`;
-
-    const buildLog = (ca.ResultJSON && ca.ResultJSON.BuildLog) ? ca.ResultJSON.BuildLog : null;
-
-    const needShowBuildLog = this.props.toggleMap[showBuildLogToggleKey];
-    let buildLogArea: JSX.Element = null;
-    if (needShowBuildLog && buildLog) {
-      buildLogArea = (
-        <div className="report-build-log">
-          <Collapse
-            bordered={false}
-            activeKey={this.props.buildLogActivePanels}
-            onChange={(activePanels: string[]) => this.props.buildLogTogglePanels(activePanels)}
-          >
-            {buildLog.Groups.map((group, i) => (
-              <Collapse.Panel
-                header={
-                  <>
-                    <span className="report-build-log-group-panel-text">
-                      {group.Name + (group.Name !== "run goenvbuild" ? ` (${this.formatDuration(group.Duration / 1000000)})` : "")}
-                    </span>
-                    {this.doesGroupHaveError(group) ?
-                      <span className="report-build-log-group-panel-tag"><Tag color="red">error</Tag></span> :
-                      null}
-                  </>
-                }
-                key={i.toString()}
-                className="report-build-log-group-panel"
-              >
-                <pre className="report-build-log-group-panel-text">{this.getBuildGroupText(group)}</pre>
-              </Collapse.Panel>
-            ))}
-          </Collapse>
-        </div>
-      );
-    }
-
-    const toolBar = (
+  private renderToolBar(ca: IAnalysisState, issues: IIssue[], buildLog: IBuildLog, needShowBuildLog: boolean): JSX.Element {
+    return (
       <Row type="flex" justify="end">
         <div className="report-toolbar">
-          {buildLog &&  (
+          {buildLog && (
             <span className="report-toolbar-build-log-btn">
               <Button
                 onClick={() => this.props.toggle(showBuildLogToggleKey)}
@@ -584,6 +542,56 @@ class Report extends React.Component<IProps> {
         </div>
       </Row>
     );
+  }
+
+  private renderPrevAnalyzesTable(ca: IAnalysisState) {
+    const columns = [
+      {
+        key: "columnA",
+        dataIndex: "a",
+        title: "a",
+      },
+      {
+        key: "columnB",
+        dataIndex: "b",
+        title: "a",
+      },
+    ];
+
+    const rows = [];
+    for (const a of ca.PreviousAnalyzes) {
+      const link = (
+        <Link
+          onClick={() => this.props.toggle(showPrevAnalyzesToggleKey)}
+          to={`/r/github.com/${ca.GithubRepoName}/pulls/${ca.GithubPullRequestNumber}?commit_sha=${a.CommitSHA}`}
+        >
+          {a.CommitSHA.substring(0, 7)}
+        </Link>
+      );
+      rows.push({
+        key: a.CommitSHA,
+        a: moment(a.CreatedAt).fromNow(),
+        b: link,
+      });
+    }
+
+    return (
+      <Table
+        className="prev-analyzes-table"
+        showHeader={false}
+        columns={columns}
+        pagination={false}
+        sortDirections={[]}
+        dataSource={rows} />
+    );
+  }
+
+  private renderBody(ca: IAnalysisState, blocks: JSX.Element[], toolBar: JSX.Element, buildLogArea: JSX.Element): JSX.Element {
+    const title = ca.GithubPullRequestNumber ?
+      `Report for Pull Request ${ca.GithubRepoName}#${ca.GithubPullRequestNumber}` :
+      `Report for Repo ${ca.GithubRepoName}`;
+
+    const prevAnalyzes = this.props.toggleMap[showPrevAnalyzesToggleKey] && this.renderPrevAnalyzesTable(ca);
 
     return (
       <Row>
@@ -628,9 +636,73 @@ class Report extends React.Component<IProps> {
               </Button>
             </Link>
           )}
+          {ca.GithubPullRequestNumber && ca.PreviousAnalyzes && ca.PreviousAnalyzes.length && (
+            <span className="prev-analyzes-btn">
+              <Button onClick={() => this.props.toggle(showPrevAnalyzesToggleKey)}>
+                <Icon type={this.props.toggleMap[showPrevAnalyzesToggleKey] ? "up" : "down"} />
+                {`${this.props.toggleMap[showPrevAnalyzesToggleKey] ? "Hide" : "Show"} Previous Analyzes`}
+              </Button>
+            </span>
+          )}
+          {prevAnalyzes && (
+            <Row>
+              <Col xs={12}>
+                {prevAnalyzes}
+              </Col>
+            </Row>
+          )}
         </Col>
       </Row>
     );
+  }
+
+  public render() {
+    switch (this.props.lastApiErrorCode) {
+    case "NEED_AUTH_TO_ACCESS_PRIVATE_REPO":
+      return this.renderNeedAuthError();
+    case "NEED_PRIVATE_ACCESS_TOKEN_TO_ACCESS_PRIVATE_REPO":
+      return this.renderNeedPrivateAccessTokenError();
+    case "NO_ACCESS_TO_PRIVATE_REPO_OR_DOESNT_EXIST":
+      this.renderNoAccessOrDoesntExistError();
+    }
+
+    if (this.props.curAnalysis === null) {
+      return getLoader();
+    }
+
+    const rj = this.props.curAnalysis.ResultJSON;
+    const issues = (rj && rj.GolangciLintRes && rj.GolangciLintRes.Issues) ? rj.GolangciLintRes.Issues : [];
+
+    const linterToIssues: any = {};
+    for (const i of issues) {
+      if (!linterToIssues[i.FromLinter]) {
+        linterToIssues[i.FromLinter] = [];
+      }
+
+      linterToIssues[i.FromLinter].push(i);
+    }
+
+    const ca = this.props.curAnalysis;
+    console.info("rendering ca", ca);
+    const sourceLinkBase = `https://github.com/${ca.GithubRepoName}/blob/${ca.CommitSHA}`;
+
+    const blocks: JSX.Element[] = [];
+    for (const linterName of Object.keys(linterToIssues)) {
+      const block = this.renderIssuesFromLinterBlock(linterName, linterToIssues[linterName], sourceLinkBase);
+      blocks.push(block);
+    }
+
+    const buildLog = (ca.ResultJSON && ca.ResultJSON.BuildLog) ? ca.ResultJSON.BuildLog : null;
+
+    const needShowBuildLog = this.props.toggleMap[showBuildLogToggleKey];
+    let buildLogArea: JSX.Element = null;
+    if (needShowBuildLog && buildLog) {
+      buildLogArea = this.renderBuildLogArea(buildLog);
+    }
+
+    const toolBar = this.renderToolBar(ca, issues, buildLog, needShowBuildLog);
+
+    return this.renderBody(ca, blocks, toolBar, buildLogArea);
   }
 }
 

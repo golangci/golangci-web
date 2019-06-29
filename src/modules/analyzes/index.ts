@@ -4,6 +4,7 @@ import { IAppStore } from "reducers";
 import {
   makeApiGetRequest, processError,
 } from "modules/api";
+import { string } from "prop-types";
 
 enum AnalyzesAction {
   Fetch = "@@GOLANGCI/ANALYZES/FETCH",
@@ -11,11 +12,12 @@ enum AnalyzesAction {
   BuildLogTogglePanels = "@@GOLANGCI/BUILDLOG/PANELS/TOGGLE",
 }
 
-export const fetchAnalysis = (owner: string, name: string, prNumber?: number, analysisGuid?: string) => ({
+export const fetchAnalysis = (owner: string, name: string, prNumber?: number, commitSha?: string,  analysisGuid?: string) => ({
   type: AnalyzesAction.Fetch,
   owner,
   name,
   prNumber,
+  commitSha,
   analysisGuid,
 });
 
@@ -41,6 +43,13 @@ export interface IAnalysisState {
   RepoIsNotConnected?: boolean;
   IsEmpty?: boolean;
   RepoAnalysisStatus?: IRepoAnalysisStatus;
+
+  PreviousAnalyzes?: IAnalysisStateLink[];
+}
+
+interface  IAnalysisStateLink {
+  CommitSHA: string;
+  CreatedAt: string;
 }
 
 interface IRepoAnalysisStatus {
@@ -53,7 +62,7 @@ interface IAnalysisResultJSON {
   BuildLog: IBuildLog;
 }
 
-interface IBuildLog {
+export interface IBuildLog {
   Groups: IBuildGroup[];
 }
 
@@ -147,14 +156,12 @@ export const reducer = combineReducers<IAnalyzesStore>({
   buildLogActivePanels,
 });
 
-function* doFetchAnalysis({prNumber, owner, name, analysisGuid}: any) {
+function* doFetchAnalysis({prNumber, owner, name, commitSha, analysisGuid}: any) {
   const state: IAppStore = yield select();
-  let apiUrl = prNumber ?
-    `/v1/repos/github.com/${owner}/${name}/pulls/${prNumber}` :
-    `/v1/repos/github.com/${owner}/${name}/repoanalyzes`;
-  if (analysisGuid) {
-    apiUrl += `?analysisguid=${analysisGuid}`;
-  }
+
+  const apiUrlBase = `/v1/repos/github.com/${owner}/${name}`;
+  const apiUrlQs = (commitSha || analysisGuid) ? `?commit_sha=${commitSha}&analysisguid=${analysisGuid}` : "";
+  const apiUrl = prNumber ? `${apiUrlBase}/pulls/${prNumber}${apiUrlQs}` : `${apiUrlBase}/repoanalyzes${apiUrlQs}`;
 
   const resp = yield call(makeApiGetRequest, apiUrl, state.auth.cookie);
   if (!resp || resp.error) {
