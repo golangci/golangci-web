@@ -29,6 +29,7 @@ sudo sh -c 'echo 127.0.0.1 api.dev.golangci.com >>/etc/hosts'
 ```
 
 The following will run Caddy server in background:
+
 ```
 brew install caddy
 sudo npm run caddy
