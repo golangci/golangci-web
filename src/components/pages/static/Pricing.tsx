@@ -31,7 +31,7 @@ const faqBlock = (
 
                     <h2>What is a user?</h2>
                     <p className="home-section-text">
-                        A use is a unique GitHub committer (determined by Git commit author's email).
+                        A user is a unique GitHub committer (determined by Git commit author's email).
                     </p>
                 </div>
             </Row>
