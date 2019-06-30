@@ -9,6 +9,7 @@ import Subscription from "components/pages/Subscription";
 import Terms from "components/pages/static/Terms";
 import Privacy from "components/pages/static/Privacy";
 import About from "components/pages/static/About";
+import Product from "components/pages/static/Product";
 
 export default () => (
   <App>
@@ -23,6 +24,7 @@ export default () => (
       <Route exact path="/terms" component={Terms} />
       <Route exact path="/privacy" component={Privacy} />
       <Route exact path="/about" component={About} />
+      <Route exact path="/product" component={Product} />
     </Switch>
   </App>
 );

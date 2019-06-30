@@ -18,6 +18,13 @@
   padding: $large-spacing 10% $large-spacing;
 }
 
+.home-section-gradient a {
+  color: $blue;
+  &:hover {
+    color: $home-gradient-link-color;
+  }
+}
+
 .home-section-content {
   margin: 0px 20px;
 }
@@ -82,27 +89,18 @@
   padding: 3em 20%;
 }
 
-.home-pr-comment-demo {
-  width: 100%;
-  max-width: 1000px;
-}
-
-.home-pr-comment-demo-img {
-  width: 100%;
-}
-
 .home-github-status-demo {
   padding-top: 4em;
   width: 100%;
   max-width: 900px;
 }
 
-.home-github-status-demo-img {
-  width: 100%;
-}
-
 .hr-bordered-top {
   border-top: 1px solid $hr-color;
+}
+
+.home-section-text {
+  font-size: 1.3em;
 }
 
 .home-section-linters-description {
@@ -134,4 +132,8 @@
     border-radius: 4px;
     -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
     box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+}
+
+.next-row-in-section {
+  margin-top: 5vh;
 }

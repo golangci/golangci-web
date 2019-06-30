@@ -133,10 +133,11 @@ function run() {
               { targets: { browsers: "> 1%" } }
             ],
             "@babel/preset-typescript",
-            "@babel/preset-react"
+            "@babel/preset-react",
           ],
           plugins: [
             "@babel/plugin-transform-regenerator",
+            "transform-class-properties",
             ["import", {"libraryName": "antd"}],
             "react-hot-loader/babel"
           ]

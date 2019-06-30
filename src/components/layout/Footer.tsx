@@ -3,9 +3,9 @@ import { Layout, Row, Button, Icon, Col } from "antd";
 import { checkAuth, IUser } from "modules/auth";
 import { IAppStore } from "reducers";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
 import Golangci from "assets/images/logo/golangci.svg";
 import Go from "assets/images/logo/go.svg";
+import { HashLink as Link } from "react-router-hash-link";
 
 interface IStateProps {
   currentUser?: IUser;
@@ -75,9 +75,12 @@ class Footer extends React.Component<IProps> {
               <>
                 <h5>Product</h5>
                 <ul>
-                  <li><a href="/#integrated-with-github">Product</a></li>
-                  <li><a href="/#why-us">Why GolangCI</a></li>
-                  <li><a href="/#pricing">Pricing</a></li>
+                  <li><Link to="/product#integrated-with-github">GitHub Integration</Link></li>
+                  <li><Link to="/product#automated-code-fixes">Automated Code Fixes</Link></li>
+                  <li><Link to="/product#control-panel">Control Panel</Link></li>
+                  <li><Link to="/product#analysis-reports">Analysis Reports</Link></li>
+                  <li><Link to="/product#custom-build-steps">Custom Build Steps</Link></li>
+                  <li><Link to="/#pricing">Pricing</Link></li>
                 </ul>
               </>)}
 

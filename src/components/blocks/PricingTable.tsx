@@ -20,6 +20,7 @@ export function buildPricingPlan(plan: Plan, buttonText: string, onButtonClick: 
                 "Unlimited public repositories",
                 "GitHub integration",
                 "Automatic comments on pull request",
+                "4 vCPU and 16 GB containers for analysis",
             ]}
             buttonText={buttonText}
             onButtonClick={onButtonClick}
@@ -35,6 +36,7 @@ export function buildPricingPlan(plan: Plan, buttonText: string, onButtonClick: 
                     features={[
                         "Unlimited private repositories",
                         "Higher analysis priority",
+                        "4 vCPU and 30 GB containers for analysis",
                         "Priority support",
                     ]}
                     buttonText={buttonText}
