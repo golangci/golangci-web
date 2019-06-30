@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { Method } from "axios";
 import { onGotApiResult } from "modules/result";
 import { put } from "redux-saga/effects";
 import { reportError } from "modules/utils/analytics";
@@ -17,7 +17,7 @@ export const makeApiDeleteRequest = (path: string, data: any, cookie?: string): 
   return makeApiRequest(path, "DELETE", cookie, data);
 };
 
-const makeApiRequest = (path: string, method: string, cookie?: string, data?: any): Promise<IApiResponse> => {
+const makeApiRequest = (path: string, method: Method, cookie?: string, data?: any): Promise<IApiResponse> => {
   const startTime = Date.now();
   console.info("API: %s: %s: making HTTP request with cookie %s", method, path, cookie);
   const headers: any = {
