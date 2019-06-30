@@ -9,7 +9,6 @@ branches:
 
 script:
   - npm run lint
-  - npm run heroku-postbuild
   - docker login -u $DOCKER_USER -p $DOCKER_PASS
   - git clone $DEPLOYMENTS_REPO ~/deploy
   - cp ~/deploy/golangci-web/Dockerfile ./Dockerfile
