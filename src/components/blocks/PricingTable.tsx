@@ -53,6 +53,7 @@ export function buildPricingPlan(plan: Plan, buttonText: string, onButtonClick: 
                 insteadOfPriceText="Self-hosted"
                 features={[
                     "For GitHub Enterprise",
+                    "Priority support",
                 ]}
                 buttonText={buttonText}
                 onButtonClick={onButtonClick}

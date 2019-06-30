@@ -10,6 +10,7 @@ import Terms from "components/pages/static/Terms";
 import Privacy from "components/pages/static/Privacy";
 import About from "components/pages/static/About";
 import Product from "components/pages/static/Product";
+import Pricing from "components/pages/static/Pricing";
 
 export default () => (
   <App>
@@ -25,6 +26,7 @@ export default () => (
       <Route exact path="/privacy" component={Privacy} />
       <Route exact path="/about" component={About} />
       <Route exact path="/product" component={Product} />
+      <Route exact path="/pricing" component={Pricing} />
     </Switch>
   </App>
 );

@@ -80,7 +80,7 @@ class Footer extends React.Component<IProps> {
                   <li><Link to="/product#control-panel">Control Panel</Link></li>
                   <li><Link to="/product#analysis-reports">Analysis Reports</Link></li>
                   <li><Link to="/product#custom-build-steps">Custom Build Steps</Link></li>
-                  <li><Link to="/#pricing">Pricing</Link></li>
+                  <li><Link to="/pricing">Pricing</Link></li>
                 </ul>
               </>)}
 
@@ -91,6 +91,7 @@ class Footer extends React.Component<IProps> {
                   <li><Link to="/about">About</Link></li>
                   <li><a target="_blank" href="https://medium.com/golangci">Blog</a></li>
                   <li><a target="_blank" href="https://github.com/golangci/golangci">GitHub</a></li>
+                  <li><a target="_blank" href="https://github.com/golangci/golangci/wiki/GolangCI-Security">Security</a></li>
                 </ul>
                </>)}
 

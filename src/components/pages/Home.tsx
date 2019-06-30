@@ -6,13 +6,13 @@ import { connect } from "react-redux";
 import { IAppStore } from "reducers";
 import { checkAuth, IUser } from "modules/auth";
 import { Link } from "react-router-dom";
-import PricingTable, { Plan } from "components/blocks/PricingTable";
-import { push, LocationAction } from "react-router-redux";
 import ProductIntro from "components/blocks/ProductIntro";
 import WhyUs from "components/blocks/WhyUs";
 import SupportedLinters from "components/blocks/SupportedLinters";
 import WhyDoYouNeedIt from "components/blocks/WhyDoYouNeedIt";
 import Customers from "components/blocks/Customers";
+import AllPricingPlans from "components/blocks/AllPricingPlans";
+import Security from "components/blocks/Security";
 
 interface IStateProps {
   currentUser?: IUser;
@@ -20,7 +20,6 @@ interface IStateProps {
 
 interface IDispatchProps {
   checkAuth(): void;
-  push: LocationAction;
 }
 
 interface IProps extends IStateProps, IDispatchProps {}
@@ -82,36 +81,8 @@ class Home extends React.Component<IProps> {
     return <ProductIntro showLinkOnMoreDetails />;
   }
 
-  private onPricingPlanChoose(chosenPlan: Plan) {
-    if (chosenPlan === Plan.Enterprise) {
-      window.location.replace(`mailto:denis@golangci.com`);
-      return;
-    }
-
-    if (!this.props.currentUser) {
-      window.location.replace(`${API_HOST}/v1/auth/github`);
-      return;
-    }
-
-    this.props.push("/repos/github");
-  }
-
   private renderPricingSection() {
-    return (
-      <section className="home-section-gradient home-section">
-        <div className="home-section-content">
-          <Row type="flex" justify="center">
-            <p id="pricing" className="home-section-header home-section-gradient-header">Pricing</p>
-          </Row>
-
-          <PricingTable
-            authorized={this.props.currentUser ? true : false}
-            onButtonClick={this.onPricingPlanChoose.bind(this)}
-          />
-
-        </div>
-      </section>
-    );
+    return <AllPricingPlans showLinkOnMoreDetails/>;
   }
 
   private renderWhyUsSection() {
@@ -155,6 +126,10 @@ class Home extends React.Component<IProps> {
     return <Customers/>;
   }
 
+  private renderSecuritySection() {
+    return <Security/>;
+  }
+
   public render() {
     return (
       <>
@@ -167,6 +142,7 @@ class Home extends React.Component<IProps> {
         {this.renderCustomersSection()}
         {this.renderLearnMore()}
         {this.renderPricingSection()}
+        {this.renderSecuritySection()}
       </>
     );
   }
@@ -178,7 +154,6 @@ const mapStateToProps = (state: IAppStore): any => ({
 
 const mapDispatchToProps = {
   checkAuth,
-  push,
 };
 
 export default connect<IStateProps, IDispatchProps, void>(mapStateToProps, mapDispatchToProps)(Home);

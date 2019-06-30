@@ -12,6 +12,7 @@ import pullDetailLinkImage from "assets/images/product/pull_detail_link.png";
 import reportForRepoImage from "assets/images/product/report_of_repo_with_issues.png";
 import buildLogImage from "assets/images/product/build_log.png";
 import customBuildStepsImage from "assets/images/product/custom_build_steps.png";
+import Helmet from "react-helmet";
 
 const suggestedChangeBlock = (
     <section className="home-section home-section-padded">
@@ -114,6 +115,7 @@ const customBuildStepsBlock = (
 
 const Product: React.StatelessComponent<any> = (props) => (
     <>
+        <Helmet title={"GolangCI Product"} />
        <ProductIntro showLinkOnMoreDetails={false} />
        {suggestedChangeBlock}
        {repoListBlock}
