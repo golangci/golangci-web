@@ -640,7 +640,7 @@ class Report extends React.Component<IProps> {
             <span className="prev-analyzes-btn">
               <Button onClick={() => this.props.toggle(showPrevAnalyzesToggleKey)}>
                 <Icon type={this.props.toggleMap[showPrevAnalyzesToggleKey] ? "up" : "down"} />
-                {`${this.props.toggleMap[showPrevAnalyzesToggleKey] ? "Hide" : "Show"} Previous Analyzes`}
+                {`${this.props.toggleMap[showPrevAnalyzesToggleKey] ? "Hide" : "Show"} Previous Analyses`}
               </Button>
             </span>
           )}

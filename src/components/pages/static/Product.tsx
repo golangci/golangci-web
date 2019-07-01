@@ -58,7 +58,7 @@ const reportsBlock = (
             <Row type="flex" justify="center">
                 <div className="full-screen-image">
                     <p className="home-section-text">
-                        We provide reports for performed analyzes. See an example of a report for analysis without found issues below.
+                        We provide reports for performed analyses. See an example of a report for analysis without found issues below.
                     </p>
                     <img className="img-responsive" alt="GolangCI successful report" src={reportSuccessfulImage} />
                 </div>
