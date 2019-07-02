@@ -1,7 +1,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router";
-import { List, Row, Col, Button, Input, Modal, Tooltip, Card, Switch, Icon } from "antd";
+import { List, Row, Col, Button, Input, Modal, Tooltip, Card, Switch, Icon, Tag } from "antd";
 import { createSelector } from "reselect";
 import Highlighter from "react-highlight-words";
 import { IAppStore } from "reducers";
@@ -200,10 +200,11 @@ class Repos extends React.Component<IProps> {
     const title = this.props.searchQuery ?
       this.highlightRepoName(r.name) :
       r.name;
+    const tag = r.isPrivate ? <> <Tag color="#2db7f5">private</Tag></> : null;
 
     return (
       <List.Item actions={[this.renderActionForRepo(r)]}>
-        <List.Item.Meta title={title} />
+        <List.Item.Meta title={<>{title}{tag}</>} />
       </List.Item>
     );
   }
