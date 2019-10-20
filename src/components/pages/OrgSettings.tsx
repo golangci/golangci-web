@@ -44,7 +44,7 @@ class OrgSettings extends React.Component<IProps> {
 
     const org = props.org;
     const p = props.match.params;
-    return !(org.provider === p.provider && org.name === p.orgName);
+    return !(org.provider === p.provider && org.name.toUpperCase() === p.orgName.toUpperCase());
   }
 
   public componentDidMount() {

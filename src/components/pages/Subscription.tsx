@@ -50,7 +50,7 @@ class SubUpdater extends React.Component<IProps> {
 
     const org = props.org;
     const p = props.match.params;
-    return !(org.provider === p.provider && org.name === p.orgName);
+    return !(org.provider === p.provider && org.name.toUpperCase() === p.orgName.toUpperCase());
   }
 
   public componentDidMount() {
@@ -87,7 +87,7 @@ class SubUpdater extends React.Component<IProps> {
       passthrough: JSON.stringify({
         userId: this.props.currentUser.id,
         orgProvider: org.provider,
-        orgName: org.name,
+        orgName: org.name.toLowerCase(),
       }),
     };
     if (sub.trialAllowanceInDays) {
@@ -102,12 +102,12 @@ class SubUpdater extends React.Component<IProps> {
       },
       closeCallback: () => {
         console.warn("closed paddle");
-        this.props.pollSub(org.provider, org.name); // user may close accidently, need to show created subscription
+        this.props.pollSub(org.provider, org.name.toLowerCase()); // user may close accidently, need to show created subscription
       },
       successCallback: (e: any) => {
         trackEvent("successfully subscribed");
         console.info("Successfully subscribed:", e);
-        this.props.pollSub(org.provider, org.name);
+        this.props.pollSub(org.provider, org.name.toLowerCase());
       },
     });
   }
@@ -196,7 +196,7 @@ class SubUpdater extends React.Component<IProps> {
       return <>
           <Helmet title={`Active Subscription for ${org.provider}/${org.name}`} />
           {this.renderActiveSubStatus()}
-          <Button onClick={() => this.props.push(`/orgs/${org.provider}/${org.name}`)}>
+          <Button onClick={() => this.props.push(`/orgs/${org.provider}/${org.name.toLowerCase()}`)}>
             Back
           </Button>
         </>;

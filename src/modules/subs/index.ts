@@ -124,7 +124,7 @@ function* doUpdateSub({seatsCount}: any) {
   const state: IAppStore = yield select();
   const org = state.orgs.current;
   const sub = state.subs.current;
-  const apiUrl = `/v1/orgs/${org.provider}/${org.name}/subscription`;
+  const apiUrl = `/v1/orgs/${org.provider}/${org.name.toLowerCase()}/subscription`;
   const req = {
     seatsCount,
     version: sub.version,
@@ -147,7 +147,7 @@ function* doUpdateSub({seatsCount}: any) {
     if (!getResp || getResp.error) {
       yield* processError(apiUrl, getResp, `Can't get subscription status`);
       yield put(onSubUpdated(sub));
-      yield put(push(`/orgs/${org.provider}/${org.name}`));
+      yield put(push(`/orgs/${org.provider}/${org.name.toLowerCase()}`));
       return;
     }
 
@@ -170,7 +170,7 @@ function* doUpdateSub({seatsCount}: any) {
 function* doPollSub({provider, name}: any) {
   const state: IAppStore = yield select();
   const org = state.orgs.current;
-  const apiUrl = `/v1/orgs/${org.provider}/${org.name}/subscription`;
+  const apiUrl = `/v1/orgs/${org.provider}/${org.name.toLowerCase()}/subscription`;
 
   const maxAttempts = 100;
   const delayIncreaseCoef = 1.5;

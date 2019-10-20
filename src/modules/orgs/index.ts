@@ -177,7 +177,7 @@ const prepareOrgForSaving = (org: IOrg): IOrg => {
 function* doSaveOrg({isBackground}: any) {
   const state: IAppStore = yield select();
   const org = state.orgs.current;
-  const apiUrl = `/v1/orgs/${org.provider}/${org.name}`;
+  const apiUrl = `/v1/orgs/${org.provider}/${org.name.toLowerCase()}`;
   const req = prepareOrgForSaving(org);
   const resp = yield call(makeApiPutRequest, apiUrl, req, state.auth.cookie);
   if (!resp || resp.error) {
@@ -186,7 +186,7 @@ function* doSaveOrg({isBackground}: any) {
   } else {
     yield put(onOrgSaved(resp.data));
     if (!isBackground) {
-      yield put(push(`/orgs/${org.provider}/${org.name}/subscription`));
+      yield put(push(`/orgs/${org.provider}/${org.name.toLowerCase()}/subscription`));
     }
   }
 }
