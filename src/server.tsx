@@ -16,7 +16,7 @@ import { parse as urlParse } from "url";
 let webpackPartialTmpl: string;
 
 const render = (req: express.Request, res: express.Response) => {
-  const url = urlParse(HOST)
+  const url = urlParse(HOST);
   if (req.hostname !== url.hostname) {
     console.info("got request to hostname %s, redirecting to %s", req.hostname, HOST);
     res.redirect(307, HOST);
