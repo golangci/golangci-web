@@ -126,6 +126,12 @@ class App extends React.Component<IProps> {
       <Layout className="layout">
         <Header />
         <Layout.Content className="content">
+          <Alert
+            message={`We are closing`}
+            description={<>The service will stop working on 15-th of April, 2020. See <a href="https://medium.com/golangci/golangci-com-is-closing-d1fc1bd30e0e">the blog post</a>.</>}
+            type="warning"
+            showIcon
+          />
           {this.renderContent()}
         </Layout.Content>
         <Footer />
