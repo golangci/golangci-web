@@ -132,6 +132,7 @@ class App extends React.Component<IProps> {
           <Header />
           <Layout.Content className="content">
             <Alert
+              style={{ marginBottom: "1em" }}
               message={`We are sorry`}
               description={
                 <>
