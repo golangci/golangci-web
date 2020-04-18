@@ -132,10 +132,10 @@ class App extends React.Component<IProps> {
           <Header />
           <Layout.Content className="content">
             <Alert
-              message={`We are closing`}
+              message={`We are sorry`}
               description={
                 <>
-                  We're sorry. The service{" "}
+                  The service{" "}
                   <a href="https://medium.com/golangci/golangci-com-is-closing-d1fc1bd30e0e">
                     has stopped working
                   </a>
