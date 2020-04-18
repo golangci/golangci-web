@@ -9,3 +9,4 @@ rules:
     "max-line-length": false
     "member-ordering": false
     "no-implicit-dependencies": false
+    "trailing-comma": false

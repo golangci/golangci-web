@@ -26,7 +26,11 @@ interface IStateProps {
 interface IDispatchProps {}
 interface IOwnProps {}
 
-interface IProps extends IStateProps, IDispatchProps, IOwnProps, RouteComponentProps<any> {}
+interface IProps
+  extends IStateProps,
+    IDispatchProps,
+    IOwnProps,
+    RouteComponentProps<any> {}
 
 class App extends React.Component<IProps> {
   private renderContent() {
@@ -35,15 +39,16 @@ class App extends React.Component<IProps> {
     }
 
     switch (this.props.lastApiHttpCode) {
-    case 403:
-      const isNotAuthorizedCode = this.props.lastApiErrorCode === "NOT_AUTHORIZED";
-      if (this.props.currentUser && isNotAuthorizedCode) {
-        return this.renderRevokedAccessTokenError();
-      }
+      case 403:
+        const isNotAuthorizedCode =
+          this.props.lastApiErrorCode === "NOT_AUTHORIZED";
+        if (this.props.currentUser && isNotAuthorizedCode) {
+          return this.renderRevokedAccessTokenError();
+        }
 
-      if (isNotAuthorizedCode) {
-        return this.renderNotAuthorizedError();
-      }
+        if (isNotAuthorizedCode) {
+          return this.renderNotAuthorizedError();
+        }
     }
 
     return this.props.children;
@@ -51,12 +56,7 @@ class App extends React.Component<IProps> {
 
   private renderCustomAlert(header: string, description: string): JSX.Element {
     return (
-      <Alert
-        message={header}
-        description={description}
-        type="error"
-        showIcon
-      />
+      <Alert message={header} description={description} type="error" showIcon />
     );
   }
 
@@ -110,42 +110,56 @@ class App extends React.Component<IProps> {
 
   public render() {
     return (
-    <>
-      <Helmet>
-        <meta property="og:locale" content="en_US" />
-        <meta property="og:site_name" content="golangci.com" />
-        <meta
-          property="og:url"
-          content={`${HOST}${this.props.location.pathname}${this.props.location.search}`}
-        />
-        <meta charSet="utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      </Helmet>
-
-      <Layout className="layout">
-        <Header />
-        <Layout.Content className="content">
-          <Alert
-            message={`We are closing`}
-            description={<>The service will stop working on 15-th of April, 2020. See <a href="https://medium.com/golangci/golangci-com-is-closing-d1fc1bd30e0e">the blog post</a>.</>}
-            type="warning"
-            showIcon
+      <>
+        <Helmet>
+          <meta property="og:locale" content="en_US" />
+          <meta property="og:site_name" content="golangci.com" />
+          <meta
+            property="og:url"
+            content={`${HOST}${this.props.location.pathname}${
+              this.props.location.search
+            }`}
           />
-          {this.renderContent()}
-        </Layout.Content>
-        <Footer />
-      </Layout>
+          <meta charSet="utf-8" />
+          <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+          />
+        </Helmet>
 
-      <ReduxToastr
-        timeOut={4000}
-        newestOnTop={false}
-        preventDuplicates
-        position="top-right"
-        transitionIn="fadeIn"
-        transitionOut="fadeOut"
-        progressBar/>
-    </>
+        <Layout className="layout">
+          <Header />
+          <Layout.Content className="content">
+            <Alert
+              message={`We are closing`}
+              description={
+                <>
+                  We're sorry. The service{" "}
+                  <a href="https://medium.com/golangci/golangci-com-is-closing-d1fc1bd30e0e">
+                    has stopped working
+                  </a>
+                  .
+                </>
+              }
+              type="warning"
+              showIcon
+            />
+            {this.renderContent()}
+          </Layout.Content>
+          <Footer />
+        </Layout>
+
+        <ReduxToastr
+          timeOut={4000}
+          newestOnTop={false}
+          preventDuplicates
+          position="top-right"
+          transitionIn="fadeIn"
+          transitionOut="fadeOut"
+          progressBar
+        />
+      </>
     );
   }
 }
@@ -154,10 +168,12 @@ const mapStateToProps = (state: IAppStore): any => ({
   lastApiHttpCode: state.result ? state.result.lastApiResultHttpCode : null,
   lastApiErrorCode: state.result ? state.result.lastApiResultErrorCode : null,
   lastApiErrorMessage: state.result ? state.result.lastApiResultMessage : null,
-  currentUser: state.auth.currentUser,
+  currentUser: state.auth.currentUser
 });
 
-let app = withRouter(connect<IStateProps, IDispatchProps, IOwnProps>(mapStateToProps)(App));
+let app = withRouter(
+  connect<IStateProps, IDispatchProps, IOwnProps>(mapStateToProps)(App)
+);
 
 if (__DEV__) {
   app = hot(app);
