@@ -55,7 +55,7 @@
     "html-webpack-plugin": "^3.2.0",
     "less": "^2.7.3",
     "less-loader": "^4.0.5",
-    "node-sass": "^4.7.2",
+    "node-sass": "^4.13.1",
     "nodemon": "^1.14.11",
     "react-svg-loader": "^2.1.0",
     "rollbar-sourcemap-webpack-plugin": "^2.2.0",
