@@ -11,13 +11,15 @@ import { IAppStore } from "./reducers";
 import rootSaga from "./sagas";
 import { StaticRouter } from "react-router-dom";
 import { setMobileDetect, mobileParser } from "react-responsive-redux";
+import { parse as urlParse } from "url";
 
 let webpackPartialTmpl: string;
 
 const render = (req: express.Request, res: express.Response) => {
-  if (req.hostname !== "golangci.com" && req.hostname !== "dev.golangci.com") {
-    console.info("got request to hostname %s, redirecting to https://golangci.com", req.hostname);
-    res.redirect(307, "https://golangci.com/");
+  const url = urlParse(HOST);
+  if (req.hostname !== url.hostname) {
+    console.info("got request to hostname %s, redirecting to %s", req.hostname, HOST);
+    res.redirect(307, HOST);
     return;
   }
 
